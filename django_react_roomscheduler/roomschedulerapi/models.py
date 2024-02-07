@@ -21,7 +21,7 @@ class Floor(models.Model):
 
 class Classroom(models.Model):
     classroom_id = models.AutoField(primary_key=True)
-    class_room_number = models.IntegerField(default=0, max_length=3)
+    class_room_number = models.IntegerField(default=0)
     total_seats = models.IntegerField(default=0)
     width_of_room = models.IntegerField(default=0)
     length_of_room = models.IntegerField(default=0)
