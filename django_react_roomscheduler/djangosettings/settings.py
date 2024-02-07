@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'roomschedulerapi',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +101,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CORS_ORIGIN_WHITELIST = [
+     'http://localhost:8000',
+     'http://localhost:3000'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

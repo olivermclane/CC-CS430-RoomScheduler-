@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 class Building(models.Model):
     building_id = models.AutoField(primary_key=True)
+    building_name = models.CharField(max_length=100)
 
 
 class Floor(models.Model):
@@ -31,7 +32,7 @@ class Classroom(models.Model):
     stereo_system = models.BooleanField(default=False)
     total_tv = models.IntegerField(default=0)
     sinks = models.IntegerField(default=0)
-    notes = ArrayField(models.CharField(max_length=200, blank=False))
+    notes = models.CharField(max_length=200, blank=False)
     floor_id = models.ForeignKey(Floor, on_delete=models.CASCADE)
 
 
@@ -44,7 +45,7 @@ class Course(models.Model):
     first_day = models.DateField()
     last_day = models.DateField()
     course_name = models.CharField(max_length=100)
-    term = ArrayField(models.CharField(max_length=10, blank=True))
+    term = models.CharField(max_length=10, blank=True)
     credits = models.IntegerField(default=0)
     course_cap = models.IntegerField(default=0)
     waitlist_cap = models.IntegerField(default=0)
