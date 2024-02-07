@@ -6,11 +6,17 @@ class Building(models.Model):
     building_id = models.AutoField(primary_key=True)
     building_name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.building_id
+
 
 class Floor(models.Model):
     floor_id = models.AutoField(primary_key=True)
     floor_name = models.CharField(max_length=50)
     building_id = models.ForeignKey(Building, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.floor_id
 
 
 class Classroom(models.Model):
@@ -34,6 +40,9 @@ class Classroom(models.Model):
     sinks = models.IntegerField(default=0)
     notes = models.CharField(max_length=200, blank=False)
     floor_id = models.ForeignKey(Floor, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.classroom_id
 
 
 class Course(models.Model):
@@ -60,3 +69,6 @@ class Course(models.Model):
     friday = models.BooleanField(default=False)
     saturday = models.BooleanField(default=False)
     sunday = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.course_name
