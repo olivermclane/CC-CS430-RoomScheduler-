@@ -4,7 +4,7 @@ This is a README
 # DB Setup
 While in the django_react_roomscheduler folder run:
 ```cmd
-     docker build -t roomschduler -f Dockerfile . 
+     docker build -t roomschduler -f dockerfile.yaml . 
 ```
 Then to start the database run
 ```cmd
