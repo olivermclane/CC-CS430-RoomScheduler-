@@ -18,7 +18,7 @@ class FloorAdmin(admin.ModelAdmin):
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = [
         'classroom_id',
-        'class_room_number',
+        'classroom_number',
         'total_seats',
         'floor_id',
         'projectors',
@@ -29,9 +29,9 @@ class ClassroomAdmin(admin.ModelAdmin):
         'piano',
         'printer',
     ]
-    ordering = ['floor_id', 'class_room_number']
+    ordering = ['floor_id', 'classroom_number']
     list_filter = ['floor_id', 'projectors', 'movable_chairs', 'piano', 'printer']
-    search_fields = ['class_room_number', 'notes']
+    search_fields = ['classroom_number', 'notes']
 
 
 @admin.register(Course)
