@@ -1,9 +1,15 @@
 FROM postgres:latest
 
 # Set environment variables for database configuration
+<<<<<<< Updated upstream:django_react_roomscheduler/dockerfile.yaml.template
 ENV POSTGRES_PASSWORD=''
 ENV POSTGRES_DB=''
 ENV POSTGRES_USER=''
+=======
+ENV POSTGRES_PASSWORD='supersecr3t'
+ENV POSTGRES_DB='roomapidb'
+ENV POSTGRES_USER='pg-roomapi'
+>>>>>>> Stashed changes:django_react_roomscheduler/dockerfile.yaml
 
 # Expose the default PostgreSQL port
 EXPOSE 5432
