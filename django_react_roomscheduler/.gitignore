@@ -1,7 +1,2 @@
-.env
-<<<<<<< Updated upstream
-dockerfile.yaml.template
 .DS_Store
-=======
-dockerfile.yaml
->>>>>>> Stashed changes
+
