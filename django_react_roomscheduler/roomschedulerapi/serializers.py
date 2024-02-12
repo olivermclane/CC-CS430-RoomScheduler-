@@ -23,7 +23,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = [
             'classroom_id',
-            'class_room_number',
+            'classroom_number',
             'total_seats',
             'width_of_room',
             'length_of_room',
@@ -67,13 +67,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'waitlist_total',
             'enrollment_total',
             'course_level',
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-            'sunday',
+            'days_of_week',
         ]
 
 

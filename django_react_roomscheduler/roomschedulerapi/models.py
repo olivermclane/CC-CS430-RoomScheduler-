@@ -13,7 +13,7 @@ class Building(models.Model):
 class Floor(models.Model):
     floor_id = models.AutoField(primary_key=True)
     floor_name = models.CharField(max_length=50)
-    building_id = models.ForeignKey(Building, on_delete=models.CASCADE)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.floor_name} (ID: {self.floor_id})"
@@ -39,7 +39,7 @@ class Classroom(models.Model):
     total_tv = models.IntegerField(default=0)
     sinks = models.IntegerField(default=0)
     notes = models.TextField(blank=True)
-    floor_id = models.ForeignKey(Floor, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.classroom_number} (ID: {self.classroom_id})"
@@ -76,6 +76,18 @@ class SavedSchedule(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     notes = models.TextField(blank=True)
+
+
+"""
+DJANGO DOCS
+https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
+
+MEDIUM EXAMPLES 1) React Implementation of JWT, 2) Django JWT 
+https://medium.com/@ronakchitlangya1997/jwt-authentication-with-react-js-and-django-c034aae1e60d
+https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
+
+Follow for a deeper understanding of our authentication backend.
+"""
 
 
 class User(AbstractUser):
