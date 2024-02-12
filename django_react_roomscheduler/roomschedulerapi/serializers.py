@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Building, Floor, Classroom, Course
+from .models import Building, Floor, Classroom, Course, User
 
 
 class BuildingSerializer(serializers.ModelSerializer):
@@ -75,3 +75,17 @@ class CourseSerializer(serializers.ModelSerializer):
             'saturday',
             'sunday',
         ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username','password']
+
+    def create(self, validated_data):
+        user = User.objects.create(email=validated_data['email'],
+                                       name=validated_data['name']
+                                       )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user

@@ -1,5 +1,5 @@
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 
 
 class Building(models.Model):
@@ -38,7 +38,7 @@ class Classroom(models.Model):
     stereo_system = models.BooleanField(default=False)
     total_tv = models.IntegerField(default=0)
     sinks = models.IntegerField(default=0)
-    notes = models.CharField(max_length=200, blank=False)
+    notes = models.TextField(blank=True)
     floor_id = models.ForeignKey(Floor, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -47,10 +47,10 @@ class Classroom(models.Model):
 
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
-    classroom_id = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    classroom_id = models.ManyToManyField(Classroom)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    instructor = models.CharField
+    instructor = models.CharField()
     first_day = models.DateField()
     last_day = models.DateField()
     course_name = models.CharField(max_length=100)
@@ -62,13 +62,52 @@ class Course(models.Model):
     waitlist_total = models.IntegerField(default=0)
     enrollment_total = models.IntegerField(default=0)
     course_level = models.CharField(max_length=3)
-    monday = models.BooleanField(default=False)
-    tuesday = models.BooleanField(default=False)
-    wednesday = models.BooleanField(default=False)
-    thursday = models.BooleanField(default=False)
-    friday = models.BooleanField(default=False)
-    saturday = models.BooleanField(default=False)
-    sunday = models.BooleanField(default=False)
+    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THURS', 'THURSDAY'), ('FRI', 'Friday'), ('SAT', 'Saturday'), ('SUN', 'Sunday')]
+    days_of_week = models.CharField(max_length=8, choices=DAY_CHOICES)
+
 
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
+
+
+class SavedSchedule(models.Model):
+    schedule_id = models.AutoField(primary_key=True)
+    course_ids = models.ManyToManyField(Course)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    notes = models.TextField(blank=True)
+
+
+
+
+
+
+
+
+class User(AbstractUser):
+    ## Basic User Fields
+    username = models.CharField(max_length=100, unique=True)
+    email = models.EmailField(
+        verbose_name='Email',
+        max_length=255,
+        unique=True,
+    )
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    ## Custom User Fields
+    user_schedules = models.ManyToManyField(SavedSchedule)
+
+    ## User Settings
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    objects = UserManager()
+    def __str__(self):
+        return self.email
+
+    def is_admin(self, perm, obj=None):
+        return self.is_admin
+
