@@ -62,9 +62,9 @@ class Course(models.Model):
     waitlist_total = models.IntegerField(default=0)
     enrollment_total = models.IntegerField(default=0)
     course_level = models.CharField(max_length=3)
-    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THURS', 'THURSDAY'), ('FRI', 'Friday'), ('SAT', 'Saturday'), ('SUN', 'Sunday')]
+    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THURS', 'THURSDAY'),
+                   ('FRI', 'Friday'), ('SAT', 'Saturday'), ('SUN', 'Sunday')]
     days_of_week = models.CharField(max_length=8, choices=DAY_CHOICES)
-
 
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
@@ -78,15 +78,10 @@ class SavedSchedule(models.Model):
     notes = models.TextField(blank=True)
 
 
-
-
-
-
-
-
 class User(AbstractUser):
     ## Basic User Fields
     username = models.CharField(max_length=100, unique=True)
+    name = None
     email = models.EmailField(
         verbose_name='Email',
         max_length=255,
@@ -105,9 +100,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     objects = UserManager()
+
     def __str__(self):
         return self.email
 
     def is_admin(self, perm, obj=None):
         return self.is_admin
-
