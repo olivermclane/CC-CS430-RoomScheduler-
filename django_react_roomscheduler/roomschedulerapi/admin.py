@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Building, Floor, Classroom, Course
+from .models import Building, Floor, Classroom, Course, User
 
 
 @admin.register(Building)
@@ -18,7 +18,7 @@ class FloorAdmin(admin.ModelAdmin):
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = [
         'classroom_id',
-        'class_room_number',
+        'classroom_number',
         'total_seats',
         'floor_id',
         'projectors',
@@ -29,9 +29,9 @@ class ClassroomAdmin(admin.ModelAdmin):
         'piano',
         'printer',
     ]
-    ordering = ['floor_id', 'class_room_number']
+    ordering = ['floor_id', 'classroom_number']
     list_filter = ['floor_id', 'projectors', 'movable_chairs', 'piano', 'printer']
-    search_fields = ['class_room_number', 'notes']
+    search_fields = ['classroom_number', 'notes']
 
 
 @admin.register(Course)
@@ -39,7 +39,6 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = [
         'course_id',
         'course_name',
-        'classroom_id',
         'instructor',
         'start_time',
         'end_time',
@@ -54,7 +53,9 @@ class CourseAdmin(admin.ModelAdmin):
         'sunday',
     ]
     ordering = ['course_name', 'start_time']
-    list_filter = ['classroom_id', 'course_level', 'term', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-                   'saturday', 'sunday']
+    list_filter = ['classroom', 'course_level', 'term']
     search_fields = ['course_name', 'instructor', 'course_id']
 
+
+## PRECONFIGURED ADMIN FOR USERMODELS
+admin.site.register(User)
