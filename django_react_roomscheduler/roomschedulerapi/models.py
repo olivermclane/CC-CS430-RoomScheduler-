@@ -47,7 +47,7 @@ class Classroom(models.Model):
 
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
-    classroom_id = models.ManyToManyField(Classroom)
+    classroom = models.ManyToManyField(Classroom)
     start_time = models.TimeField()
     end_time = models.TimeField()
     instructor = models.CharField()
@@ -62,9 +62,13 @@ class Course(models.Model):
     waitlist_total = models.IntegerField(default=0)
     enrollment_total = models.IntegerField(default=0)
     course_level = models.CharField(max_length=3)
-    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THURS', 'THURSDAY'),
-                   ('FRI', 'Friday'), ('SAT', 'Saturday'), ('SUN', 'Sunday')]
-    days_of_week = models.CharField(max_length=8, choices=DAY_CHOICES)
+    monday = models.BooleanField(default=False)
+    tuesday = models.BooleanField(default=False)
+    wednesday = models.BooleanField(default=False)
+    thursday = models.BooleanField(default=False)
+    friday = models.BooleanField(default=False)
+    saturday = models.BooleanField(default=False)
+    sunday = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
