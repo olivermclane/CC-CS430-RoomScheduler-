@@ -55,6 +55,18 @@ class BuildingView(APIView):
         return Response(serializer.data)
 
 
+class BuildingDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        try:
+            building = Building.objects.get(building_id=pk)
+            serializer = BuildingSerializer(building)
+            return Response(serializer.data)
+        except Building.DoesNotExist:
+            return Response({'error': 'Building not found'}, status=404)
+
+
 class CourseView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -65,13 +77,37 @@ class CourseView(APIView):
         return Response(serializer.data)
 
 
+class CourseDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        try:
+            course = Course.objects.get(course_id=pk)
+            serializer = CourseSerializer(course)
+            return Response(serializer.data)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found'}, status=404)
+
+
 class ClassroomView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        classrooms = Classroom.objects.all()
-        serializer = ClassroomSerializer(classrooms, many=True)
+        classroom = Classroom.objects.all()
+        serializer = ClassroomSerializer(classroom, many=True)
         return Response(serializer.data)
+
+
+class ClassroomDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        try:
+            classrooms = Classroom.objects.get(classroom_id=pk)
+            serializer = ClassroomSerializer(classrooms)
+            return Response(serializer.data)
+        except Classroom.DoesNotExist:
+            return Response({'error': 'Classroom not found'}, status=404)
 
 
 class FloorView(APIView):
@@ -81,3 +117,15 @@ class FloorView(APIView):
         floors = Floor.objects.all()
         serializer = FloorSerializer(floors, many=True)
         return Response(serializer.data)
+
+
+class FloorDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        try:
+            floor = Floor.objects.get(floor_id=pk)
+            serializer = FloorSerializer(floor)
+            return Response(serializer.data)
+        except Floor.DoesNotExist:
+            return Response({'error': 'Floor not found'}, status=404)

@@ -44,10 +44,16 @@ class CourseAdmin(admin.ModelAdmin):
         'end_time',
         'course_cap',
         'enrollment_total',
-        'days_of_week',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
     ]
     ordering = ['course_name', 'start_time']
-    list_filter = ['classroom_id', 'course_level', 'term']
+    list_filter = ['classroom', 'course_level', 'term']
     search_fields = ['course_name', 'instructor', 'course_id']
 
 

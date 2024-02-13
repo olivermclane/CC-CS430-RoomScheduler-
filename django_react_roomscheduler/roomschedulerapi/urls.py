@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from django.views.generic import TemplateView
-from .views import DefaultView, RegisterView, LoginView, BuildingView, FloorView, ClassroomView, CourseView
-
+from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
+     BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView
 
 urlpatterns = [
      ## INDEX ENDPOINT
@@ -20,8 +20,15 @@ urlpatterns = [
 
      ## APPLICATION ENDPOINTS
      path('buildings/', BuildingView.as_view(), name='buildings'),
+     path('buildings/<int:pk>/', BuildingDetailView.as_view(), name='building-detail'),
+
      path('floors/', FloorView.as_view(), name='floors'),
+     path('floors/<int:pk>/', FloorDetailView.as_view(), name='building-detail'),
+
      path('courses/', CourseView.as_view(), name='courses'),
-     path('classrooms/', ClassroomView.as_view(), name='classrooms')
+     path('courses/<int:pk>/', CourseDetailView.as_view(), name='building-detail'),
+
+     path('classrooms/', ClassroomView.as_view(), name='classrooms'),
+     path('classrooms/<int:pk>/', ClassroomDetailView.as_view(), name='building-detail'),
 
 ]
