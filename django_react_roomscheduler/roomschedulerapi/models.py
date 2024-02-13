@@ -4,23 +4,25 @@ from django.contrib.postgres.fields import ArrayField
 
 class Building(models.Model):
     building_id = models.AutoField(primary_key=True)
-    building_name = models.CharField(max_length=100)
+    building_name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return self.building_id
+        return f"self.building_id {self.building_id}"
 
 
 class Floor(models.Model):
     floor_id = models.AutoField(primary_key=True)
     floor_name = models.CharField(max_length=50)
+    building_name = models.CharField(max_length=50, default=0)
     building_id = models.ForeignKey(Building, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.floor_id
+        return f" Floor id  {self.floor_id}"
 
 
 class Classroom(models.Model):
     classroom_id = models.AutoField(primary_key=True)
+    classroom_name = models.CharField(max_length=100)
     class_room_number = models.IntegerField(default=0)
     total_seats = models.IntegerField(default=0)
     width_of_room = models.IntegerField(default=0)
@@ -39,10 +41,11 @@ class Classroom(models.Model):
     total_tv = models.IntegerField(default=0)
     sinks = models.IntegerField(default=0)
     notes = models.CharField(max_length=200, blank=False)
+    floor_name = models.CharField(default=0)
     floor_id = models.ForeignKey(Floor, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.classroom_id
+        return f"classroom_id {self.classroom_id}"
 
 
 class Course(models.Model):
@@ -50,7 +53,7 @@ class Course(models.Model):
     classroom_id = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    instructor = models.CharField
+    instructor = models.CharField(default='')
     first_day = models.DateField()
     last_day = models.DateField()
     course_name = models.CharField(max_length=100)
@@ -61,7 +64,7 @@ class Course(models.Model):
     course_total = models.IntegerField(default=0)
     waitlist_total = models.IntegerField(default=0)
     enrollment_total = models.IntegerField(default=0)
-    course_level = models.CharField(max_length=3)
+    course_level = models.CharField(max_length=10)
     monday = models.BooleanField(default=False)
     tuesday = models.BooleanField(default=False)
     wednesday = models.BooleanField(default=False)
@@ -71,4 +74,4 @@ class Course(models.Model):
     sunday = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.course_name
+        return f" course name {self.course_name}"
