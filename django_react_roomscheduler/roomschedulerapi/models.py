@@ -10,7 +10,6 @@ class Building(models.Model):
         return f"{self.building_name} (ID: {self.building_id})"
 
 
-
 class Floor(models.Model):
     floor_id = models.AutoField(primary_key=True)
     floor_name = models.CharField(max_length=50)
@@ -49,10 +48,9 @@ class Classroom(models.Model):
         return f"{self.classroom_name} (ID: {self.classroom_id})"
 
 
-
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
-    classroom = models.ManyToManyField(Classroom)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, default=None)
     start_time = models.TimeField()
     end_time = models.TimeField()
     instructor = models.CharField(default='')
@@ -63,7 +61,6 @@ class Course(models.Model):
     credits = models.IntegerField(default=0)
     course_cap = models.IntegerField(default=0)
     waitlist_cap = models.IntegerField(default=0)
-    course_total = models.IntegerField(default=0)
     waitlist_total = models.IntegerField(default=0)
     enrollment_total = models.IntegerField(default=0)
     course_level = models.CharField(max_length=10)
@@ -127,4 +124,3 @@ class User(AbstractUser):
 
     def is_admin(self, perm, obj=None):
         return self.is_admin
-

@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from django.views.generic import TemplateView
 from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
-     BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView
+     BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView
 
 urlpatterns = [
      ## INDEX ENDPOINT
@@ -30,5 +30,7 @@ urlpatterns = [
 
      path('classrooms/', ClassroomView.as_view(), name='classrooms'),
      path('classrooms/<int:pk>/', ClassroomDetailView.as_view(), name='building-detail'),
+
+     path('load/', LoadView.as_view(), name='load')
 
 ]

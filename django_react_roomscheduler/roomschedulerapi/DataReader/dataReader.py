@@ -3,7 +3,6 @@ Feb. 4, 2024
 Data Reader for computer science senior project.
 Author: Hank Rugg
 
-**** Not Complete, needs to be tested and foreign key ids need to be added
 '''
 
 import pandas as pd
@@ -20,7 +19,7 @@ class DataReader(object):
         self.courseData = pd.read_csv(
             'roomschedulerapi/DataReader/Data/Spring2024Schedule.csv')
 
-        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on="Name")
+        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on="Classroom Name")
         self.data['Military Start'].fillna("00:00:00", inplace=True)
         self.data['Military End'].fillna("00:00:00", inplace=True)
         self.data.fillna(0, inplace=True)
@@ -32,9 +31,9 @@ class DataReader(object):
 
             f = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
                                             building_name=self.data['CSM_BLDG'].iloc[c],
-                                            building_id=b[0])
-            cl = Classroom.objects.get_or_create(class_room_number=self.data['Room Number'].iloc[c],
-                                                 classroom_name=self.data['Name'].iloc[c],
+                                            building=b[0])
+            cl = Classroom.objects.get_or_create(classroom_number=self.data['Room Number'].iloc[c],
+                                                 classroom_name=self.data['Classroom Name'].iloc[c],
                                                  total_seats=self.data['Number of Student Seats in Room'].iloc[c],
                                                  width_of_room=self.data['Width of Room'].iloc[c],
                                                  length_of_room=self.data['Length of Room'].iloc[c],
@@ -53,7 +52,7 @@ class DataReader(object):
                                                  sinks=self.data['Sink'].iloc[c],
                                                  notes=self.data['Notes'].iloc[c],
                                                  floor_name=self.data['Floor Name'].iloc[c],
-                                                 floor_id=f[0])
+                                                 floor=f[0])
             cr = Course.objects.get_or_create(first_day=self.data['Start Date'].iloc[c],
                                               last_day=self.data['End Date'].iloc[c],
                                               course_name=self.data['SEC_SHORT_TITLE'].iloc[c],
@@ -72,5 +71,6 @@ class DataReader(object):
                                               enrollment_total=self.data['STUDENTS_AND_RESERVED_SEATS'].iloc[c],
                                               course_cap=self.data['SEC_CAPACITY'].iloc[c],
                                               waitlist_cap=self.data['XL_WAITLIST_MAX'].iloc[c],
+                                              waitlist_total=self.data['WAITLIST'].iloc[c],
                                               course_level=self.data['SEC_COURSE_NO'].iloc[c],
-                                              classroom_id=cl[0])
+                                              classroom=cl[0])

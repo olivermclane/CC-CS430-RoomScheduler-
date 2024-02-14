@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .DataReader.dataReader import DataReader
 from .models import Building, Floor, Classroom, Course, User
 from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer
 
@@ -129,3 +130,11 @@ class FloorDetailView(APIView):
             return Response(serializer.data)
         except Floor.DoesNotExist:
             return Response({'error': 'Floor not found'}, status=404)
+
+
+class LoadView(APIView):
+
+    def get(self, request):
+        dr = DataReader()
+        dr.loadData()
+        return Response()
