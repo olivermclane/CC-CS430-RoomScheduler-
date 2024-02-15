@@ -1,23 +1,29 @@
 import logo from './logo.svg';
 import './App.css';
+import BuildingList from "./components/BuildingList";
+import FloorList from "./components/FloorList";
+import ClassroomList from "./components/ClassroomList";
+import {useState} from "react";
 
 function App() {
+
+    const [selectedBuilding, setSelectedBuilding] = useState(null)
+    const [selectedFloor, setSelectedFloor] = useState(null)
+    function updateFloorList(building){
+        setSelectedBuilding(building)
+        setSelectedFloor(null)
+    }
+    function updateClassroomList(floor){
+        setSelectedFloor(floor)
+    }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <BuildingList updateFloorList = {updateFloorList} />
+        <br /><br />
+        <FloorList selectedBuilding={selectedBuilding} updateClassroomList={updateClassroomList} />
+        <br /><br />
+        <ClassroomList selectedFloor={selectedFloor} />
     </div>
   );
 }
