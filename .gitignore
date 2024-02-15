@@ -2,5 +2,5 @@
 __pycache__/
 .DS_Store
 .env
-django_react_roomscheduler/dockerfile.yaml
+dockerfile.yaml
 
