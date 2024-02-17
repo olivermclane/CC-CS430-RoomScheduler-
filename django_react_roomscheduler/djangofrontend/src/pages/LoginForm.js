@@ -28,6 +28,8 @@ export default function LoginForm() {
       const data = await login( email, password );
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('email', data.email)
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
       window.location.href = '/dashboard';
     } catch (error) {
