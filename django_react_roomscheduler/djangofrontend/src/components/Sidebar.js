@@ -4,6 +4,9 @@ import axios from "axios";
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
+ * https://lucide.dev/icons/file-up
+ * https://www.carroll.edu/about/offices-services/marketing-communications/carroll-style-guide
+ * https://tailwindcss.com/docs/customizing-colors
  */
 const SidebarContext = createContext()
 
