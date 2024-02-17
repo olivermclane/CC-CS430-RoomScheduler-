@@ -38,33 +38,32 @@ export default function LoginForm() {
   };
 
     return (
-        <div className="bg-white flex justify-center items-center h-screen w-screen">
-            <div className="border-t-8 rounded-sm border-violet-400 bg-white p-12 shadow-2xl w-96">
-                <h1 className="font-bold text-center block text-2xl text-violet-900">Login</h1>
-                <div className="bg-white rounded-t-lg overflow-hidden mb-8">
-                    <img src="/icons/shield.png" alt="Login Image"
-                         className="w-48 mx-auto"/>
+        <div className="bg-dark-purple-900 flex justify-center items-center h-screen w-screen">
+            <div className="border-t-8 rounded-sm border-purple-900 bg-dark-purple-800 p-12 shadow-2xl w-96">
+                <h1 className="font-bold text-center block text-2xl text-purple-950">Login</h1>
+                <div className="bg-dark-purple-800 rounded-t-lg overflow-hidden mb-8">
+                    <img src="/icons/shield.png" alt="Login Image" className="w-48 mx-auto"/>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Input
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-violet-700 ring-1 ring-inset ring-violet-300 placeholder:text-violet-400 focus:ring-2 focus:ring-inset focus:ring-violet-800 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-purple-400 ring-1 ring-inset ring-purple-700 placeholder:text-purple-500 focus:ring-2 focus:ring-inset focus:ring-purple-900 sm:text-sm sm:leading-6"
                         type="email" id="email" name="email" label="Email" placeholder="Email"
                     />
                     <div className="mt-4">
                         <Input
-                            className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-violet-700 ring-1 ring-inset ring-violet-300 placeholder:text-violet-400 focus:ring-2 focus:ring-inset focus:ring-violet-800 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-purple-400 ring-1 ring-inset ring-purple-700 placeholder:text-purple-500 focus:ring-2 focus:ring-inset focus:ring-purple-900 sm:text-sm sm:leading-6"
                             type="password" id="password" name="password" label="Password" placeholder="••••••••••"
                         />
                         <div className="mt-4">
                             <div className="mt-4">
                                 <Button
-                                    className="rounded-full px-4 py-2 text-sm font-medium text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white"
+                                    className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
                                     value="Submit" label="Login In"
                                 >
                                     Login In
                                 </Button>
                                 <a href="/register/"
-                                   className="inline-block ml-4 text-sm font-medium text-violet-700 hover:text-violet-600">
+                                   className="inline-block ml-4 text-sm font-medium text-purple-400 hover:text-purple-300">
                                     Sign Up
                                 </a>
                             </div>
@@ -72,17 +71,14 @@ export default function LoginForm() {
                     </div>
                 </form>
                 <div className="text-center mt-4">
-                     <a
-/*
-                    <a href="https://your-okta-domain.com/oauth2/default/v1/authorize?clientId=your-okta-client-id&redirectUri=your-redirect-uri&responseType=code&scope=openid%20profile%20email"
-*/
-                       className="inline-block rounded-full px-4 py-2 text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white">
+                    <a
+                        className="inline-block rounded-full px-4 py-2 text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
+                        href="https://your-okta-domain.com/oauth2/default/v1/authorize?clientId=your-okta-client-id&redirectUri=your-redirect-uri&responseType=code&scope=openid%20profile%20email">
                         Login with Okta
                     </a>
                 </div>
                 {loginError && (
-                    <div className="text-violet-400 mt-4">  {loginError}
-                    </div>
+                    <div className="text-purple-400 mt-4">{loginError}</div>
                 )}
             </div>
         </div>

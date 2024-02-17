@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,6 +17,18 @@ class DefaultView(APIView):
     def get(self, request):
         print("get default")
         return render(request, 'index.html')
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        # Blacklist the current token
+        if request.auth and hasattr(request.auth, 'get_token'):
+            token = request.auth.get_token()
+
+        # Optionally add additional logout logic here (e.g., clearing cookies)
+
+        logout(request)
+        return Response({"message": "Successfully logged out"})
 
 
 class LoginView(TokenObtainPairView):
@@ -148,4 +160,3 @@ class LoadView(APIView):
         dr = DataReader()
         dr.loadData()
         return Response()
-
