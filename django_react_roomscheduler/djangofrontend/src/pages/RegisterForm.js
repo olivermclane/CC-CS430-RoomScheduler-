@@ -34,7 +34,7 @@ export default function RegisterForm() {
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
-            window.location.href = '/dashboard';
+            window.location.href = '/login';
         } catch (error) {
             setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
         }

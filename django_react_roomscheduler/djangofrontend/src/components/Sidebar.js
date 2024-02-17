@@ -10,9 +10,9 @@ export default function Sidebar({ children }) {
   const email = localStorage.getItem('email');
   const username = localStorage.getItem('username');
   const [expanded, setExpanded] = useState(true)
-  const profileiconurl = "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true";
+  const baseurl = "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true";
   const fieldParam = `&name=${username}`;
-  const finalUrl = profileiconurl + fieldParam;
+  const profileURL = baseurl + fieldParam;
 
 
   return (
@@ -42,7 +42,7 @@ export default function Sidebar({ children }) {
         <div className="border-t flex p-3">
           <img
 
-            src={finalUrl}
+            src={profileURL}
             alt=""
             className="w-10 h-10 rounded-md"
           />
