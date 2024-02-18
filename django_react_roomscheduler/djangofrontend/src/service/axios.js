@@ -16,7 +16,7 @@ axios.interceptors.response.use(resp => resp, async error => {
         refresh: refreshToken
       }, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         withCredentials: true
       });

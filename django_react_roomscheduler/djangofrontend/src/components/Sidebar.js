@@ -13,7 +13,7 @@ const SidebarContext = createContext()
 export default function Sidebar({children}) {
     const email = localStorage.getItem('email');
     const username = localStorage.getItem('username');
-    const [expanded, setExpanded] = useState(true)
+    const [expanded, setExpanded] = useState(false)
     const baseurl = "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true";
     const fieldParam = `&name=${username}`;
     const profileURL = baseurl + fieldParam;
@@ -34,8 +34,9 @@ export default function Sidebar({children}) {
     }
 
     return (
+    <div className="flex">
         <aside className="h-screen transition-all">
-            <nav className="h-full flex flex-col bg-white border-r shadow-sm">
+            <nav className="h-full flex flex-col bg-white border-r shadow-sm fixed top-0">
                 <div className="p-4 pb-2 flex justify-between items-center">
                     <img
                         src="/icons/cc_logo_horiz.jpg"
@@ -84,24 +85,29 @@ export default function Sidebar({children}) {
                 </div>
             </nav>
         </aside>
-    )
+        <main className="flex-1 p-10"> {/* Adjust padding as needed */}
+            {/* Your main content goes here */}
+        </main>
+    </div>
+)
 }
 
-export function SidebarItem({icon, text, active, alert}) {
-    const {expanded} = useContext(SidebarContext)
+export function SidebarItem({ icon, text, active, alert, onClick }) {
+    const { expanded } = useContext(SidebarContext);
 
     return (
         <li
             className={`
-        relative flex items-center py-2 px-3 my-1
-        font-medium rounded-md cursor-pointer
-        transition-colors group
-        ${
+                relative flex items-center py-2 px-3 my-1
+                font-medium rounded-md cursor-pointer
+                transition-colors group
+                ${
                 active
                     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
                     : "hover:bg-violet-300 text-gray-600"
-            }
-    `}
+                }
+            `}
+            onClick={onClick} // Pass onClick handler
         >
             {icon}
             <span
@@ -109,8 +115,8 @@ export function SidebarItem({icon, text, active, alert}) {
                     expanded ? "w-52 ml-3" : "w-0"
                 }`}
             >
-        {text}
-      </span>
+                {text}
+            </span>
             {alert && (
                 <div
                     className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${
@@ -122,15 +128,15 @@ export function SidebarItem({icon, text, active, alert}) {
             {!expanded && (
                 <div
                     className={`
-          absolute left-full rounded-md px-2 py-1 ml-6
-          bg-indigo-100 text-indigo-800 text-sm
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
-      `}
+                        absolute left-full rounded-md px-2 py-1 ml-6
+                        bg-indigo-100 text-indigo-800 text-sm
+                        invisible opacity-20 -translate-x-3 transition-all
+                        group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+                    `}
                 >
                     {text}
                 </div>
             )}
         </li>
-    )
+    );
 }
