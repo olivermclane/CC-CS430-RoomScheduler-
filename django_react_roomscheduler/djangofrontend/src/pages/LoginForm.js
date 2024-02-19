@@ -8,9 +8,7 @@ export default function LoginForm() {
     const [loginError, setLoginError] = useState('');
     const login = async (email, password) => {
       try {
-        console.log(password)
         const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
-        console.log(response)
         return response.data;
       } catch (error) {
         throw error;
@@ -21,8 +19,7 @@ export default function LoginForm() {
     const formData = new FormData(e.currentTarget); // Use e.currentTarget
     const email = formData.get('email');
     const password = formData.get('password');
-    console.log(email)
-    console.log(password)
+
 
     try {
       const data = await login( email, password );
@@ -33,7 +30,7 @@ export default function LoginForm() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
       window.location.href = '/dashboard';
     } catch (error) {
-      setLoginError(error.message || 'Login failed. Please check your credentials and try again.');
+      setLoginError('Login failed. Please check your credentials and try again.');
     }
   };
 
