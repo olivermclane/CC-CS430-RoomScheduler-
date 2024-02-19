@@ -1,41 +1,54 @@
 import axios from "axios";
 
-let refresh = false;
+let isRefreshing = false;
+let subscribers = [];
 
-axios.interceptors.response.use(resp => resp, async error => {
-  if (error.response.status === 401 && !refresh) {
-    refresh = true;
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config, response } = error;
+    const originalRequest = config;
 
-    try {
-      const refreshToken = localStorage.getItem('refresh_token');
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
+    if (response.status === 401) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          const refreshToken = localStorage.getItem("refresh_token");
+          if (!refreshToken) {
+            window.location.href = '/login'; // Redirect to login (if not using callback)
+          }
 
-      const response = await axios.post('http://localhost:8000/login/refresh/', {
-        refresh: refreshToken
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true
-      });
+          const refreshedResponse = await axios.post(
+            "http://localhost:8000/login/refresh/",
+            { refresh: refreshToken },
+            { withCredentials: true }
+          );
 
-      if (response.status === 200) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data['access']}`;
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
+          const { access: newAccessToken, refresh: newRefreshToken } = refreshedResponse.data;
 
-        return axios(error.config);
+          localStorage.setItem("access_token", newAccessToken);
+          localStorage.setItem("refresh_token", newRefreshToken);
+
+          axios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+
+          subscribers.forEach((callback) => callback(newAccessToken));
+          subscribers = [];
+          isRefreshing = false;
+
+          return axios(originalRequest);
+        } catch (error) {
+          isRefreshing = false;
+          return Promise.reject(error);
+        }
       } else {
-        return Promise.reject(error);
+        return new Promise((resolve) => {
+          subscribers.push((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(axios(originalRequest));
+          });
+        });
       }
-    } catch (err) {
-      return Promise.reject(error);
-    } finally {
-      refresh = false;
     }
+    return Promise.reject(error);
   }
-
-  return Promise.reject(error);
-});
+);
