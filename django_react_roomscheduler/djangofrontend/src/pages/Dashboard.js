@@ -19,7 +19,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="d-flex">
+        <div className="d-flex bg-gray-100">
             <Sidebar className="sm:w-2/5">
                 <SidebarItem icon={<LayoutDashboard size={20}/>} text="Dashboard"
                              onClick={() => handleSidebarItemClick("dashboard")}/>
