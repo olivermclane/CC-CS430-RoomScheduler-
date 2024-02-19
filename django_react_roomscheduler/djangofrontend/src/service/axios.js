@@ -15,7 +15,7 @@ axios.interceptors.response.use(
         try {
           const refreshToken = localStorage.getItem("refresh_token");
           if (!refreshToken) {
-            window.location.href = '/login'; // Redirect to login (if not using callback)
+            window.location.href = '/login'; // Redirect to login (if token unavailable)
           }
 
           const refreshedResponse = await axios.post(
