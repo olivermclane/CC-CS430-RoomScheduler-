@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .DataReader.dataReader import DataReader
 from .models import Building, Floor, Classroom, Course, User
@@ -13,21 +15,41 @@ class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+        print("get default")
         return render(request, 'index.html')
 
 
-class LoginView(APIView):
+class LogoutView(APIView):
+    def post(self, request):
+        # Blacklist the current token
+        if request.auth and hasattr(request.auth, 'get_token'):
+            token = request.auth.get_token()
+
+        # Optionally add additional logout logic here (e.g., clearing cookies)
+
+        logout(request)
+        return Response({"message": "Successfully logged out"})
+
+
+class LoginView(TokenObtainPairView):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        })
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)  # Generate tokens first
+
+        # Access user data after token generation
+        try:
+            user = get_user_model().objects.get(email=request.data['email'])
+            user_data = {
+                'username': user.username,
+                'email': user.email,
+            }
+            response.data.update(user_data)  # Include user data in response
+        except KeyError:
+            # Handle cases where email is not found (e.g., invalid credentials)
+            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return response
 
 
 class RegisterView(APIView):
