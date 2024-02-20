@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import timeGridPlugin from '@fullcalendar/timegrid'
 
 const Calendar = () => {
-    const [endpoint, setEndpoint] = useState("/courses/1")
+    const [endpoint, setEndpoint] = useState("/courses/8")
     const [calendarData, setCalendarData] = useState([])
 
     const fetchData = async (endpoint) => {
@@ -33,15 +33,15 @@ const Calendar = () => {
     useEffect(() => {
         fetchData(endpoint);
     }, [endpoint]);
-
+    console.log(calendarData.start_time)
     return (
         <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin]}
             initialView="timeGridWeek"
             events={[
-                {title: 'Health', start: '2024-02-20T18:00:00', end: '2024-02-20T20:00:00'},
-                {title: 'Biology', start: '2024-02-20T10:00:00', end: '2021-06-10T12:00:00'},
-            ]}
+                {title: calendarData.course_name, start: calendarData.start_time, end: calendarData.end_time},
+                {title: calendarData.course_name, start: '2024-02-20T'+calendarData.start_time, end: '2021-06-10T'+calendarData.end_time},
+            ]} 
         />
     )
 }
