@@ -4,6 +4,7 @@ import BuildingList from "./components/BuildingList";
 import FloorList from "./components/FloorList";
 import ClassroomList from "./components/ClassroomList";
 import {useState} from "react";
+import Calendar from "./components/Calendar";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         <FloorList selectedBuilding={selectedBuilding} updateClassroomList={updateClassroomList} />
         <br /><br />
         <ClassroomList selectedFloor={selectedFloor} />
+        <Calendar />
     </div>
   );
 }
