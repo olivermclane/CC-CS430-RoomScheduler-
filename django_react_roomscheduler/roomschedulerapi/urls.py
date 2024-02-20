@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from django.views.generic import TemplateView
 from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
-     BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView
+     BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView
 
 urlpatterns = [
      ## INDEX ENDPOINT
@@ -11,12 +11,13 @@ urlpatterns = [
 
      ## AUTH ENDPOINTS
      path('login/',
-          jwt_views.TokenObtainPairView.as_view(),
+          LoginView.as_view(),
           name ='token_obtain_pair'),
      path('login/refresh/',
           jwt_views.TokenRefreshView.as_view(),
           name ='token_refresh'),
      path('register/', RegisterView.as_view(), name='register'),
+     path('logout/', LogoutView.as_view()),
 
      ## APPLICATION ENDPOINTS
      path('buildings/', BuildingView.as_view(), name='buildings'),

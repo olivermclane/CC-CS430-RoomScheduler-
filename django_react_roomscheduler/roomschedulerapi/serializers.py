@@ -46,7 +46,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    classroom = ClassroomSerializer(read_only=True, many=True)
+    classroom = ClassroomSerializer(read_only=True)
 
     class Meta:
         model = Course
@@ -62,7 +62,6 @@ class CourseSerializer(serializers.ModelSerializer):
             'credits',
             'course_cap',
             'waitlist_cap',
-            'course_total',
             'waitlist_total',
             'enrollment_total',
             'course_level',
