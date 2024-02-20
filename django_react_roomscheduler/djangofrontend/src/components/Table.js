@@ -113,42 +113,52 @@ const Table = () => {
             {
                 Header: "Microphone System",
                 accessor: "microphone_system",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Blu-ray Player",
                 accessor: "blueray_player",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Laptop HDMI",
                 accessor: "laptop_hdmi",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Zoom Camera",
                 accessor: "zoom_camera",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Document Camera",
                 accessor: "document_camera",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Storage",
                 accessor: "storage",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Movable Chairs",
                 accessor: "movable_chairs",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Printer",
                 accessor: "printer",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Piano",
                 accessor: "piano",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Stereo System",
                 accessor: "stereo_system",
+                Cell: ({ value }) => value ? "Yes" : "No",
             },
             {
                 Header: "Total TVs",
