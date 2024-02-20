@@ -31,7 +31,7 @@ export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
     }, 200);
 
     return (
-        <span className="flex justify-between ml-auto pt-10 pb-10 ">
+        <span className="flex justify-between ml-auto pt-10 pb-10 px-4">
       <input
           value={value || ""}
           onChange={(e) => {
@@ -42,7 +42,7 @@ export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
           type="search"
           placeholder={placeholder}
       />
-      <button className="bg-white rounded-xl p-4 border-1 cursor-pointer">
+            <button className="bg-white rounded-xl p-4 border-1 cursor-pointer ml-4">
         Export
       </button>
     </span>
@@ -113,52 +113,52 @@ const Table = () => {
             {
                 Header: "Microphone System",
                 accessor: "microphone_system",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Blu-ray Player",
                 accessor: "blueray_player",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Laptop HDMI",
                 accessor: "laptop_hdmi",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Zoom Camera",
                 accessor: "zoom_camera",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Document Camera",
                 accessor: "document_camera",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Storage",
                 accessor: "storage",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Movable Chairs",
                 accessor: "movable_chairs",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Printer",
                 accessor: "printer",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Piano",
                 accessor: "piano",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Stereo System",
                 accessor: "stereo_system",
-                Cell: ({ value }) => value ? "Yes" : "No",
+                Cell: ({value}) => value ? "Yes" : "No",
             },
             {
                 Header: "Total TVs",
@@ -285,7 +285,7 @@ const Table = () => {
                             setGlobalFilter={setGlobalFilter}
                             placeholder="Search..."
                         />
-                        <div className="mb-4 flex">
+                        <div className="mb-4 flex p-4">
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
                                 onClick={() => setEndpoint("/courses")}
