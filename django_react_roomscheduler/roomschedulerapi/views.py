@@ -70,6 +70,7 @@ class RegisterView(APIView):
 
 class BuildingView(APIView):
     permission_classes = (IsAuthenticated,)
+    #permission_classes = (AllowAny,)
 
     def get(self, request):
         # Retrieve buildings data for authenticated user
@@ -92,6 +93,7 @@ class BuildingDetailView(APIView):
 
 class CourseView(APIView):
     permission_classes = (IsAuthenticated,)
+    #permission_classes = (AllowAny,)
 
     def get(self, request):
         # Retrieve buildings data for authenticated user
@@ -114,6 +116,7 @@ class CourseDetailView(APIView):
 
 class ClassroomView(APIView):
     permission_classes = (IsAuthenticated,)
+    #permission_classes = (AllowAny,)
 
     def get(self, request):
         classroom = Classroom.objects.all()
@@ -123,6 +126,7 @@ class ClassroomView(APIView):
 
 class ClassroomDetailView(APIView):
     permission_classes = (IsAuthenticated,)
+
 
     def get(self, request, pk):
         try:
@@ -135,7 +139,7 @@ class ClassroomDetailView(APIView):
 
 class FloorView(APIView):
     permission_classes = (IsAuthenticated,)
-
+    #permission_classes = (AllowAny,)
     def get(self, request):
         floors = Floor.objects.all()
         serializer = FloorSerializer(floors, many=True)
