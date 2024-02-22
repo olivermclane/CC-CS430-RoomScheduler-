@@ -57,7 +57,7 @@ function ScheduleInsight() {
         ],
     };
 
-// Render the chart once the component mounts
+    // Render the chart once the component mounts
     useEffect(() => {
         const chart = new ApexCharts(document.getElementById("bar-chart"), options);
         chart.render();

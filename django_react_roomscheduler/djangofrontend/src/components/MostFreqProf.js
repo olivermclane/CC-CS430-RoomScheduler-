@@ -122,7 +122,7 @@ function MostFreqProf() {
         <hr className="my-3" />
         <h3 className="text-lg font-semibold mb-2">Most Prevalent Professors</h3>
         <p className="text-sm text-gray-600">
-          Number of courses taught by each professor
+          Number of courses taught by each professor per classroom
         </p>
       </div>
     </div>
