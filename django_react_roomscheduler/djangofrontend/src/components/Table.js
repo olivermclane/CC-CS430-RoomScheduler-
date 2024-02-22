@@ -287,28 +287,26 @@ const Table = () => {
     }, [state.selectedRowIds, tableData]);
 
 
-const loadingRows = isLoading ? Array.from({ length: 13 }).map((_, rowIndex) => (
-    <tr key={`loading-row-${rowIndex}`}>
-        {columns.map((column, columnIndex) => (
+    const loadingRows = isLoading ? Array.from({length: 13}).map((_, rowIndex) => (
+        <tr key={`loading-row-${rowIndex}`}>
+            {columns.map((column, columnIndex) => (
+                <td
+                    key={`loading-cell-${rowIndex}-${columnIndex}`}
+                    className="px-6 py-10 whitespace-nowrap bg-gray-200 bg-violet-100"
+                >
+                    <div className="flex items-center">
+                    </div>
+                </td>
+            ))}
             <td
-                key={`loading-cell-${rowIndex}-${columnIndex}`}
-                className="px-6 py-10 whitespace-nowrap bg-gray-200 bg-violet-100"
+                key={`extra-column-${rowIndex}`}
+                className="px-6 py-10 whitespace-nowrap bg-violet-100"
             >
                 <div className="flex items-center">
                 </div>
             </td>
-        ))}
-        <td
-            key={`extra-column-${rowIndex}`}
-            className="px-6 py-10 whitespace-nowrap bg-violet-100"
-        >
-            <div className="flex items-center">
-            </div>
-        </td>
-    </tr>
-)) : null;
-
-
+        </tr>
+    )) : null;
 
 
     const exportSelectedRows = () => {
