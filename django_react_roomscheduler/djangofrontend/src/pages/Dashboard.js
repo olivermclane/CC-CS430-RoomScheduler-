@@ -21,7 +21,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="d-flex bg-gray-100">
+        <div style={{width:"100vw", height: "100vh"}} className="d-flex bg-gray-100">
             <Sidebar className="sm:w-2/5">
                 <SidebarItem icon={<LayoutDashboard size={20}/>} text="Dashboard"
                              onClick={() => handleSidebarItemClick("dashboard")}/>
@@ -29,7 +29,8 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("insights")}/>
                 <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"
                              onClick={() => handleSidebarItemClick("schedules")}/>
-                <SidebarItem icon={<FileUp size={20}/>} text="Import Schedule" onClick={() => handleSidebarItemClick("import")}/>
+                <SidebarItem icon={<FileUp size={20}/>} text="Import Schedule"
+                             onClick={() => handleSidebarItemClick("import")}/>
                 <hr className='my-3'/>
                 <SidebarItem icon={<UserIcon size={20}/>} text="Profile"
                              onClick={() => handleSidebarItemClick("profile")}/>

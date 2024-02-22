@@ -89,3 +89,34 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+class ClassroomCourseSerializer(serializers.ModelSerializer):
+    classroom = ClassroomSerializer(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = [
+            'course_id',
+            'classroom_id',
+            'start_time',
+            'end_time',
+            'instructor',
+            'first_day',
+            'last_day',
+            'course_name',
+            'term',
+            'credits',
+            'course_cap',
+            'waitlist_cap',
+            'waitlist_total',
+            'enrollment_total',
+            'course_level',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
+            'classroom',
+        ]
