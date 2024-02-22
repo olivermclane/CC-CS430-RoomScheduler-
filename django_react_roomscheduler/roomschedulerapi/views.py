@@ -153,7 +153,6 @@ class FloorDetailView(APIView):
         except Floor.DoesNotExist:
             return Response({'error': 'Floor not found'}, status=404)
 
-
 class LoadView(APIView):
 
     def get(self, request):
