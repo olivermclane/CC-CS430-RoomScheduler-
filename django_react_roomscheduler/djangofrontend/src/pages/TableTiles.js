@@ -9,8 +9,10 @@ export default function DashboardPage() {
     const [selectedClassroom, setSelectedClassroom] = useState(null);
     const [selectedBuilding, setSelectedBuilding] = useState(null);
     const [selectedFloor, setSelectedFloor] = useState(null);
-    const [showTable, setShowTable] = useState(false);
+    const [showTable, setShowTable] = useState(true);
+
     let calendarShowing = false;
+
 
     function updateFloorList(building) {
         setSelectedBuilding(building);

@@ -37,7 +37,7 @@ export default function Dashboard() {
                 <SidebarItem icon={<Settings size={20}/>} text="Settings"
                              onClick={() => handleSidebarItemClick("settings")}/>
             </Sidebar>
-            <div className="sm:w-full mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
+            <div className="sm:w-full p-4 bg-gray-100 rounded-lg shadow-md">
                 {selectedItem === "dashboard" && (
                     <TableTiles/>
                 )}

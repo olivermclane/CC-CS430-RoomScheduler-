@@ -25,27 +25,29 @@ function ImportPage() {
     };
 
     return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Import Schedule Page</h1>
-      <div className="mb-6">
-        <input type="file" accept=".csv" onChange={handleFileUpload} className="py-2 px-4 border rounded" />
-      </div>
-      <div className="mb-6">
+        <div className="container mx-auto p-6">
+            <h1 className="text-3xl font-bold mb-6">Import Schedule Page</h1>
+            <div className="mb-6">
+                <input type="file" accept=".csv" onChange={handleFileUpload}
+                       className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300"/>
+            </div>
+            <div className="mb-6">
         <textarea
-          rows="10"
-          cols="50"
-          value={csvData}
-          readOnly
-          className="border rounded w-full"
+            rows="10"
+            cols="50"
+            value={csvData}
+            readOnly
+            className="border rounded w-full"
         />
-      </div>
-      <div>
-        <button onClick={handleSubmit} className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white">
-          Submit
-        </button>
-      </div>
-    </div>
-  );
+            </div>
+            <div>
+                <button onClick={handleSubmit}
+                        className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white">
+                    Submit
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default ImportPage;

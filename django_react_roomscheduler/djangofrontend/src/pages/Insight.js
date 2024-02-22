@@ -1,6 +1,6 @@
 import React from "react";
-import UsageChart from "../components/UsageChart";
-import DailyScheduleInsight from "../components/TimeBarChart";
+import UsageChart from "../components/ScheduleInsight";
+import DailyScheduleInsight from "../components/DailyScheduleInsight";
 import MostFreqProf from "../components/MostFreqProf";
 /*
  * Charts made via: https://apexcharts.com
