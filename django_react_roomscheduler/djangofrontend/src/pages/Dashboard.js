@@ -3,6 +3,8 @@ import Sidebar, {SidebarItem} from '../components/Sidebar';
 import TableTiles from './TableTiles'
 
 import {BarChart3, Calendar, FileUp, LayoutDashboard, Settings, UserIcon} from "lucide-react";
+import ImportPage from "./Import";
+import Insight from "./Insight";
 export default function Dashboard() {
 
     const [selectedItem, setSelectedItem] = useState("dashboard");
@@ -27,7 +29,7 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("insights")}/>
                 <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"
                              onClick={() => handleSidebarItemClick("schedules")}/>
-                <SidebarItem icon={<FileUp size={20}/>} text="Import" onClick={() => handleSidebarItemClick("import")}/>
+                <SidebarItem icon={<FileUp size={20}/>} text="Import Schedule" onClick={() => handleSidebarItemClick("import")}/>
                 <hr className='my-3'/>
                 <SidebarItem icon={<UserIcon size={20}/>} text="Profile"
                              onClick={() => handleSidebarItemClick("profile")}/>
@@ -39,13 +41,13 @@ export default function Dashboard() {
                     <TableTiles/>
                 )}
                 {selectedItem === "insights" && (
-                    <p>Insights</p>
+                    <Insight/>
                 )}
                 {selectedItem === "schedules" && (
                     <p>Saved Schedules</p>
                 )}
                 {selectedItem === "import" && (
-                    <p>Import</p>
+                    <ImportPage/>
                 )}
                 {selectedItem === "profile" && (
                     <p>Profile</p>

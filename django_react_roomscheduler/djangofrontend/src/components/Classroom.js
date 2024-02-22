@@ -8,7 +8,7 @@ function Classroom({classroom, selectClassroom}){
     return (
         <div className='classroom card col-sm-3 m-1 text-center' onClick={() => {setShowCalendar(true)}}>
             <div className='card-body'>
-                {classroom.classroom_number}
+                Classroom number: {classroom.classroom_number}
                 <br />
                 {classroom.total_seats}
                 {showCalendar ? (
@@ -17,6 +17,7 @@ function Classroom({classroom, selectClassroom}){
                         <p> No classroom schedule loaded </p>
                 )
                     }
+                Classroom total seats: {classroom.total_seats}
             </div>
         </div>
 
