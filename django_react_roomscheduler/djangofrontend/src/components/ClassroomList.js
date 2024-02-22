@@ -24,7 +24,6 @@ function ClassroomList({selectedFloor}){
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
-            console.log(response.data)
             setClassrooms(response.data);
         } catch (err) {
             if (err.response) {

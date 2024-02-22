@@ -4,10 +4,12 @@ import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
-const Calendar = (classroomid) => {
+const Calendar = (classroom) => {
     // the /12 is the classroom id and should be changed based on what classroom is chosen
-    const [endpoint, setEndpoint] = useState(`/classroom-courses/${classroomid}`)
+    const [endpoint, setEndpoint] = useState(`/classroom-courses/${classroom.selectedClassroom}`)
     const [calendarData, setCalendarData] = useState([[]])
+
+    console.log(classroom)
 
     const fetchData = async (endpoint) => {
 

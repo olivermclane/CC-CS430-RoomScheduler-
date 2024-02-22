@@ -47,8 +47,6 @@ export default function DashboardPage() {
                     <ClassroomList selectedFloor={selectedFloor} updateClassroom={updateClassroom}/>
                     <br/><br/>
 
-
-
                     <button
                         className="mt-4 p-2 bg-gray-200 rounded-lg text-gray-800 hover:bg-gray-300 flex items-center justify-center"
                         onClick={() => setShowTable(true)}
