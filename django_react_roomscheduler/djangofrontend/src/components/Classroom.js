@@ -1,5 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css"
+import Calendar from "./Calendar";
 
 function Classroom({classroom, selectClassroom}){
     return (
@@ -10,7 +11,9 @@ function Classroom({classroom, selectClassroom}){
                 {classroom.total_seats}
             </div>
         </div>
+
     )
 }
+
 
 export default Classroom

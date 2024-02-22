@@ -25,6 +25,10 @@ class DataReader(object):
         self.data.fillna(0, inplace=True)
 
     def loadData(self):
+        # Building.objects.all().delete()
+        # Floor.objects.all().delete()
+        # Classroom.objects.all().delete()
+        # Course.objects.all().delete()
         # load classes
         for c in range(len(self.courseData)):
             b = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c])

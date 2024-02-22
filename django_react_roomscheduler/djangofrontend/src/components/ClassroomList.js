@@ -1,9 +1,9 @@
 import React,  {useState} from "react";
-
 import Classroom from "./Classroom";
+import Calendar from "./Calendar";
 
 function ClassroomList({selectedFloor}){
-    const [classrooms, setClassrooms] = useState([
+    const [classrooms, setClassroom] = useState([
         {
             classroom_id: 1,
             classroom_number: '123',
@@ -24,6 +24,7 @@ function ClassroomList({selectedFloor}){
         }
 
     ])
+
 
     function renderClassroom(classroom){
         if(selectedFloor != null && classroom.floor_id == selectedFloor.floor_id) {

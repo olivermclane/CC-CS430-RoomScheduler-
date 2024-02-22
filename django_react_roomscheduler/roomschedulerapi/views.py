@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .DataReader.dataReader import DataReader
 from .models import Building, Floor, Classroom, Course, User
-from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer
+from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer, ClassroomCourseSerializer
 
 
 class DefaultView(APIView):
@@ -152,6 +152,18 @@ class FloorDetailView(APIView):
             return Response(serializer.data)
         except Floor.DoesNotExist:
             return Response({'error': 'Floor not found'}, status=404)
+
+
+class ClassroomCoursesView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def get(self, request, fk):
+        try:
+            classroomCourse = Course.objects.all().filter(classroom_id=fk)
+            serializer = ClassroomCourseSerializer(classroomCourse, many=True)
+            return Response(serializer.data)
+        except Floor.DoesNotExist:
+            return Response({'error': 'Classroom and course combination not found'}, status=404)
 
 
 class LoadView(APIView):
