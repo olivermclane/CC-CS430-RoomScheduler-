@@ -5,9 +5,9 @@ function Classroom({classroom, selectClassroom}){
     return (
         <div className='classroom card col-sm-3 m-1 text-center' onClick={() => {selectClassroom(classroom)}}>
             <div className='card-body'>
-                {classroom.classroom_number}
+                Classroom number: {classroom.classroom_number}
                 <br />
-                {classroom.total_seats}
+                Classroom total seats: {classroom.total_seats}
             </div>
         </div>
     )
