@@ -155,7 +155,7 @@ class FloorDetailView(APIView):
 
 
 class ClassroomCoursesView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, fk):
         try:

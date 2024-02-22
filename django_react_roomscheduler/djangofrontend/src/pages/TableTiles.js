@@ -46,7 +46,7 @@ export default function DashboardPage() {
                     <br/><br/>
                     <ClassroomList selectedFloor={selectedFloor} updateClassroom={updateClassroom}/>
                     <br/><br/>
-                    <Calendar selectedClassroom={selectedClassroom}/>
+
 
 
                     <button
@@ -57,6 +57,8 @@ export default function DashboardPage() {
                     </button>
                 </Fragment>
             )}
+
+
         </Fragment>
     );
 }
