@@ -286,23 +286,6 @@ const Table = () => {
         );
     }, [state.selectedRowIds, tableData]);
 
-/*const loadingRows = isLoading ? Array.from({ length: 15 }).map((_, rowIndex) => (
-    <tr key={`loading-row-${rowIndex}`}>
-        {columns.map((column, columnIndex) => (
-            <td
-                key={`loading-cell-${rowIndex}-${columnIndex}`}
-                className="px-6 py-10 whitespace-nowrap bg-gray-200"
-            >
-            </td>
-        ))}
-        {/!* Add one more column *!/}
-        <td
-            key={`extra-column-${rowIndex}`}
-            className="px-6 py-10 whitespace-nowrap bg-gray-200"
-        >
-        </td>
-    </tr>
-)) : null;*/
 
 const loadingRows = isLoading ? Array.from({ length: 13 }).map((_, rowIndex) => (
     <tr key={`loading-row-${rowIndex}`}>
@@ -315,7 +298,6 @@ const loadingRows = isLoading ? Array.from({ length: 13 }).map((_, rowIndex) => 
                 </div>
             </td>
         ))}
-        {/* Add one more column */}
         <td
             key={`extra-column-${rowIndex}`}
             className="px-6 py-10 whitespace-nowrap bg-violet-100"
