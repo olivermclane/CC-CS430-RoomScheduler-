@@ -23,28 +23,28 @@ import {
 } from "react-table";
 import {useRowSelectColumn} from "@lineup-lite/hooks";
 import axios from "axios";
+import {GridLoader} from "react-spinners";
+import './loadingstyle.css'
 
 export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
     const [value, setValue] = useState(globalFilter);
+
     const onChange = useAsyncDebounce((value) => {
         setGlobalFilter(value || undefined);
     }, 200);
 
     return (
-        <span className="flex justify-between ml-auto pt-10 pb-10 px-4">
+        <span className="flex justify-between ml-auto pt-4 pb-2 px-3">
       <input
           value={value || ""}
           onChange={(e) => {
               setValue(e.target.value);
               onChange(e.target.value);
           }}
-          className="w-8/12 rounded-xl border p-4 text-gray-500 cursor-pointer"
+          className="w-4/12 rounded-xl border p-4 text-gray-500 cursor-pointer"
           type="search"
           placeholder={placeholder}
       />
-            <button className="bg-white rounded-xl p-4 border-1 cursor-pointer ml-4">
-        Export
-      </button>
     </span>
     );
 }
@@ -52,8 +52,11 @@ export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
 const Table = () => {
     const [tableData, setTableData] = useState([]);
     const [endpoint, setEndpoint] = useState("/courses"); // Default endpoint
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchData = async (endpoint) => {
+        setIsLoading(true);
         try {
             const storedToken = localStorage.getItem("access_token");
             const response = await axios.get(`http://localhost:8000${endpoint}/`, {
@@ -71,6 +74,8 @@ const Table = () => {
             } else {
                 console.log("Error:", err.message);
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -268,16 +273,86 @@ const Table = () => {
         useRowSelectColumn
     );
 
+
     const {pageIndex} = state;
     const paginationRange = useCustomPagination({
         totalPageCount: pageCount,
         currentPage: pageIndex,
     });
 
+    useEffect(() => {
+        setSelectedRows(
+            Object.keys(state.selectedRowIds).map((id) => tableData[id])
+        );
+    }, [state.selectedRowIds, tableData]);
+
+/*const loadingRows = isLoading ? Array.from({ length: 15 }).map((_, rowIndex) => (
+    <tr key={`loading-row-${rowIndex}`}>
+        {columns.map((column, columnIndex) => (
+            <td
+                key={`loading-cell-${rowIndex}-${columnIndex}`}
+                className="px-6 py-10 whitespace-nowrap bg-gray-200"
+            >
+            </td>
+        ))}
+        {/!* Add one more column *!/}
+        <td
+            key={`extra-column-${rowIndex}`}
+            className="px-6 py-10 whitespace-nowrap bg-gray-200"
+        >
+        </td>
+    </tr>
+)) : null;*/
+
+const loadingRows = isLoading ? Array.from({ length: 13 }).map((_, rowIndex) => (
+    <tr key={`loading-row-${rowIndex}`}>
+        {columns.map((column, columnIndex) => (
+            <td
+                key={`loading-cell-${rowIndex}-${columnIndex}`}
+                className="px-6 py-10 whitespace-nowrap bg-gray-200 bg-violet-100"
+            >
+                <div className="flex items-center">
+                </div>
+            </td>
+        ))}
+        {/* Add one more column */}
+        <td
+            key={`extra-column-${rowIndex}`}
+            className="px-6 py-10 whitespace-nowrap bg-violet-100"
+        >
+            <div className="flex items-center">
+            </div>
+        </td>
+    </tr>
+)) : null;
+
+
+
+
+    const exportSelectedRows = () => {
+        const headers = columns.map(column => column.Header);
+        const data = selectedRows.map(row => columns.map(column => row[column.accessor]));
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => row.join(','))
+        ].join('\n');
+
+        // Download the CSV file
+        const blob = new Blob([csvContent], {type: 'text/csv'});
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Carroll_X_X.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
-                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
                     <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                         <GlobalFilter
                             preGlobalFilteredRows={preGlobalFilteredRows}
@@ -285,7 +360,7 @@ const Table = () => {
                             setGlobalFilter={setGlobalFilter}
                             placeholder="Search..."
                         />
-                        <div className="mb-4 flex p-4">
+                        <div className="flex p-4">
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
                                 onClick={() => setEndpoint("/courses")}
@@ -298,8 +373,22 @@ const Table = () => {
                             >
                                 Classrooms
                             </button>
+                            <button
+                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-auto hover:bg-purple-700 hover:text-white"
+                                onClick={exportSelectedRows}
+                            >
+                                Export Selected
+                            </button>
                         </div>
+
+                        {isLoading && (
+                            <div
+                                className="table-loading-overlay absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                <GridLoader color="#4A148C"/>
+                            </div>
+                        )}
                         <table
+
                             {...getTableProps()}
                             className="min-w-full divide-y divide-gray-200"
                         >
@@ -309,7 +398,7 @@ const Table = () => {
                                     {headerGroup.headers.map((column) => (
                                         <th
                                             {...column.getHeaderProps()}
-                                            className="px-6 py-5 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
+                                            className="px-6 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
                                         >
                                             {column.render("Header")}
                                         </th>
@@ -321,7 +410,8 @@ const Table = () => {
                                 {...getTableBodyProps()}
                                 className="bg-white divide-y divide-gray-200"
                             >
-                            {page.map((row, i) => {
+                            {loadingRows}
+                            {!isLoading && page.map((row, i) => {
                                 prepareRow(row);
                                 return (
                                     <tr {...row.getRowProps()}>
@@ -377,11 +467,12 @@ const Table = () => {
                     onChange={(e) => {
                         setPageSize(Number(e.target.value));
                     }}
-                > {[10, 20, 30, 40, 50].map((pageSize) => (
-                    <option key={pageSize} value={pageSize}>
-                        Show {pageSize}
-                    </option>
-                ))}
+                >
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
                 </select>
             </div>
         </div>

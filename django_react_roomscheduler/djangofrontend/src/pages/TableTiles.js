@@ -7,7 +7,7 @@ import Calendar from "../components/Calendar";
 export default function DashboardPage() {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
     const [selectedFloor, setSelectedFloor] = useState(null);
-    const [showTable, setShowTable] = useState(false);
+    const [showTable, setShowTable] = useState(true);
 
     function updateFloorList(building) {
         setSelectedBuilding(building);
