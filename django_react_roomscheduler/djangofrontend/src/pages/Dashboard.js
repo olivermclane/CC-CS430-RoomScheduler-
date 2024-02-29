@@ -5,6 +5,7 @@ import TableTiles from './TableTiles'
 import {BarChart3, Calendar, FileUp, LayoutDashboard, Settings, UserIcon} from "lucide-react";
 import ImportPage from "./Import";
 import Insight from "./Insight";
+import ImportNewTerm from "./ImportNewTerm";
 export default function Dashboard() {
 
     const [selectedItem, setSelectedItem] = useState("dashboard");
@@ -27,15 +28,14 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("dashboard")}/>
                 <SidebarItem icon={<BarChart3 size={20}/>} text="Insights"
                              onClick={() => handleSidebarItemClick("insights")}/>
-                <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"
-                             onClick={() => handleSidebarItemClick("schedules")}/>
+                <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"/>
                 <SidebarItem icon={<FileUp size={20}/>} text="Import Schedule"
                              onClick={() => handleSidebarItemClick("import")}/>
+                <SidebarItem icon={<FileUp size={20}/>} text="Import New Term"
+                             onClick={() => handleSidebarItemClick("import new term")}/>
                 <hr className='my-3'/>
-                <SidebarItem icon={<UserIcon size={20}/>} text="Profile"
-                             onClick={() => handleSidebarItemClick("profile")}/>
-                <SidebarItem icon={<Settings size={20}/>} text="Settings"
-                             onClick={() => handleSidebarItemClick("settings")}/>
+                <SidebarItem icon={<UserIcon size={20}/>} text="Profile"/>
+                <SidebarItem icon={<Settings size={20}/>} text="Settings"/>
             </Sidebar>
             <div className="sm:w-full mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
                 {selectedItem === "dashboard" && (
@@ -52,6 +52,9 @@ export default function Dashboard() {
                 )}
                 {selectedItem === "profile" && (
                     <p>Profile</p>
+                )}
+                {selectedItem === "import new term" && (
+                    <ImportNewTerm/>
                 )}
                 {selectedItem === "settings" && (
                     <p>Settings</p>
