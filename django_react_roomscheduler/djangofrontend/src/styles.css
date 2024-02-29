@@ -1,0 +1,30 @@
+body{
+    color:white;
+}
+
+.building{
+    height:175px;
+    width:175px;
+    background-size: cover;
+}
+
+.building-name{
+    width: 100%;
+    padding: 10px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+.classroom{
+    height:175px;
+    width:175px;
+    background-size: cover;
+}
+
+.bg-yellow{
+    background:#cfb988;
+}
+
+.bg-purple{
+    background:#3c1952;
+}
