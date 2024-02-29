@@ -45,7 +45,7 @@ export default function Dashboard() {
                     <Insight/>
                 )}
                 {selectedItem === "schedules" && (
-                    <p>Saved Schedules</p>
+                    <p>Schedules</p>
                 )}
                 {selectedItem === "import" && (
                     <ImportPage/>

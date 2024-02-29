@@ -1,16 +1,11 @@
-import {useMemo, Fragment, useCallback, useEffect, useState} from "react";
+import {useMemo, useEffect, useState} from "react";
 import React from "react";
 
 import {
-    Search,
-    Check,
     ChevronsLeft,
     ChevronLeft,
     ChevronsRight,
     ChevronRight,
-    ChevronDownSquare,
-    MoveDown,
-    MoveUp,
 } from "lucide-react";
 import {DOTS, useCustomPagination} from "./pagination/CustomPagination";
 
@@ -54,6 +49,8 @@ const Table = () => {
     const [endpoint, setEndpoint] = useState("/courses"); // Default endpoint
     const [selectedRows, setSelectedRows] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [hiddenColumns, setHiddenColumns] = useState([]);
+    const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
 
     const fetchData = async (endpoint) => {
         setIsLoading(true);
@@ -181,7 +178,6 @@ const Table = () => {
         []
     );
 
-
     const columnsCourses = useMemo(
         () => [
             {
@@ -243,8 +239,26 @@ const Table = () => {
         ], []
     );
 
+    const toggleColumnVisibility = (columnId) => {
+        setHiddenColumns((prevHiddenColumns) => {
+            if (prevHiddenColumns.includes(columnId)) {
+                return prevHiddenColumns.filter((col) => col !== columnId);
+            } else {
+                return [...prevHiddenColumns, columnId];
+            }
+        });
+    };
 
     const columns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
+
+    const modifiedColumns = useMemo(() => {
+        return columns.map((column) => ({
+            ...column,
+            show: !hiddenColumns.includes(column.accessor),
+        }));
+
+    }, [columns, hiddenColumns]);
+
 
     const {
         getTableProps,
@@ -264,7 +278,7 @@ const Table = () => {
         setGlobalFilter,
     } = useTable(
         {
-            columns,
+            columns: modifiedColumns,
             data,
         },
         useGlobalFilter,
@@ -280,11 +294,26 @@ const Table = () => {
         currentPage: pageIndex,
     });
 
+
     useEffect(() => {
-        setSelectedRows(
-            Object.keys(state.selectedRowIds).map((id) => tableData[id])
-        );
-    }, [state.selectedRowIds, tableData]);
+        if (isSelectAllChecked) {
+            setSelectedRows([...tableData]); // Select all rows if "Select All" checkbox is checked
+        } else {
+            setSelectedRows([]); // Deselect all rows if "Select All" checkbox is unchecked
+        }
+    }, [isSelectAllChecked, tableData]);
+
+    const handleRowCheckboxChange = (row) => {
+        if (selectedRows.includes(row)) {
+            setSelectedRows(selectedRows.filter(selectedRow => selectedRow !== row));
+        } else {
+            setSelectedRows([...selectedRows, row]);
+        }
+    };
+
+    const handleSelectAllChange = () => {
+        setIsSelectAllChecked(!isSelectAllChecked);
+    };
 
 
     const loadingRows = isLoading ? Array.from({length: 13}).map((_, rowIndex) => (
@@ -310,8 +339,20 @@ const Table = () => {
 
 
     const exportSelectedRows = () => {
-        const headers = columns.map(column => column.Header);
-        const data = selectedRows.map(row => columns.map(column => row[column.accessor]));
+        const allColumns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
+        const visibleColumns = allColumns.filter(column => !hiddenColumns.includes(column.accessor));
+        const headers = visibleColumns.map(column => column.Header);
+        const visibleRows = page.map(row => row.original);
+        const selectedVisibleRows = selectedRows.filter(row => visibleRows.includes(row));
+
+        // Include only visible columns in the export
+        const data = selectedVisibleRows.map(row => visibleColumns.map(column => {
+            // Wrap each field value in double quotes to handle commas
+            const cellValue = row[column.accessor];
+            return typeof cellValue === 'string' && cellValue.includes(',') ? `"${cellValue}"` : cellValue;
+        }));
+
+        // Construct CSV content
         const csvContent = [
             headers.join(','),
             ...data.map(row => row.join(','))
@@ -329,6 +370,7 @@ const Table = () => {
         window.URL.revokeObjectURL(url);
     };
 
+
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
@@ -340,6 +382,7 @@ const Table = () => {
                             setGlobalFilter={setGlobalFilter}
                             placeholder="Search..."
                         />
+
                         <div className="flex p-4">
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
@@ -361,53 +404,86 @@ const Table = () => {
                             </button>
                         </div>
 
+                        <div className="flex p-4">
+                            {modifiedColumns.map((column) => (
+                                <button
+                                    key={column.Header}
+                                    onClick={() => toggleColumnVisibility(column.accessor)}
+                                    className={`${
+                                        column.show ? "bg-violet-300" : "bg-gray-300"
+                                    } text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white`}
+                                >
+                                    {column.Header}
+                                </button>
+                            ))}
+                        </div>
+
                         {isLoading && (
                             <div
-                                className="table-loading-overlay absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                className="table-loading-overlay absolute top-0 left-0 w-full h-full flex items-center justify-center"
+                            >
                                 <GridLoader color="#4A148C"/>
                             </div>
                         )}
-                        <table
-
-                            {...getTableProps()}
-                            className="min-w-full divide-y divide-gray-200"
-                        >
+                        <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-10">
-                            {headerGroups.map((headerGroup) => (
-                                <tr {...headerGroup.getHeaderGroupProps()}>
-                                    {headerGroup.headers.map((column) => (
-                                        <th
-                                            {...column.getHeaderProps()}
-                                            className="px-6 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
-                                        >
-                                            {column.render("Header")}
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
-                            </thead>
-                            <tbody
-                                {...getTableBodyProps()}
-                                className="bg-white divide-y divide-gray-200"
-                            >
-                            {loadingRows}
-                            {!isLoading && page.map((row, i) => {
-                                prepareRow(row);
-                                return (
-                                    <tr {...row.getRowProps()}>
-                                        {row.cells.map((cell) => (
-                                            <td
-                                                {...cell.getCellProps()}
-                                                className="px-6 py-10 whitespace-nowrap"
+                            <tr>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        className="ml-4"
+                                        checked={isSelectAllChecked}
+                                        onChange={handleSelectAllChange}
+                                    />
+                                </th>
+                                {headerGroups.map((headerGroup) => (
+                                    headerGroup.headers.map((column) => (
+                                        // Conditionally render the table header cell based on column visibility
+                                        column.show && (
+                                            <th
+                                                {...column.getHeaderProps()}
+                                                className="px-6 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
                                             >
-                                                {cell.render("Cell")}
+                                                {column.render("Header")}
+                                            </th>
+                                        )
+                                    ))
+                                ))}
+                            </tr>
+                            </thead>
+                            <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+                            {loadingRows}
+                            {!isLoading &&
+                                page.map((row, i) => {
+                                    prepareRow(row);
+                                    return (
+                                        <tr {...row.getRowProps()}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    className="ml-4"
+                                                    checked={selectedRows.includes(row.original)}
+                                                    onChange={() => handleRowCheckboxChange(row.original)}
+                                                />
                                             </td>
-                                        ))}
-                                    </tr>
-                                );
-                            })}
+                                            {row.cells.map((cell, cellIndex) => (
+                                                // Only render the cell if the corresponding column is visible
+                                                cell.column.show && (
+                                                    <td
+                                                        {...cell.getCellProps()}
+                                                        className="px-6 py-10 whitespace-nowrap"
+                                                    >
+                                                        {cell.render("Cell")}
+                                                    </td>
+                                                )
+                                            ))}
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
+
+
                     </div>
                 </div>
             </div>
@@ -425,13 +501,13 @@ const Table = () => {
                     <ChevronsRight/>
                 </button>
                 <span>
-          Page{" "}
+                Page{" "}
                     <strong>
-            {pageIndex + 1} of {pageCount}
-          </strong>{" "}
-        </span>
+                    {pageIndex + 1} of {pageCount}
+                </strong>{" "}
+            </span>
                 <span>
-          | Go to page:{" "}
+                | Go to page:{" "}
                     <input
                         type="number"
                         defaultValue={pageIndex + 1}
@@ -441,7 +517,7 @@ const Table = () => {
                         }}
                         style={{width: "100px"}}
                     />
-        </span>{" "}
+            </span>{" "}
                 <select
                     value={state.pageSize}
                     onChange={(e) => {
