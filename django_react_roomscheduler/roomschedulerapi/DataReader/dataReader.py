@@ -6,7 +6,6 @@ Author: Hank Rugg
 '''
 
 import pandas as pd
-from tkinter import filedialog
 from roomschedulerapi.models import Building, Floor, Classroom, Course
 
 
@@ -151,6 +150,8 @@ class DataReader(object):
                                                                                             i][0:2] + ":00"
 
 
+
+
     def loadData(self):
         Building.objects.all().delete()
         Floor.objects.all().delete()
@@ -163,6 +164,7 @@ class DataReader(object):
             f = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
                                             building_name=self.data['CSM_BLDG'].iloc[c],
                                             building=b[0])
+            print(self.data['Room Number'].iloc[c])
             cl = Classroom.objects.get_or_create(classroom_number=self.data['Room Number'].iloc[c],
                                                  classroom_name=self.data['Classroom Name'].iloc[c],
                                                  total_seats=self.data['Number of Student Seats in Room'].iloc[c],
