@@ -5,6 +5,7 @@ from django.db import models
 class Building(models.Model):
     building_id = models.AutoField(primary_key=True)
     building_name = models.CharField(max_length=100, unique=True)
+    image_url = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.building_name} (ID: {self.building_id})"

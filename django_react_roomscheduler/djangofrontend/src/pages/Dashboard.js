@@ -21,7 +21,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="d-flex bg-gray-100">
+        <div className="d-flex bg-gray-100 bg-yellow">
             <Sidebar className="sm:w-2/5">
                 <SidebarItem icon={<LayoutDashboard size={20}/>} text="Dashboard"
                              onClick={() => handleSidebarItemClick("dashboard")}/>
@@ -36,7 +36,7 @@ export default function Dashboard() {
                 <SidebarItem icon={<Settings size={20}/>} text="Settings"
                              onClick={() => handleSidebarItemClick("settings")}/>
             </Sidebar>
-            <div className="sm:w-full mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
+            <div className="sm:w-full mt-4 p-4 bg-gray-100 rounded-lg shadow-md bg-purple">
                 {selectedItem === "dashboard" && (
                     <TableTiles/>
                 )}
