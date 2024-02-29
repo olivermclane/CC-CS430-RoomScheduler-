@@ -171,7 +171,8 @@ class ClassroomCoursesView(APIView):
 
 class LoadView(APIView):
 
-    def get(self, request):
-        dr = DataReader()
+    def post(self, request):
+        dr = DataReader(request.data['file'])
+        dr.sortData()
         dr.loadData()
         return Response()
