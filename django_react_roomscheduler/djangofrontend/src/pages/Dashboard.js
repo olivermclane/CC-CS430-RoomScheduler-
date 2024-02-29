@@ -27,15 +27,12 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("dashboard")}/>
                 <SidebarItem icon={<BarChart3 size={20}/>} text="Insights"
                              onClick={() => handleSidebarItemClick("insights")}/>
-                <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"
-                             onClick={() => handleSidebarItemClick("schedules")}/>
+                <SidebarItem icon={<Calendar size={20}/>} text="Saved Schedules"/>
                 <SidebarItem icon={<FileUp size={20}/>} text="Import Schedule"
                              onClick={() => handleSidebarItemClick("import")}/>
                 <hr className='my-3'/>
-                <SidebarItem icon={<UserIcon size={20}/>} text="Profile"
-                             onClick={() => handleSidebarItemClick("profile")}/>
-                <SidebarItem icon={<Settings size={20}/>} text="Settings"
-                             onClick={() => handleSidebarItemClick("settings")}/>
+                <SidebarItem icon={<UserIcon size={20}/>} text="Profile"/>
+                <SidebarItem icon={<Settings size={20}/>} text="Settings"/>
             </Sidebar>
             <div className="sm:w-full p-4 bg-gray-100 rounded-lg shadow-md">
                 {selectedItem === "dashboard" && (
@@ -45,7 +42,7 @@ export default function Dashboard() {
                     <Insight/>
                 )}
                 {selectedItem === "schedules" && (
-                    <p>Saved Schedules</p>
+                    <p>Schedules</p>
                 )}
                 {selectedItem === "import" && (
                     <ImportPage/>

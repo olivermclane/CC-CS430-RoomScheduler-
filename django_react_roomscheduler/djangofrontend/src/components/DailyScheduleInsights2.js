@@ -1,31 +1,32 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
 
-function DailyScheduleInsight({selectedClassroom}) {
+function DailyScheduleInsight2({ selectedClassroom }) {
     const [scheduleData, setScheduleData] = useState([]);
     const [chartOptions, setChartOptions] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
-                console.log("Fetched data:", response.data); // Log fetched data
-                const parsedData = parseData(response.data);
-                console.log("Parsed data:", parsedData); // Log parsed data
-                setScheduleData(parsedData);
-                updateChartOptions(parsedData);
-            } catch (err) {
-                console.error('Error fetching data:', err);
-            }
-        };
         fetchData();
     }, [selectedClassroom]);
+
+    const fetchData = async () => {
+        try {
+            const storedToken = localStorage.getItem('access_token');
+            const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                },
+            });
+            console.log("Fetched data:", response.data); // Log fetched data
+            const parsedData = parseData(response.data);
+            console.log("Parsed data:", parsedData); // Log parsed data
+            setScheduleData(parsedData);
+            updateTotalUsedTimeChartOptions(parsedData);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+        }
+    };
 
     const parseData = (data) => {
         return data.map(course => ({
@@ -41,17 +42,17 @@ function DailyScheduleInsight({selectedClassroom}) {
         }));
     };
 
-    const updateChartOptions = (data) => {
-        const totalUnusedTime = {
-            Monday: 15,
-            Tuesday: 15,
-            Wednesday: 15,
-            Thursday: 15,
-            Friday: 15
+    const updateTotalUsedTimeChartOptions = (data) => {
+        const totalUsedTime = {
+            Monday: 0,
+            Tuesday: 0,
+            Wednesday: 0,
+            Thursday: 0,
+            Friday: 0
         };
 
         data.forEach(course => {
-            Object.keys(totalUnusedTime).forEach(day => {
+            Object.keys(totalUsedTime).forEach(day => {
                 if (course[day.toLowerCase()]) {
                     const startTime = course.start_time.split(":"); // Split the time string
                     const endTime = course.end_time.split(":"); // Split the time string
@@ -60,22 +61,17 @@ function DailyScheduleInsight({selectedClassroom}) {
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
                     console.log("Time Difference (minutes):", timeDiff);
 
-                    // Calculate unused time
-                    const unusedTime = timeDiff / 60; // Convert minutes to hours
-                    if (unusedTime > 0) {
-                        totalUnusedTime[day] -= unusedTime;
-                    } else {
-                        totalUnusedTime[day] = 0;
-                    }
+                    // Calculate used time
+                    const usedTime = timeDiff / 60; // Convert minutes to hours
+                    totalUsedTime[day] += usedTime;
                 }
             });
         });
 
-        console.log("Total unused time:", totalUnusedTime); // Log total unused time
+        console.log("Total used time:", totalUsedTime); // Log total used time
 
-        const days = Object.keys(totalUnusedTime);
-        const unusedTimes = Object.values(totalUnusedTime);
-
+        const days = Object.keys(totalUsedTime);
+        const usedTimes = Object.values(totalUsedTime);
 
         const options = {
             chart: {
@@ -98,15 +94,14 @@ function DailyScheduleInsight({selectedClassroom}) {
             },
             yaxis: {
                 title: {
-                    text: "Total Unused Time (hours)"
-                },
-                max: 15 // Maximum value for the y-axis (total hours in a day)
+                    text: "Total Used Time (hours)"
+                }
             },
             colors: ["#BA68C8"],
             series: [
                 {
-                    name: "Total Unused Time",
-                    data: unusedTimes
+                    name: "Total Used Time",
+                    data: usedTimes
                 }
             ]
         };
@@ -118,7 +113,7 @@ function DailyScheduleInsight({selectedClassroom}) {
 
     useEffect(() => {
         if (chartOptions) {
-            const chart = new ApexCharts(document.getElementById("daily-schedule-chart"), chartOptions);
+            const chart = new ApexCharts(document.getElementById("daily-schedule-chart2"), chartOptions);
             chart.render();
 
             // Return a cleanup function to remove the chart when the component unmounts
@@ -128,16 +123,16 @@ function DailyScheduleInsight({selectedClassroom}) {
 
     return (
         <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
-            <div id="daily-schedule-chart"/>
+            <div id="daily-schedule-chart2"/>
             <div className="mt-4">
                 <hr className="my-3"/>
-                <h3 className="text-lg font-semibold mb-2">Unused Time Insight</h3>
+                <h3 className="text-lg font-semibold mb-2">Used Time Insight</h3>
                 <p className="text-sm text-gray-600">
-                    Total unused time for each day based on the class schedule (in a 12-hour day)
+                    Total used time for each day based on the class schedule (in a 12-hour day)
                 </p>
             </div>
         </div>
     );
 }
 
-export default DailyScheduleInsight;
+export default DailyScheduleInsight2;
