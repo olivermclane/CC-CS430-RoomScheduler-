@@ -16,7 +16,6 @@ function BuildingList({updateFloorList}){
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
-            console.log(response.data)
             setBuildings(response.data);
         } catch (err) {
             if (err.response) {

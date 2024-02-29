@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
 
-function MostFreqProf({ selectedClassroom }) {
+function ScheduleInsight({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const parseData = (data) => {
-        const instructorCounts = {};
-
-        data.forEach((course) => {
-            const instructor = course.instructor;
-            instructorCounts[instructor] = (instructorCounts[instructor] || 0) + 1;
-        });
-
-        return instructorCounts;
-    };
+    const [isLoading, setIsLoading] = useState(true); // Add isLoading state
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,13 +32,14 @@ function MostFreqProf({ selectedClassroom }) {
         };
 
         fetchData(); // Fetch data when the selected classroom changes
-    }, [selectedClassroom]);
+    }, [selectedClassroom]); // Add selectedClassroom as a dependency
 
     useEffect(() => {
-        if (!isLoading && Object.keys(scheduleData).length > 0) {
-            const instructors = Object.keys(scheduleData);
-            const counts = Object.values(scheduleData);
+        let chart = null; // Initialize chart variable
 
+        if (!isLoading && scheduleData.length > 0) {
+            const categories = scheduleData.map(scheduleData => scheduleData.course_name);
+            const seatUsages = scheduleData.map(scheduleData => (scheduleData.enrollment_total / scheduleData.total_seats) * 100);
             const options = {
                 chart: {
                     type: "bar",
@@ -60,47 +50,65 @@ function MostFreqProf({ selectedClassroom }) {
                 },
                 plotOptions: {
                     bar: {
-                        horizontal: false
+                        horizontal: true,
                     }
                 },
                 dataLabels: {
                     enabled: false
                 },
                 xaxis: {
-                    categories: instructors
-                },
-                yaxis: {
-                    title: {
-                        text: "Number of Courses"
-                    }
+                    categories: categories,
                 },
                 colors: ["#4A148C"],
                 series: [
                     {
-                        name: "Courses",
-                        data: counts
+                        name: "Seat Usage (%)",
+                        data: seatUsages,
                     }
-                ]
+                ],
             };
 
-            const chart = new ApexCharts(document.getElementById("MostFreqProfChart"), options);
-            chart.render();
+            // Destroy previous chart instance if it exists
+            if (chart) {
+                chart.destroy();
+            }
 
-            // Return a cleanup function to remove the chart when the component unmounts
-            return () => chart.destroy();
+            // Render new chart
+            chart = new ApexCharts(document.getElementById("bar-chart"), options);
+            chart.render();
         }
+
+        return () => {
+            // Clean up: destroy the chart instance when component unmounts
+            if (chart) {
+                chart.destroy();
+            }
+        };
     }, [isLoading, scheduleData]);
+
+
+    const parseData = (data) => {
+        return data.map(course => ({
+            course_id: course.course_id,
+            course_name: course.course_name,
+            enrollment_total: course.enrollment_total,
+            total_seats: course.classroom.total_seats
+        }));
+    };
+
 
     return (
         <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
-            <div id="MostFreqProfChart"/>
+            <div id="bar-chart"/>
+            {isLoading && <p>Loading...</p>}
             <div className="mt-4">
                 <hr className='my-3'/>
-                <h3 className="text-lg font-semibold mb-2">Most Frequent Professors</h3>
-                <p className="text-sm text-gray-600">Number of courses taught by each professor per classroom</p>
+                <h3 className="text-lg font-semibold mb-2">Seat Usage (%)</h3>
+                <p className="text-sm text-gray-600">For each of the courses in a classroom, the percentage of total
+                    seats used</p>
             </div>
         </div>
     );
 }
 
-export default MostFreqProf;
+export default ScheduleInsight;

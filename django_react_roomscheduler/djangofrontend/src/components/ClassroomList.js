@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-
 import Classroom from "./Classroom";
 import axios from "axios";
 
@@ -25,7 +24,6 @@ function ClassroomList({selectedFloor}){
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
-            console.log(response.data)
             setClassrooms(response.data);
         } catch (err) {
             if (err.response) {
@@ -40,6 +38,7 @@ function ClassroomList({selectedFloor}){
     useEffect(() => {
         fetchData(endpoint);
     }, [endpoint]);
+
 
     function renderClassroom(classroom){
         if(selectedFloor != null && classroom.floor.floor_id == selectedFloor.floor_id) {

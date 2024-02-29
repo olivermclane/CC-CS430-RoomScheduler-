@@ -23,7 +23,6 @@ function FloorList({selectedBuilding, updateClassroomList}){
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
-            console.log(response.data)
             setFloors(response.data);
         } catch (err) {
             if (err.response) {

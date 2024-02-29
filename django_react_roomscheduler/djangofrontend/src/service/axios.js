@@ -9,7 +9,7 @@ axios.interceptors.response.use(
     const { config, response } = error;
     const originalRequest = config;
 
-    if (response.status === 401) {
+    if (response.status === 401 && !originalRequest._retry) {
       if (!isRefreshing) {
         isRefreshing = true;
         try {
@@ -26,14 +26,20 @@ axios.interceptors.response.use(
 
           const { access: newAccessToken, refresh: newRefreshToken } = refreshedResponse.data;
 
+          // Update tokens in local storage
           localStorage.setItem("access_token", newAccessToken);
           localStorage.setItem("refresh_token", newRefreshToken);
 
           axios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
 
+          // Retry the original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          originalRequest._retry = true;
           subscribers.forEach((callback) => callback(newAccessToken));
-          subscribers = [];
           isRefreshing = false;
+
+          // Trigger a function to reload table data or perform any other necessary actions
+          reloadTableData();
 
           return axios(originalRequest);
         } catch (error) {
@@ -52,3 +58,11 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Function to reload table data (replace this with your actual implementation)
+function reloadTableData() {
+  // Replace this with code to reload table data
+  console.log('Table data reloaded');
+}
+
+export default axios;
