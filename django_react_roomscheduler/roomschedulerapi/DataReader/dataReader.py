@@ -4,9 +4,12 @@ Data Reader for computer science senior project.
 Author: Hank Rugg
 
 '''
+import warnings
 
 import pandas as pd
+from tkinter import filedialog
 from roomschedulerapi.models import Building, Floor, Classroom, Course
+warnings.filterwarnings("ignore", message="DataFrame is highly fragmented", category=pd.errors.PerformanceWarning)
 
 
 def getMonthNum(month):
@@ -40,6 +43,31 @@ def getMonthNum(month):
 
 class DataReader(object):
 
+    # columns to verify
+    # CSM_BLDG
+    # CSM_ROOM
+    # CSM_SUNDAY
+    # CSM_MONDAY
+    # CSM_TUESDAY
+    # CSM_WEDNESDAY
+    # CSM_THURSDAY
+    # CSM_FRIDAY
+    # CSM_SATURDAY
+    # SEC_START_DATE
+    # SEC_END_DATE
+    # CSM_START_TIME
+    # CSM_END_TIME
+    # SEC_SHORT_TITLE
+    # SEC_TERM
+    # SEC_MIN_CRED
+    # SEC_FACULTY_INFO
+    # STUDENTS_AND_RESERVED_SEATS
+    # SEC_CAPACITY
+    # XL_WAITLIST_MAX
+    # WAITLIST
+    # SEC_COURSE_NO
+
+
     def __init__(self, file):
         # load classroom data
         self.classRoomData = pd.read_csv(
@@ -56,101 +84,65 @@ class DataReader(object):
 
         for i in range(len(self.data)):
             if self.data['CSM_BLDG'].iloc[i] == 0:
-                self.data['CSM_BLDG'].iloc[i] = "No assigned building"
+                self.data['CSM_BLDG'].iloc[i] = "No Building Assigned"
             if self.data['Floor Name'].iloc[i] == 0:
-                self.data['Floor Name'].iloc[i] = "No assigned floor"
+                self.data['Floor Name'].iloc[i] = "No Floor Assigned"
             if self.data['Room Number'].iloc[i] == 0:
-                self.data['Room Number'].iloc[i] = "No assigned room"
+                self.data['Room Number'].iloc[i] = "No Room Assigned"
 
-
-        for i in range(len(self.courseData)):
-            # mondays
-            if self.data['CSM_MONDAY'].loc[i] == "Y":
-                self.data['CSM_MONDAY'].loc[i] = True
-            else:
-                self.data['CSM_MONDAY'].loc[i] = False
-            # tuesdays
-            if self.data['CSM_TUESDAY'].loc[i] == "Y":
-                self.data['CSM_TUESDAY'].loc[i] = True
-            else:
-                self.data['CSM_TUESDAY'].loc[i] = False
-            # wednesdays
-            if self.data['CSM_WEDNESDAY'].loc[i] == "Y":
-                self.data['CSM_WEDNESDAY'].loc[i] = True
-            else:
-                self.data['CSM_WEDNESDAY'].loc[i] = False
-            # thursdays
-            if self.data['CSM_THURSDAY'].loc[i] == "Y":
-                self.data['CSM_THURSDAY'].loc[i] = True
-            else:
-                self.data['CSM_THURSDAY'].loc[i] = False
-            # fridays
-            if self.data['CSM_FRIDAY'].loc[i] == "Y":
-                self.data['CSM_FRIDAY'].loc[i] = True
-            else:
-                self.data['CSM_FRIDAY'].loc[i] = False
-            # saturdays
-            if self.data['CSM_SATURDAY'].loc[i] == "Y":
-                self.data['CSM_SATURDAY'].loc[i] = True
-            else:
-                self.data['CSM_SATURDAY'].loc[i] = False
-            # sundays
-            if self.data['CSM_SUNDAY'].loc[i] == "Y":
-                self.data['CSM_SUNDAY'].loc[i] = True
-            else:
-                self.data['CSM_SUNDAY'].loc[i] = False
+        self.data['CSM_SUNDAY'] = self.data['CSM_SUNDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_MONDAY'] = self.data['CSM_MONDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_TUESDAY'] = self.data['CSM_TUESDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_WEDNESDAY'] = self.data['CSM_WEDNESDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_THURSDAY'] = self.data['CSM_THURSDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_FRIDAY'] = self.data['CSM_FRIDAY'].replace({'Y': True, '-': False})
+        self.data['CSM_SATURDAY'] = self.data['CSM_SATURDAY'].replace({'Y': True, '-': False})
 
         pattern = r'\s{1,2}'
-        self.data[['StartMonth', 'StartDay', 'StartYear']] = self.data['SEC_START_DATE'].str.split(pattern,
-                                                                                                   expand=True)
+        self.data[['StartMonth', 'StartDay', 'StartYear']] = self.data['SEC_START_DATE'].str.split(pattern, expand=True)
         self.data[['EndMonth', 'EndDay', 'EndYear']] = self.data['SEC_END_DATE'].str.split(pattern, expand=True)
 
         self.data['StartMonthNum'] = "0"
         self.data['EndMonthNum'] = "0"
-        for i in range(len(self.data)):
-            self.data['StartMonthNum'].iloc[i] = getMonthNum(self.data['StartMonth'].iloc[i])
-            self.data['EndMonthNum'].iloc[i] = getMonthNum(self.data['EndMonth'].iloc[i])
 
-        self.data['StartDate'] = self.data['StartYear'] + '-' + self.data['StartMonthNum'] + '-' + self.data[
-            'StartDay']
-        self.data['EndDate'] = self.data['EndYear'] + '-' + self.data['EndMonthNum'] + '-' + self.data['EndDay']
+        self.data['EndMonthNum'] = self.data['EndMonth'].apply(getMonthNum)
+        self.data['StartMonthNum'] = self.data['StartMonth'].apply(getMonthNum)
 
-        self.data[['StartHour', 'StartMinute']] = self.data['CSM_START_TIME'].str.split(":", expand=True)
-        self.data[['EndHour', 'EndMinute']] = self.data['CSM_END_TIME'].str.split(":", expand=True)
+        self.data['StartDate'] = pd.concat([self.data['StartYear'], self.data['StartMonthNum'], self.data['StartDay']], axis=1).apply(lambda x: '-'.join(x), axis=1)
+
+        self.data['EndDate'] = pd.concat([self.data['EndYear'], self.data['EndMonthNum'], self.data['EndDay']], axis=1).apply(lambda x: '-'.join(x), axis=1)
+
+        self.data = pd.concat([self.data, self.data['CSM_START_TIME'].str.split(":", expand=True)], axis=1)
+        self.data.rename(columns={0: 'StartHour', 1: 'StartMinute'}, inplace=True)
+
+        self.data = pd.concat([self.data, self.data['CSM_END_TIME'].str.split(":", expand=True)], axis=1)
+        self.data.rename(columns={0: 'EndHour', 1: 'EndMinute'}, inplace=True)
 
         self.data['MilitaryStart'] = '00:00:00'
         self.data['MilitaryEnd'] = '00:00:00'
 
         for i in range(len(self.data)):
             if str(self.data['StartMinute'].iloc[i])[2] == "P":
-                print(type(self.data['StartHour'].iloc[i]))
                 if self.data['StartHour'].iloc[i] != '12':
                     startHour = int(self.data['StartHour'].iloc[i]) + 12
-                    self.data['MilitaryStart'].iloc[i] = str(startHour) + ":" + self.data['StartMinute'].iloc[i][
-                                                                                0:2] + ":00"
+                    self.data.loc[i, 'MilitaryStart'] = str(startHour) + ":" + self.data.loc[i, 'StartMinute'][0:2] + ":00"
                 else:
                     startHour = int(self.data['StartHour'].iloc[i])
-                    self.data['MilitaryStart'].iloc[i] = str(startHour) + ":" + self.data['StartMinute'].iloc[i][
-                                                                                0:2] + ":00"
-            elif str(self.data['StartMinute'].iloc[i])[2] == "A":
-                self.data['MilitaryStart'].iloc[i] = self.data['StartHour'].iloc[i] + ":" + \
-                                                     self.data['StartMinute'].iloc[i][0:2] + ":00"
+                    self.data.loc[i, 'MilitaryStart'] = str(startHour) + ":" + self.data.loc[i, 'StartMinute'][0:2] + ":00"
+            elif str(self.data['StartMinute'].loc[i])[2] == "A":
+                self.data.loc[i, 'MilitaryStart'] = self.data.loc[i, 'StartHour'] + ":" + self.data.loc[i, 'StartMinute'][0:2] + ":00"
 
-            if str(self.data['EndMinute'].iloc[i])[2] == "P":
-                if self.data['EndHour'].iloc[i] != '12':
-                    endHour = int(self.data['EndHour'].iloc[i]) + 12
-                    self.data['MilitaryEnd'].iloc[i] = str(endHour) + ":" + self.data['EndMinute'].iloc[i][0:2] + ":00"
+            if str(self.data['EndMinute'].loc[i])[2] == "P":
+                if self.data['EndHour'].loc[i] != '12':
+                    endHour = int(self.data['EndHour'].loc[i]) + 12
+                    self.data.loc[i, 'MilitaryEnd'] = str(endHour) + ":" + self.data.loc[i, 'EndMinute'][0:2] + ":00"
 
                 else:
-                    endHour = int(self.data['EndHour'].iloc[i])
-                    self.data['MilitaryEnd'].iloc[i] = str(endHour) + ":" + self.data['EndMinute'].iloc[i][0:2] + ":00"
+                    endHour = int(self.data['EndHour'].loc[i])
+                    self.data.loc[i, 'MilitaryEnd'] = str(endHour) + ":" + self.data.loc[i, 'EndMinute'][0:2] + ":00"
 
-            elif str(self.data['EndMinute'].iloc[i])[2] == "A":
-                self.data['MilitaryEnd'].iloc[i] = self.data['EndHour'].iloc[i] + ":" + self.data['EndMinute'].iloc[
-                                                                                            i][0:2] + ":00"
-
-
-
+            elif str(self.data['EndMinute'].loc[i])[2] == "A":
+                self.data.loc[i, 'MilitaryEnd'] = self.data.loc[i, 'EndHour'] + ":" + self.data.loc[i, 'EndMinute'][0:2] + ":00"
 
     def loadData(self):
         Building.objects.all().delete()
@@ -164,7 +156,6 @@ class DataReader(object):
             f = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
                                             building_name=self.data['CSM_BLDG'].iloc[c],
                                             building=b[0])
-            print(self.data['Room Number'].iloc[c])
             cl = Classroom.objects.get_or_create(classroom_number=self.data['Room Number'].iloc[c],
                                                  classroom_name=self.data['Classroom Name'].iloc[c],
                                                  total_seats=self.data['Number of Student Seats in Room'].iloc[c],
@@ -207,4 +198,3 @@ class DataReader(object):
                                               waitlist_total=self.data['WAITLIST'].iloc[c],
                                               course_level=self.data['SEC_COURSE_NO'].iloc[c],
                                               classroom=cl[0])
-
