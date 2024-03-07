@@ -38,6 +38,7 @@ function ImportNewTerm() {
         setFile(event.target.files[0]);
         setError(''); // Clear any previous errors
         setSuccess(false); // Reset success state
+        setLoading(false)
     };
 
     // Function to handle form submission
@@ -47,6 +48,8 @@ function ImportNewTerm() {
             return;
         }
 
+        setSuccess(false)
+        setError('')
         setLoading(true);
 
         try {
