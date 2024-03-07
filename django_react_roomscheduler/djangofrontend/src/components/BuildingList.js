@@ -42,6 +42,11 @@ function BuildingList({updateFloorList}){
     */
     function selectBuilding(building){
         updateFloorList(building)
+        let buildings = document.getElementsByClassName("building")
+        for (let i = 0; i < buildings.length; i++) {
+            buildings[i].style.border = "0px";
+        }
+        document.getElementById("building-" + building.building_id).style.border = "10px solid red"
     }
     return (
         <div className='building-list'>

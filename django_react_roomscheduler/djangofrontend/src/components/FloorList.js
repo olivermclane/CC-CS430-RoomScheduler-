@@ -6,14 +6,6 @@ function FloorList({selectedBuilding, updateClassroomList}){
     const [endpoint, setEndpoint] = useState("/floors")
     const [floors, setFloors] = useState([])
 
-    /*let url = "http://127.0.0.1:8000/floors/"
-    fetch(url)
-        .then(response => response.json())
-        .then((jsonData) => {
-            //console.log(jsonData)
-            setFloors(jsonData)
-        })*/
-
     const fetchData = async (endpoint) => {
 
         try {
@@ -40,6 +32,11 @@ function FloorList({selectedBuilding, updateClassroomList}){
 
     function selectFloor(floor){
         updateClassroomList(floor)
+        let floors = document.getElementsByClassName("floor")
+        for (let i = 0; i < floors.length; i++) {
+            floors[i].style.border = "0px";
+        }
+        document.getElementById("floor-" + floor.floor_id).style.border = "10px solid violet"
     }
 
     function renderFloor(floor){

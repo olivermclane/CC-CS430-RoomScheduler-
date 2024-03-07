@@ -20,6 +20,7 @@ const Calendar = ({selectedClassroom}) => {
                 },
             });
             setCalendarData(response.data);
+            console.log(response.data)
         } catch (err) {
             console.error("Error fetching calendar data:", err);
         }
