@@ -31,7 +31,7 @@ function ImportNewTerm() {
 
     return (
         <div className="container mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Import New Term Page</h1>
+            <h1 className="text-white text-3xl font-bold mb-6">Import New Term Page</h1>
             <div className="mb-6">
                 <input type="file" accept=".xlsx" onChange={handleFileUpload} className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300" />
             </div>

@@ -23,31 +23,26 @@ function Classroom({classroom, selectClassroom}) {
             more details
           </button>
           <br/>
-          <button className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 my-2 hover:bg-purple-700 hover:text-white" type="button" data-toggle="modal" data-target={"#modal-calendar-" + classroom.classroom_id} onClick={()=>setShowCalendar(!showCalendar)} >
+          <button className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 my-2 hover:bg-purple-700 hover:text-white" type="button" onClick={()=>{
+            setShowCalendar(!showCalendar);
+          }} >
             view calendar
           </button>
         </div>
         {showCalendar ? (
-            <div className="modal text-center" id={"modal-calendar-" + classroom.classroom_id}>
-              <div className="modal-dialog modal-fullscreen w-75" style={{marginLeft: "100px"}}>
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <button type="button" className="close" data-dismiss="modal">
-                      &times;
-                    </button>
-                  </div>
-                  {
-                    showCalendar ? (
-                        <div className="modal-body" onClick={handleCalendarClick}>
-                          <Calendar selectedClassroom={classroom.classroom_id}/>
-                        </div>
-                    ) : (
-                        <p>No classroom schedule loaded</p>
-                    )
-                  }
-
-                </div>
-              </div>
+            <div id={"calendar-" + classroom.classroom_id} style={{zIndex: "2", position: "fixed", left: "5%", top: "10%", width: "70%", background: "white", padding: "50px"}}>
+              {
+                showCalendar ? (
+                    <div>
+                      <div onClick={() => {
+                        setShowCalendar(!showCalendar);
+                      }}><h1 style={{cursor: "pointer"}}>&times; Close</h1></div>
+                      <Calendar selectedClassroom={classroom.classroom_id}/>
+                    </div>
+                ) : (
+                    <p>No classroom schedule loaded</p>
+                )
+              }
             </div>
         ) : (
             <p></p>

@@ -48,7 +48,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
     }
 
     return (
-        <div className='floor-list'>
+        <div className='text-white floor-list'>
             <h2>
                 Floor list
             </h2>

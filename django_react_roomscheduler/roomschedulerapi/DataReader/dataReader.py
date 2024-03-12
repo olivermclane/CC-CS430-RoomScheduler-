@@ -158,7 +158,8 @@ class DataReader(object):
         Course.objects.all().delete()
         # load classes
         for c in range(len(self.courseData)):
-            b = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c])
+            b = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c],
+                                               image_url=self.data['Image_url'].iloc[c])
 
             f = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
                                             building_name=self.data['CSM_BLDG'].iloc[c],

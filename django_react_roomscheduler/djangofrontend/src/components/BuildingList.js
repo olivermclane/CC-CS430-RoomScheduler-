@@ -31,15 +31,6 @@ function BuildingList({updateFloorList}){
         fetchData(endpoint);
     }, [endpoint]);
 
-    /*
-    let url = "http://127.0.0.1:8000/buildings/"
-    fetch(url)
-        .then(response => response.json())
-        .then((jsonData) => {
-            //console.log(jsonData)
-            setBuildings(jsonData)
-        })
-    */
     function selectBuilding(building){
         updateFloorList(building)
         let buildings = document.getElementsByClassName("building")
@@ -49,7 +40,7 @@ function BuildingList({updateFloorList}){
         document.getElementById("building-" + building.building_id).style.border = "10px solid red"
     }
     return (
-        <div className='building-list'>
+        <div className='text-white building-list'>
             <h2>Building list</h2>
             <div className='row'>
                 {

@@ -1,61 +1,61 @@
-﻿Classroom Name,Building Information,Building,Room Number,Floor Name,Number of Student Seats in Room,Width of Room,Length of Room,Number of Projectors in Room,BluRay,Zoom,Microphone,Laptop HDMI input plug in,Document Camera,Storage,Movable Chairs,Printer,Piano,Stereo,TV,Sink,Notes
-SIMP 108,SIMP,Simperman Hall,108,First,24,25,24,5,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,1 projector is missing.
-SIMP 400,SIMP,Simperman Hall,400,Fourth,30,26,44,1,TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,1,"1 sink, 2 lockers, 1 fridge, 2 side rooms, 1 human anatomy poster, 2 human anatomy busts, bookshelves, and more storage compartments."
-SIMP 120,SIMP,Simperman Hall,120,First,17,23,26,2,FALSE,TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,1,0,"2 bookshelves, a TV in the inner window, and a storage closet."
-STCH 034,STCH ,St Charles,034,Basement,46,66,60,1,TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,4,"2 movable whiteboards, 2 document cameras, additional office, small lockers, 4 sinks, cupboards, 2 storage closets."
-PCCC 100,PCCC,Perkins Call Center,100,First,0,56,36,1,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,2 storage closets.
-OCON 106,OCON,O'Connell Hall,106,First,34,35,27,7,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,2,0,2 TVs
-SIMP 214,SIMP,Simperman Hall,214,Second,27,24,35,1,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,4,"4 sinks, many bookshelves, filing cabinets, and more storage compartments."
-CHPL 201,CHPL,St Charles,201,Second,32,36,43,3,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Access to balcony.
-OCON 119,OCON,O'Connell Hall,119,First,30,28,35,4,TRUE,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,"Additional room, many storage compartments."
-STCH 018,STCH ,St Charles,018,Basement,24,17,26,1,FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Closet.
-OCON 107,OCON,O'Connell Hall,107,First,86,54,36,1,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,"Microphone, storage cabinet, movable whiteboard, periodic table poster."
-STCH 017,STCH ,St Charles,017,Basement,23,22,27,1,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desk attached.
-STCH 045,STCH ,St Charles,045,Basement,28,23,26,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.
-SIMP 212,SIMP,Simperman Hall,212,Second,28,23,23,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.
-SIMP 314,SIMP,Simperman Hall,314,Third,32,24,32,5,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.
-OCON 101,OCON,O'Connell Hall,101,First,41,37,28,1,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Movable whiteboard.
-CUBE 004,CUBE ,Cube,004,Basement,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-FSCT 111,FSCT,Fortin Science Center,111,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-FSCT 115,FSCT,Fortin Science Center,115,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 121,SIMP,Simperman Hall,121,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-HAC 133,HAC,Hunthausen Activity Center,133,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-FSCT 212,FSCT,Fortin Science Center,212,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-FSCT 213,FSCT,Fortin Science Center,213,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 220,SIMP,Simperman Hall,220,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 221,SIMP,Simperman Hall,221,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 316,SIMP,Simperman Hall,316,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 320,SIMP,Simperman Hall,320,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 321,SIMP,Simperman Hall,321,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 403,SIMP,Simperman Hall,403,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 406,SIMP,Simperman Hall,406,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-SIMP 408,SIMP,Simperman Hall,408,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-OCON 120B,OCON,O'Connell Hall,120B,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-ECQT EQCT,ECQT,Equine Center,EQCT,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-LYHS LYHS,LYHS,No Building Assigned,LYHS,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-OFCP OFFCMPS,OFCP,Off Campus,OFFCMPS,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-OFCP ONLINE,OFCP,Off Campus,ONLINE,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-PCCC,PCCC,Perkins Call Center,No Room Assigned,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA
-PECT 100,PECT,PE Center,100,First,18,0,0,1,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,PE Center Classroom
-OCON 102,OCON,O'Connell Hall,102,First,47,39,27,1,TRUE,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,"Periodic table poster, movable chairs with desks attached."
-SIMP 331,SIMP,Simperman Hall,331,Third,32,29,33,1,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Periodic table poster.
-SIMP 101,SIMP,Simperman Hall,101,First,127,39,39,1,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Periodic table poster.
-CUBE 003,CUBE ,Cube,003,Basement,10,23,10,2,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,0,0,Piano.
-OCON 125,OCON,O'Connell Hall,125,First,22,24,28,3,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,0,0,"Stereo system, bookshelf."
-SIMP 114,SIMP,Simperman Hall,114,First,28,25,35,2,TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Storage closet and chalkboard.
-CENG 201,CENG,Engineering Building,201,Second,31,32,23,2,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Storage closet.
-SIMP 231,SIMP,Simperman Hall,231,Second,16,17,22,1,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,The room has 7 whiteboards placed throughout the room. 
-SIMP 407,SIMP,Simperman Hall,407,Fourth,24,20,24,4,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,The room has whiteboard walls on three sides. 
-SIMP 146,SIMP,Simperman Hall,146,Second,32,26,41,2,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,The room lots of individual white boards spaced throughout the room. 
-SIMP 345,SIMP,Simperman Hall,345,Third,10,15,16,1,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-SIMP 234,SIMP,Simperman Hall,234,Second,16,12,28,1,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-SIMP 312,SIMP,Simperman Hall,312,Third,20,22,24,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-STCH 044,STCH ,St Charles,044,Basement,25,16,31,1,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-STCH 140,STCH ,St Charles,140,First,27,32,20,3,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-PCCC 101,PCCC,Perkins Call Center,101,First,28,21,31,4,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-SIMP 106,SIMP,Simperman Hall,106,First,24,27,24,5,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-GUAD 001,GUAD ,Guadalupe Hall,001,Basement,13,50,35,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-HAC 117,HAC,Hunthausen Activity Center,117,First,16,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-WBAR WBAR,WBAR,Water Barn,WBAR,First,18,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-CHPL 104,CHPL,St Charles,104,First,23,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
-CENG 101,CENG,Engineering Building,101,First,24,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes
+﻿Classroom Name,Building Information,Building,Room Number,Floor Name,Number of Student Seats in Room,Width of Room,Length of Room,Number of Projectors in Room,BluRay,Zoom,Microphone,Laptop HDMI input plug in,Document Camera,Storage,Movable Chairs,Printer,Piano,Stereo,TV,Sink,Notes,Image_url
+SIMP 108,SIMP,Simperman Hall,108,First,24,25,24,5,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,1 projector is missing.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 400,SIMP,Simperman Hall,400,Fourth,30,26,44,1,TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,1,"1 sink, 2 lockers, 1 fridge, 2 side rooms, 1 human anatomy poster, 2 human anatomy busts, bookshelves, and more storage compartments.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 120,SIMP,Simperman Hall,120,First,17,23,26,2,FALSE,TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,1,0,"2 bookshelves, a TV in the inner window, and a storage closet.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 034,STCH ,St Charles,034,Basement,46,66,60,1,TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,4,"2 movable whiteboards, 2 document cameras, additional office, small lockers, 4 sinks, cupboards, 2 storage closets.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+PCCC 100,PCCC,Perkins Call Center,100,First,0,56,36,1,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,2 storage closets.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 106,OCON,O'Connell Hall,106,First,34,35,27,7,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,2,0,2 TVs,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 214,SIMP,Simperman Hall,214,Second,27,24,35,1,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,4,"4 sinks, many bookshelves, filing cabinets, and more storage compartments.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CHPL 201,CHPL,St Charles,201,Second,32,36,43,3,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Access to balcony.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 119,OCON,O'Connell Hall,119,First,30,28,35,4,TRUE,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,"Additional room, many storage compartments.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 018,STCH ,St Charles,018,Basement,24,17,26,1,FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Closet.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 107,OCON,O'Connell Hall,107,First,86,54,36,1,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,"Microphone, storage cabinet, movable whiteboard, periodic table poster.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 017,STCH ,St Charles,017,Basement,23,22,27,1,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desk attached.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 045,STCH ,St Charles,045,Basement,28,23,26,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 212,SIMP,Simperman Hall,212,Second,28,23,23,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 314,SIMP,Simperman Hall,314,Third,32,24,32,5,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,Movable chairs with desks attached.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 101,OCON,O'Connell Hall,101,First,41,37,28,1,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Movable whiteboard.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CUBE 004,CUBE ,Cube,004,Basement,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+FSCT 111,FSCT,Fortin Science Center,111,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+FSCT 115,FSCT,Fortin Science Center,115,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 121,SIMP,Simperman Hall,121,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+HAC 133,HAC,Hunthausen Activity Center,133,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+FSCT 212,FSCT,Fortin Science Center,212,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+FSCT 213,FSCT,Fortin Science Center,213,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 220,SIMP,Simperman Hall,220,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 221,SIMP,Simperman Hall,221,Second,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 316,SIMP,Simperman Hall,316,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 320,SIMP,Simperman Hall,320,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 321,SIMP,Simperman Hall,321,Third,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 403,SIMP,Simperman Hall,403,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 406,SIMP,Simperman Hall,406,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 408,SIMP,Simperman Hall,408,Fourth,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 120B,OCON,O'Connell Hall,120B,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+ECQT EQCT,ECQT,Equine Center,EQCT,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+LYHS LYHS,LYHS,No Building Assigned,LYHS,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OFCP OFFCMPS,OFCP,Off Campus,OFFCMPS,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OFCP ONLINE,OFCP,Off Campus,ONLINE,No Floor Assigned,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+PCCC,PCCC,Perkins Call Center,No Room Assigned,First,0,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,NO CLASSROOM DATA,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+PECT 100,PECT,PE Center,100,First,18,0,0,1,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,PE Center Classroom,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 102,OCON,O'Connell Hall,102,First,47,39,27,1,TRUE,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,"Periodic table poster, movable chairs with desks attached.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 331,SIMP,Simperman Hall,331,Third,32,29,33,1,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Periodic table poster.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 101,SIMP,Simperman Hall,101,First,127,39,39,1,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,Periodic table poster.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CUBE 003,CUBE ,Cube,003,Basement,10,23,10,2,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,0,0,Piano.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+OCON 125,OCON,O'Connell Hall,125,First,22,24,28,3,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,0,0,"Stereo system, bookshelf.",https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 114,SIMP,Simperman Hall,114,First,28,25,35,2,TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Storage closet and chalkboard.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CENG 201,CENG,Engineering Building,201,Second,31,32,23,2,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,0,0,Storage closet.,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 231,SIMP,Simperman Hall,231,Second,16,17,22,1,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,The room has 7 whiteboards placed throughout the room. ,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 407,SIMP,Simperman Hall,407,Fourth,24,20,24,4,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,The room has whiteboard walls on three sides. ,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 146,SIMP,Simperman Hall,146,Second,32,26,41,2,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,0,0,The room lots of individual white boards spaced throughout the room. ,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 345,SIMP,Simperman Hall,345,Third,10,15,16,1,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 234,SIMP,Simperman Hall,234,Second,16,12,28,1,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 312,SIMP,Simperman Hall,312,Third,20,22,24,1,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 044,STCH ,St Charles,044,Basement,25,16,31,1,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+STCH 140,STCH ,St Charles,140,First,27,32,20,3,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+PCCC 101,PCCC,Perkins Call Center,101,First,28,21,31,4,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+SIMP 106,SIMP,Simperman Hall,106,First,24,27,24,5,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+GUAD 001,GUAD ,Guadalupe Hall,001,Basement,13,50,35,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+HAC 117,HAC,Hunthausen Activity Center,117,First,16,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+WBAR WBAR,WBAR,Water Barn,WBAR,First,18,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CHPL 104,CHPL,St Charles,104,First,23,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
+CENG 101,CENG,Engineering Building,101,First,24,0,0,0,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,0,0,No notes,https://www.carroll.edu/sites/default/files/2023-06/campus-from-park.jpg
