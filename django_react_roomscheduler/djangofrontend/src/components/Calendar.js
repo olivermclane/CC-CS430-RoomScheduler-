@@ -81,6 +81,8 @@ const Calendar = ({selectedClassroom}) => {
             });
         });
 
+        console.log(events)
+
         return {dates, events};
     };
 
