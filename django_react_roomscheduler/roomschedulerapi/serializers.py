@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Building, Floor, Classroom, Course, User
+from .models import Building, Floor, Classroom, Course, User, Term
 
 
 class BuildingSerializer(serializers.ModelSerializer):
@@ -43,10 +43,14 @@ class ClassroomSerializer(serializers.ModelSerializer):
             'notes',
             'floor',
         ]
-
+class TermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Term
+        fields = ['term_id', 'term_name']
 
 class CourseSerializer(serializers.ModelSerializer):
     classroom = ClassroomSerializer(read_only=True)
+    term = TermSerializer(read_only=True)
 
     class Meta:
         model = Course
@@ -73,7 +77,6 @@ class CourseSerializer(serializers.ModelSerializer):
             'saturday',
             'sunday',
             'classroom',
-
         ]
 
 

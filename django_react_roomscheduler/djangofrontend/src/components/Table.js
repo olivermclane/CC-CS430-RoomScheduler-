@@ -210,7 +210,7 @@ const Table = () => {
             },
             {
                 Header: "Term",
-                accessor: "term",
+                accessor: "term.term_name",
             },
             {
                 Header: "Credits",

@@ -7,7 +7,11 @@ Author: Hank Rugg
 
 import pandas as pd
 from tkinter import filedialog
-from roomschedulerapi.models import Building, Floor, Classroom, Course
+from roomschedulerapi.models import Building, Floor, Classroom, Course, Term
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def getMonthNum(month):
@@ -62,7 +66,6 @@ class DataReader(object):
                 self.data['Floor Name'].iloc[i] = "No assigned floor"
             if self.data['Room Number'].iloc[i] == 0:
                 self.data['Room Number'].iloc[i] = "No assigned room"
-
 
         for i in range(len(self.courseData)):
             # mondays
@@ -149,60 +152,73 @@ class DataReader(object):
             elif str(self.data['EndMinute'].iloc[i])[2] == "A":
                 self.data['MilitaryEnd'].iloc[i] = self.data['EndHour'].iloc[i] + ":" + self.data['EndMinute'].iloc[
                                                                                             i][0:2] + ":00"
-
+        print("Saving csv")
+        self.data.to_csv("saved.csv", index=True)
 
     def loadData(self):
-        Building.objects.all().delete()
-        Floor.objects.all().delete()
-        Classroom.objects.all().delete()
-        Course.objects.all().delete()
+        logger.info("Loading new data started for term", self.courseData['SEC_TERM'].iloc[0])
+
+        current_term_name = self.courseData['SEC_TERM'].iloc[0]  # Assuming it's in the first row
+        current_term, _ = Term.objects.get_or_create(term_name=current_term_name)
+
+
+        Course.objects.filter(term=current_term).delete()
+
         # load classes
         for c in range(len(self.courseData)):
-            b = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c])
+            b, _ = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c])
+            logger.info("Added new building to the database, ", b.building_name)
 
-            f = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
-                                            building_name=self.data['CSM_BLDG'].iloc[c],
-                                            building=b[0])
-            cl = Classroom.objects.get_or_create(classroom_number=self.data['Room Number'].iloc[c],
-                                                 classroom_name=self.data['Classroom Name'].iloc[c],
-                                                 total_seats=self.data['Number of Student Seats in Room'].iloc[c],
-                                                 width_of_room=self.data['Width of Room'].iloc[c],
-                                                 length_of_room=self.data['Length of Room'].iloc[c],
-                                                 projectors=self.data['Number of Projectors in Room'].iloc[c],
-                                                 microphone_system=self.data['Microphone'].iloc[c],
-                                                 blueray_player=self.data['BluRay'].iloc[c],
-                                                 laptop_hdmi=self.data['Laptop HDMI input plug in'].iloc[c],
-                                                 zoom_camera=self.data['Zoom'].iloc[c],
-                                                 document_camera=self.data['Document Camera'].iloc[c],
-                                                 storage=self.data['Storage'].iloc[c],
-                                                 movable_chairs=self.data['Movable Chairs'].iloc[c],
-                                                 printer=self.data['Printer'].iloc[c],
-                                                 piano=self.data['Piano'].iloc[c],
-                                                 stereo_system=self.data['Stereo'].iloc[c],
-                                                 total_tv=self.data['TV'].iloc[c],
-                                                 sinks=self.data['Sink'].iloc[c],
-                                                 notes=self.data['Notes'].iloc[c],
-                                                 floor_name=self.data['Floor Name'].iloc[c],
-                                                 floor=f[0])
-            cr = Course.objects.get_or_create(first_day=self.data['StartDate'].iloc[c],
-                                              last_day=self.data['EndDate'].iloc[c],
-                                              course_name=self.data['SEC_SHORT_TITLE'].iloc[c],
-                                              term=self.data['SEC_TERM'].iloc[c],
-                                              credits=self.data['SEC_MIN_CRED'].iloc[c],
-                                              start_time=self.data['MilitaryStart'].iloc[c],
-                                              end_time=self.data['MilitaryEnd'].iloc[c],
-                                              monday=self.data['CSM_MONDAY'].iloc[c],
-                                              tuesday=self.data['CSM_TUESDAY'].iloc[c],
-                                              wednesday=self.data['CSM_WEDNESDAY'].iloc[c],
-                                              thursday=self.data['CSM_THURSDAY'].iloc[c],
-                                              friday=self.data['CSM_FRIDAY'].iloc[c],
-                                              saturday=self.data['CSM_SATURDAY'].iloc[c],
-                                              sunday=self.data['CSM_SUNDAY'].iloc[c],
-                                              instructor=self.data['SEC_FACULTY_INFO'].iloc[c],
-                                              enrollment_total=self.data['STUDENTS_AND_RESERVED_SEATS'].iloc[c],
-                                              course_cap=self.data['SEC_CAPACITY'].iloc[c],
-                                              waitlist_cap=self.data['XL_WAITLIST_MAX'].iloc[c],
-                                              waitlist_total=self.data['WAITLIST'].iloc[c],
-                                              course_level=self.data['SEC_COURSE_NO'].iloc[c],
-                                              classroom=cl[0])
+            f, _ = Floor.objects.get_or_create(floor_name=self.data['Floor Name'].iloc[c],
+                                               building_name=self.data['CSM_BLDG'].iloc[c],
+                                               building=b)
+
+            logger.info("Added new floor to the database, ", f.floor_name)
+            cl, _ = Classroom.objects.get_or_create(classroom_number=self.data['Room Number'].iloc[c],
+                                                    classroom_name=self.data['Classroom Name'].iloc[c],
+                                                    total_seats=self.data['Number of Student Seats in Room'].iloc[c],
+                                                    width_of_room=self.data['Width of Room'].iloc[c],
+                                                    length_of_room=self.data['Length of Room'].iloc[c],
+                                                    projectors=self.data['Number of Projectors in Room'].iloc[c],
+                                                    microphone_system=self.data['Microphone'].iloc[c],
+                                                    blueray_player=self.data['BluRay'].iloc[c],
+                                                    laptop_hdmi=self.data['Laptop HDMI input plug in'].iloc[c],
+                                                    zoom_camera=self.data['Zoom'].iloc[c],
+                                                    document_camera=self.data['Document Camera'].iloc[c],
+                                                    storage=self.data['Storage'].iloc[c],
+                                                    movable_chairs=self.data['Movable Chairs'].iloc[c],
+                                                    printer=self.data['Printer'].iloc[c],
+                                                    piano=self.data['Piano'].iloc[c],
+                                                    stereo_system=self.data['Stereo'].iloc[c],
+                                                    total_tv=self.data['TV'].iloc[c],
+                                                    sinks=self.data['Sink'].iloc[c],
+                                                    notes=self.data['Notes'].iloc[c],
+                                                    floor_name=self.data['Floor Name'].iloc[c],
+                                                    floor=f)
+
+            logger.info("Added new classroom to the database, ", cl.classroom_name)
+            cr, _ = Course.objects.get_or_create(first_day=self.data['StartDate'].iloc[c],
+                                                 last_day=self.data['EndDate'].iloc[c],
+                                                 course_name=self.data['SEC_SHORT_TITLE'].iloc[c],
+                                                 term=current_term,
+                                                 credits=self.data['SEC_MIN_CRED'].iloc[c],
+                                                 start_time=self.data['MilitaryStart'].iloc[c],
+                                                 end_time=self.data['MilitaryEnd'].iloc[c],
+                                                 monday=self.data['CSM_MONDAY'].iloc[c],
+                                                 tuesday=self.data['CSM_TUESDAY'].iloc[c],
+                                                 wednesday=self.data['CSM_WEDNESDAY'].iloc[c],
+                                                 thursday=self.data['CSM_THURSDAY'].iloc[c],
+                                                 friday=self.data['CSM_FRIDAY'].iloc[c],
+                                                 saturday=self.data['CSM_SATURDAY'].iloc[c],
+                                                 sunday=self.data['CSM_SUNDAY'].iloc[c],
+                                                 instructor=self.data['SEC_FACULTY_INFO'].iloc[c],
+                                                 enrollment_total=self.data['STUDENTS_AND_RESERVED_SEATS'].iloc[c],
+                                                 course_cap=self.data['SEC_CAPACITY'].iloc[c],
+                                                 waitlist_cap=self.data['XL_WAITLIST_MAX'].iloc[c],
+                                                 waitlist_total=self.data['WAITLIST'].iloc[c],
+                                                 course_level=self.data['SEC_COURSE_NO'].iloc[c],
+                                                 classroom=cl)
+
+            logger.info("Added new course to the database, ", cr.course_name)
+
 

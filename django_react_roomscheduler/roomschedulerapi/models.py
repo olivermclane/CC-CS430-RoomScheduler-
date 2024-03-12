@@ -23,7 +23,7 @@ class Floor(models.Model):
 
 class Classroom(models.Model):
     classroom_id = models.AutoField(primary_key=True)
-    classroom_name = models.CharField(max_length=100, default=0)
+    classroom_name = models.CharField(max_length=1000, default=0)
     classroom_number = models.CharField(default=0)
     total_seats = models.IntegerField(default=0)
     width_of_room = models.IntegerField(default=0)
@@ -44,9 +44,20 @@ class Classroom(models.Model):
     notes = models.CharField(max_length=200, blank=True)
     floor_name = models.CharField(default=0)
     floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
+    optimization_score = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.classroom_name} (ID: {self.classroom_id})"
+
+
+class Term(models.Model):
+    term_id = models.AutoField(primary_key=True)
+    term_name = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.term_name} (ID: {self.term_id})"
 
 
 class Course(models.Model):
@@ -58,7 +69,7 @@ class Course(models.Model):
     first_day = models.DateField()
     last_day = models.DateField()
     course_name = models.CharField(max_length=100)
-    term = models.CharField(max_length=10, blank=True)
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, default=None)
     credits = models.IntegerField(default=0)
     course_cap = models.IntegerField(default=0)
     waitlist_cap = models.IntegerField(default=0)

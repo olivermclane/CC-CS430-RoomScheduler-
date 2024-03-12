@@ -95,7 +95,8 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             yaxis: {
                 title: {
                     text: "Total Used Time (hours)"
-                }
+                },
+                max: 15
             },
             colors: ["#BA68C8"],
             series: [

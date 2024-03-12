@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -8,14 +9,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .DataReader.dataReader import DataReader
 from .models import Building, Floor, Classroom, Course, User
-from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer, ClassroomCourseSerializer
+from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer, \
+    ClassroomCourseSerializer
 
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        print("get default")
         return render(request, 'index.html')
 
 
@@ -24,8 +25,6 @@ class LogoutView(APIView):
         # Blacklist the current token
         if request.auth and hasattr(request.auth, 'get_token'):
             token = request.auth.get_token()
-
-        # Optionally add additional logout logic here (e.g., clearing cookies)
 
         logout(request)
         return Response({"message": "Successfully logged out"})
@@ -70,7 +69,8 @@ class RegisterView(APIView):
 
 class BuildingView(APIView):
     permission_classes = (IsAuthenticated,)
-    #permission_classes = (AllowAny,)
+
+    # permission_classes = (AllowAny,)
 
     def get(self, request):
         # Retrieve buildings data for authenticated user
@@ -93,7 +93,8 @@ class BuildingDetailView(APIView):
 
 class CourseView(APIView):
     permission_classes = (IsAuthenticated,)
-    #permission_classes = (AllowAny,)
+
+    # permission_classes = (AllowAny,)
 
     def get(self, request):
         # Retrieve buildings data for authenticated user
@@ -116,7 +117,8 @@ class CourseDetailView(APIView):
 
 class ClassroomView(APIView):
     permission_classes = (IsAuthenticated,)
-    #permission_classes = (AllowAny,)
+
+    # permission_classes = (AllowAny,)
 
     def get(self, request):
         classroom = Classroom.objects.all()
@@ -126,7 +128,6 @@ class ClassroomView(APIView):
 
 class ClassroomDetailView(APIView):
     permission_classes = (IsAuthenticated,)
-
 
     def get(self, request, pk):
         try:
@@ -139,7 +140,8 @@ class ClassroomDetailView(APIView):
 
 class FloorView(APIView):
     permission_classes = (IsAuthenticated,)
-    #permission_classes = (AllowAny,)
+
+    # permission_classes = (AllowAny,)
     def get(self, request):
         floors = Floor.objects.all()
         serializer = FloorSerializer(floors, many=True)
@@ -168,6 +170,31 @@ class ClassroomCoursesView(APIView):
             return Response(serializer.data)
         except Floor.DoesNotExist:
             return Response({'error': 'Classroom and course combination not found'}, status=404)
+
+
+class CoursesTermView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, term):
+        try:
+            classroomCourse = Course.objects.all().filter(term=term)
+            serializer = ClassroomCourseSerializer(classroomCourse, many=True)
+            return Response(serializer.data)
+        except Floor.DoesNotExist:
+            return Response({'error': 'Classroom and course combination not found'}, status=404)
+
+
+class ClassroomCoursesTermView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, term, fk):
+        try:
+            classroomCourse = Course.objects.get(term=term, classroom_id=fk)
+            serializer = ClassroomCourseSerializer(classroomCourse, many=True)
+            return Response(serializer.data)
+        except Floor.DoesNotExist:
+            return Response({'error': 'Classroom and course combination not found'}, status=404)
+
 
 class LoadView(APIView):
 
