@@ -7,7 +7,6 @@ Author: Hank Rugg
 import warnings
 
 import pandas as pd
-from tkinter import filedialog
 from roomschedulerapi.models import Building, Floor, Classroom, Course
 warnings.filterwarnings("ignore", message="DataFrame is highly fragmented", category=pd.errors.PerformanceWarning)
 
