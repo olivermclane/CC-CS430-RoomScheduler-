@@ -42,30 +42,6 @@ def getMonthNum(month):
 
 class DataReader(object):
 
-    # columns to verify
-    # CSM_BLDG
-    # CSM_ROOM
-    # CSM_SUNDAY
-    # CSM_MONDAY
-    # CSM_TUESDAY
-    # CSM_WEDNESDAY
-    # CSM_THURSDAY
-    # CSM_FRIDAY
-    # CSM_SATURDAY
-    # SEC_START_DATE
-    # SEC_END_DATE
-    # CSM_START_TIME
-    # CSM_END_TIME
-    # SEC_SHORT_TITLE
-    # SEC_TERM
-    # SEC_MIN_CRED
-    # SEC_FACULTY_INFO
-    # STUDENTS_AND_RESERVED_SEATS
-    # SEC_CAPACITY
-    # XL_WAITLIST_MAX
-    # WAITLIST
-    # SEC_COURSE_NO
-
 
     def __init__(self, file):
         # load classroom data
@@ -83,11 +59,11 @@ class DataReader(object):
 
         for i in range(len(self.data)):
             if self.data['CSM_BLDG'].iloc[i] == 0:
-                self.data['CSM_BLDG'].iloc[i] = "No Building Assigned"
+                self.data.loc[i, 'CSM_BLDG'] = "No Building Assigned"
             if self.data['Floor Name'].iloc[i] == 0:
-                self.data['Floor Name'].iloc[i] = "No Floor Assigned"
+                self.data.loc[i, 'Floor Name'] = "No Floor Assigned"
             if self.data['Room Number'].iloc[i] == 0:
-                self.data['Room Number'].iloc[i] = "No Room Assigned"
+                self.data.loc[i, 'Room Number'] = "No Room Assigned"
 
         self.data['CSM_SUNDAY'] = self.data['CSM_SUNDAY'].replace({'Y': True, '-': False})
         self.data['CSM_MONDAY'] = self.data['CSM_MONDAY'].replace({'Y': True, '-': False})
