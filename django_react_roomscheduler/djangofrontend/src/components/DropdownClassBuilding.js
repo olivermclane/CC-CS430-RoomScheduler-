@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+ import logger from "../loggers";
 
 const DropdownClassBuilding = ({ onClassroomChange }) => {
   const [buildings, setBuildings] = useState([]);
@@ -10,20 +11,22 @@ const DropdownClassBuilding = ({ onClassroomChange }) => {
     const fetchData = async () => {
       try {
         const storedToken = localStorage.getItem('access_token');
+        logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
         const response = await axios.get('http://127.0.0.1:8000/classrooms/', {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },
         });
+        logger.info("Fetched data:", response.data); // Log fetched data
         const parsedBuildings = parseData(response.data);
         setBuildings(parsedBuildings);
       } catch (err) {
         if (err.response) {
-          console.log('Server error:', err.response.data);
+          logger.error('Server error:', err.response.data);
         } else if (err.request) {
-          console.log('Network error:', err.message);
+          logger.error('Network error:', err.message);
         } else {
-          console.log('Error:', err.message);
+          logger.error('Error:', err.message);
         }
       }
     };
@@ -44,7 +47,7 @@ const DropdownClassBuilding = ({ onClassroomChange }) => {
         number: classroom.classroom_number,
       });
     });
-
+    logger.log("Data parsed")
     return buildings;
   };
 

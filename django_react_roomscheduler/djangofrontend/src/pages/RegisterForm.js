@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import logger from "../loggers";
 
 export default function RegisterForm() {
 
@@ -9,15 +10,15 @@ export default function RegisterForm() {
     const navigate = useNavigate();
     const login = async (email, password, username) => {
         try {
-            console.log(password)
             const response = await axios.post('http://localhost:8000/register/', {
                 'email': email.toString(),
                 'username': username,
                 'password': password
             });
-            console.log(response)
+            logger.info("User registered with email ", email.toString())
             return response.data;
         } catch (error) {
+            logger.error("User failed to register with email", email.toString())
             throw error;
         }
     }
@@ -32,6 +33,7 @@ export default function RegisterForm() {
             window.location.href = '/login';
         } catch (error) {
             setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
+            logger.info("Registration failed for user with email ", email)
         }
     };
 

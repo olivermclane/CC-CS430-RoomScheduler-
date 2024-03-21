@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import logger from "../loggers";
 
 const Calendar = ({selectedClassroom}) => {
     const [endpoint, setEndpoint] = useState(`/classroom-courses/${selectedClassroom}`)
@@ -20,8 +21,9 @@ const Calendar = ({selectedClassroom}) => {
                 },
             });
             setCalendarData(response.data);
+            logger.info("Calendar data set")
         } catch (err) {
-            console.error("Error fetching calendar data:", err);
+            logger.error("Error fetching calendar data:", err);
         }
     };
 
@@ -80,8 +82,7 @@ const Calendar = ({selectedClassroom}) => {
                 backgroundColor: color,
             });
         });
-
-        console.log(events)
+        logger.trace("Events loaded", events)
 
         return {dates, events};
     };
@@ -99,7 +100,7 @@ const Calendar = ({selectedClassroom}) => {
             events={events}
             weekends={false}
             eventClick={(info) => {
-                console.log(`You've clicked an event: ${info.event.title}`);
+                logger.trace(`You've clicked an event: ${info.event.title}`);
             }}
         />
     )

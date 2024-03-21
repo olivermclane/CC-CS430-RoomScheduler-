@@ -22,6 +22,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.331.0",
     "pagination": "^0.4.6",
+    "pino": "^8.19.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.10.1",

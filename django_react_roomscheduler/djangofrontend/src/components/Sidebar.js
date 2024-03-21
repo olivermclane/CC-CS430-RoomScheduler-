@@ -1,6 +1,7 @@
 import {LogOut, ChevronLast, ChevronFirst} from "lucide-react"
 import {useContext, createContext, useState} from "react"
 import axios from "axios";
+import logger from "../loggers";
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -28,7 +29,7 @@ export default function Sidebar({children}) {
                 }
             })
             .catch(error => {
-                console.error('Logout failed:', error);
+                logger.error('Logout failed:', error);
                 // Handle errors
             });
     }

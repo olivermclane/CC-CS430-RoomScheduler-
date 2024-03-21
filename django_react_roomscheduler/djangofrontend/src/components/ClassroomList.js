@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
 import axios from "axios";
+import logger from "../loggers"
 
 function ClassroomList({selectedFloor}){
     const [endpoint, setEndpoint] = useState("/classrooms")
@@ -19,19 +20,21 @@ function ClassroomList({selectedFloor}){
 
         try {
             const storedToken = localStorage.getItem("access_token");
+            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
             const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
             setClassrooms(response.data);
+            logger.info('Response received:', response.data); // Log the response received
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error("Server error:", err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error("Network error:", err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error("Error:", err.message);
             }
         }
     };

@@ -2,6 +2,7 @@ import React, {useState, useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import logger from "../loggers";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -9,8 +10,10 @@ export default function LoginForm() {
     const login = async (email, password) => {
       try {
         const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
+        logger.info("User attempted login", email.toString()); // Log the endpoint being called
         return response.data;
       } catch (error) {
+        logger.error("Error ", error)
         throw error;
       }
     }
@@ -31,6 +34,8 @@ export default function LoginForm() {
       window.location.href = '/dashboard';
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
+      logger.error('Login failed for user', data.username)
+
     }
   };
 

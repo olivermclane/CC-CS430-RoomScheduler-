@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import logger from "../loggers";
 
 function MostFreqProf({ selectedClassroom }) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -13,6 +14,7 @@ function MostFreqProf({ selectedClassroom }) {
             const instructor = course.instructor;
             instructorCounts[instructor] = (instructorCounts[instructor] || 0) + 1;
         });
+        logger.info("Instructor counts set")
 
         return instructorCounts;
     };
@@ -22,22 +24,24 @@ function MostFreqProf({ selectedClassroom }) {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
                 const storedToken = localStorage.getItem('access_token');
+                logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
                 const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
                 });
+                logger.info('Response received:', response.data); // Log the response received
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);
                 setIsLoading(false); // Set loading to false after data is fetched
             } catch (err) {
                 setIsLoading(false); // Set loading to false in case of error
                 if (err.response) {
-                    console.log('Server error:', err.response.data);
+                    logger.error('Server error:', err.response.data);
                 } else if (err.request) {
-                    console.log('Network error:', err.message);
+                    logger.error('Network error:', err.message);
                 } else {
-                    console.log('Error:', err.message);
+                    logger.error('Error:', err.message);
                 }
             }
         };
@@ -85,6 +89,7 @@ function MostFreqProf({ selectedClassroom }) {
 
             const chart = new ApexCharts(document.getElementById("MostFreqProfChart"), options);
             chart.render();
+            logger.info("chart rendered")
 
             // Return a cleanup function to remove the chart when the component unmounts
             return () => chart.destroy();

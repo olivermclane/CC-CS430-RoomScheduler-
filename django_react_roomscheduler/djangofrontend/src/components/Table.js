@@ -20,6 +20,7 @@ import {useRowSelectColumn} from "@lineup-lite/hooks";
 import axios from "axios";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
+import logger from "../loggers";
 
 export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
     const [value, setValue] = useState(globalFilter);
@@ -56,20 +57,21 @@ const Table = () => {
         setIsLoading(true);
         try {
             const storedToken = localStorage.getItem("access_token");
+            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
             const response = await axios.get(`http://localhost:8000${endpoint}/`, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
-
+            logger.info("Data received")
             setTableData(response.data);
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error("Server error:", err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error("Network error:", err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error("Error:", err.message);
             }
         } finally {
             setIsLoading(false);

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import logger from "../loggers";
 
 function ScheduleInsight({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -11,22 +12,24 @@ function ScheduleInsight({selectedClassroom}) {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
                 const storedToken = localStorage.getItem('access_token');
+                logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
                 const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
                 });
                 const parsedData = parseData(response.data);
+                logger.info("Data received")
                 setScheduleData(parsedData);
                 setIsLoading(false); // Set loading to false after data is fetched
             } catch (err) {
                 setIsLoading(false); // Set loading to false in case of error
                 if (err.response) {
-                    console.log('Server error:', err.response.data);
+                    logger.info('Server error:', err.response.data);
                 } else if (err.request) {
-                    console.log('Network error:', err.message);
+                    logger.info('Network error:', err.message);
                 } else {
-                    console.log('Error:', err.message);
+                    logger.info('Error:', err.message);
                 }
             }
         };
@@ -76,18 +79,21 @@ function ScheduleInsight({selectedClassroom}) {
             // Render new chart
             chart = new ApexCharts(document.getElementById("bar-chart"), options);
             chart.render();
+            logger.info("Chart rendered")
         }
 
         return () => {
             // Clean up: destroy the chart instance when component unmounts
             if (chart) {
                 chart.destroy();
+                logger.info("Chart destroyed")
             }
         };
     }, [isLoading, scheduleData]);
 
 
     const parseData = (data) => {
+        logger.info("Data parsed")
         return data.map(course => ({
             course_id: course.course_id,
             course_name: course.course_name,

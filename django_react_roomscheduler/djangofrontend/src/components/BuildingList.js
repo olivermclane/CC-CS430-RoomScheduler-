@@ -1,62 +1,52 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react';
+import Building from './Building';
+import axios from 'axios';
+import logger from "../loggers";
 
-import Building from "./Building";
-import axios from "axios";
-
-function BuildingList({updateFloorList}){
-    const [endpoint, setEndpoint] = useState("/buildings")
-    const [buildings, setBuildings] = useState([])
+function BuildingList({ updateFloorList }) {
+    const [endpoint, setEndpoint] = useState('/buildings');
+    const [buildings, setBuildings] = useState([]);
 
     const fetchData = async (endpoint) => {
-
         try {
-            const storedToken = localStorage.getItem("access_token");
+            const storedToken = localStorage.getItem('access_token');
+            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
             const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },
             });
+            logger.info('Response received:', response.data); // Log the response received
             setBuildings(response.data);
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error('Server error:', err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error('Network error:', err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error('Error:', err.message);
             }
         }
     };
+
     useEffect(() => {
         fetchData(endpoint);
     }, [endpoint]);
 
-    /*
-    let url = "http://127.0.0.1:8000/buildings/"
-    fetch(url)
-        .then(response => response.json())
-        .then((jsonData) => {
-            //console.log(jsonData)
-            setBuildings(jsonData)
-        })
-    */
-    function selectBuilding(building){
-        updateFloorList(building)
+    function selectBuilding(building) {
+        updateFloorList(building);
     }
+
     return (
-        <div className='building-list'>
+        <div className="building-list">
             <h2>Building list</h2>
-            <div className='row'>
-                {
-                    buildings.map(building=>(
-                        <Building building={building} selectBuilding = {selectBuilding} />
-                        )
-                    )
-                }
+            <div className="row">
+                {buildings.map((building) => (
+                    <Building key={building.id} building={building} selectBuilding={selectBuilding} />
+                ))}
             </div>
         </div>
-    )
-
+    );
 }
 
-export default BuildingList
+export default BuildingList;
