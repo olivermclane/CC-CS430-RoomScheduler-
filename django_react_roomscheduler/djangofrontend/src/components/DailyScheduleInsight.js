@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
 
-function DailyScheduleInsight({selectedClassroom}) {
+function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
     const [chartOptions, setChartOptions] = useState(null);
 
@@ -100,6 +100,11 @@ function DailyScheduleInsight({selectedClassroom}) {
                 title: {
                     text: "Total Unused Time (hours)"
                 },
+                labels: {
+                    formatter: (value) => {
+                        return parseInt(value).toString(); // Converts value to integer and then to string for display
+                    }
+                },
                 max: 15 // Maximum value for the y-axis (total hours in a day)
             },
             colors: ["#BA68C8"],
@@ -110,8 +115,6 @@ function DailyScheduleInsight({selectedClassroom}) {
                 }
             ]
         };
-
-        console.log("Chart options:", options); // Log chart options
 
         setChartOptions(options);
     };
@@ -127,7 +130,7 @@ function DailyScheduleInsight({selectedClassroom}) {
     }, [chartOptions]);
 
     return (
-        <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
+        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6">
             <div id="daily-schedule-chart"/>
             <div className="mt-4">
                 <hr className="my-3"/>
