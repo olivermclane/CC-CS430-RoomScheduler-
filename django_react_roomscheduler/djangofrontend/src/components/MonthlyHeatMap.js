@@ -1,13 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
-import CalHeatMap from 'cal-heatmap';
+import React, {useEffect, useState} from 'react';
+import CalHeatmap from 'cal-heatmap';
 import 'cal-heatmap/cal-heatmap.css';
 import axios from "axios";
-import CalendarLabel from 'cal-heatmap/plugins/CalendarLabel';
-
+import Tooltip from 'cal-heatmap/plugins/Tooltip';
+import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
+import "./cal-heatmap-custom.css"
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
-    const [scheduleData, setScheduleData] = useState([]); // Define the state for schedule data
-    const calHeatMapRef = useRef(null); // useRef to hold the CalHeatMap instance
+    const [scheduleData, setScheduleData] = useState({});
+    useEffect(() => {
+        const container = document.getElementById('cal-heatmap');
+        if (container) {
+            container.innerHTML = ''; // Clear the container before initializing a new heatmap
+        }
+
+        if (Object.keys(scheduleData).length > 0) {
+            initHeatMap(scheduleData);
+        }
+    }, [scheduleData]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,95 +29,102 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                     },
                 });
                 const parsedData = parseData(response.data);
-                setScheduleData(transformDataForHeatMap(parsedData));
+                const transformedData = transformDataForHeatMap(parsedData);
+                setScheduleData(transformedData);
             } catch (err) {
-                console.error(err); // Handle errors
+                console.error(err);
             }
         };
 
         fetchData();
     }, [selectedClassroom]);
 
-    useEffect(() => {
-        // Clear previous heatmap content
-        const container = document.getElementById('cal-heatmap');
-        if (container) {
-            container.innerHTML = ''; // Clear the container before initializing a new heatmap
-        }
-
-        if (scheduleData && Object.keys(scheduleData).length > 0) {
-            // Initialize heatmap here
-            initHeatMap(scheduleData);
-        }
-    }, [scheduleData]);
-
-    // This function now calculates the total number of courses per day
     const transformDataForHeatMap = (data) => {
-        const result = {};
-        Object.entries(data).forEach(([timestamp, events]) => {
-            // Simply count the number of events for each day
-            result[timestamp] = events.length;
+        const transformedData = [];
+
+        Object.entries(data).forEach(([date, courses]) => {
+            const count = courses.length; // The number of courses on this date
+
+            transformedData.push({
+                date: date, // Include the date property
+                p: count,
+            });
         });
-        return result;
+
+        return transformedData;
     };
 
-    // Adjusting the CalHeatMap setup
     const initHeatMap = (data) => {
-        const cal = new CalHeatMap();
+        const cal = new CalHeatmap();
         cal.paint({
-            itemSelector: "#cal-heatmap",
-            domain: {type: "month", height: 50, width: 50},
-            subDomain: {type: "day", height: 50, width: 50},
-            data: data,
-            start: new Date(),
-            cellSize: 50,
-            range: 3,
-            tooltip: true,
-            legend: [1, 3, 5, 7],
-            legendColors: {
-                min: "#E0BBE4",
-                max: "#52057B",
-                empty: "#ECECEC",
-            },
-        }, [
-            [
-                CalendarLabel,
-                {
-                    position: 'left',
-                    key: 'left',
-                    text: () => ['Sun', 'Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat'],
-                    width: 50, // Match this with the cellSize or the actual width of your subDomain cells if different
-                    textAlign: 'middle',
-                    padding: [0, 0, 5, 0], // Adjust padding as necessary
+                itemSelector: "#cal-heatmap",
+                domain: {type: "month", height: 50, width: 50},
+                subDomain: {type: "day", height: 50, width: 50},
+                data: {
+                    source: data,
+                    type: 'json',
+                    x: 'date',
+                    y: d => +d['p'],
                 },
-            ]
-        ]);
+                start: new Date(Object.keys(data).sort()[0]),
+                cellSize: 20,
+                range: 3,
+                tooltip: true,
+                legend: [1, 3, 5, 7],
+                legendColors: {
+                    min: "#E0BBE4",
+                    max: "#52057B",
+                    empty: "#ECECEC",
+                },
+                scale: {
+                    color: {
+                        scheme: 'Purples',
+                        type: 'linear',
+                        domain: [0, 10],
+                    }
+                }
+            },
+            [
+                [
+                    Tooltip,
+                    {
+                        text: function (date, value) {
+                            console.log(date, value); // Check the values being passed
+                            return value ? `${value} course${value > 1 ? 's' : ''} on ${date}` : 'No courses';
+                        },
+                    },
+                ],
+                [
+                    CalendarLabel,
+                    {
+                        position: 'left',
+                        key: 'left',
+                        text: () => ['Sun', 'Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat'],
+                        textAlign: 'end',
+                        width: 30,
+                        padding: [0, 5, 0, 0],
+                    },
+                ],
+            ]);
     };
 
-
-    const parseData = (data) => {
+    const parseData = (courses) => {
         const result = {};
+        // Logic to parse the data from your API response
+        courses.forEach((course) => {
+            const {first_day, last_day, course_name} = course;
+            const startDate = new Date(first_day);
+            const endDate = new Date(last_day);
 
-        data.forEach((course) => {
-            let currentDate = new Date(course.first_day);
-            const endDate = new Date(course.last_day);
-
-            const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
-            while (currentDate <= endDate) {
-                const dayOfWeek = dayMapping[currentDate.getDay()];
-
+            // Adjusted logic to fill dates based on course days
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const dayOfWeek = d.toLocaleDateString('en-US', {weekday: 'long'}).toLowerCase();
                 if (course[dayOfWeek]) {
-                    const dateKey = Math.floor(currentDate.getTime() / 1000);
-                    result[dateKey] = (result[dateKey] || []).concat({
-                        name: course.course_name
-                    });
+                    const dateStr = d.toISOString().split('T')[0];
+                    result[dateStr] = (result[dateStr] || []).concat(course_name);
                 }
-
-                currentDate.setDate(currentDate.getDate() + 1);
             }
         });
-
         return result;
     };
 
@@ -119,7 +136,7 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
             <div className="mt-4">
                 <hr className='my-3'/>
                 <h3 className="text-lg font-semibold mb-2">Heatmap of schedule</h3>
-                <p className="text-sm text-gray-600">The heatmap </p>
+                <p className="text-sm text-gray-600">This heatmap visualizes the distribution of courses over time.</p>
             </div>
         </div>
     );
