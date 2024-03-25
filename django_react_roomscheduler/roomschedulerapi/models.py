@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 
 class Building(models.Model):
@@ -21,12 +22,39 @@ class Floor(models.Model):
         return f"{self.floor_name} (ID: {self.floor_id})"
 
 
+class Term(models.Model):
+    term_id = models.AutoField(primary_key=True)
+    term_name = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.term_name} (ID: {self.term_id})"
+
+
+class OptiScore(models.Model):
+    score_id = models.AutoField(primary_key=True)
+    prime_time_score = models.DecimalField(max_digits=5, decimal_places=2)
+    prime_time_utilization = models.DecimalField(max_digits=5, decimal_places=2)
+    capacity_score = models.DecimalField(max_digits=5, decimal_places=2)
+    instructor_score = models.DecimalField(max_digits=5, decimal_places=2)
+    instructor_methods = ArrayField(models.CharField())
+    double_booking_score = models.DecimalField(max_digits=5, decimal_places=2)
+    idle_time_score = models.DecimalField(max_digits=5, decimal_places=2)
+    double_booking = models.BooleanField(default=False)
+    overall_score = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.overall_score} (ID: {self.score_id})"
+
+
 class Classroom(models.Model):
     classroom_id = models.AutoField(primary_key=True)
     classroom_name = models.CharField(max_length=1000, default=0)
     classroom_number = models.CharField(default=0)
     total_seats = models.IntegerField(default=0)
     width_of_room = models.IntegerField(default=0)
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, default=None)
     length_of_room = models.IntegerField(default=0)
     projectors = models.IntegerField(default=0)
     microphone_system = models.BooleanField(default=0)
@@ -44,6 +72,7 @@ class Classroom(models.Model):
     notes = models.CharField(max_length=200, blank=True)
     floor_name = models.CharField(default=0)
     floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
+    optimization_score = models.ForeignKey(OptiScore, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.classroom_name} (ID: {self.classroom_id})"
@@ -58,7 +87,7 @@ class Course(models.Model):
     first_day = models.DateField()
     last_day = models.DateField()
     course_name = models.CharField(max_length=100)
-    term = models.CharField(max_length=10, blank=True)
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, default=None)
     credits = models.IntegerField(default=0)
     course_cap = models.IntegerField(default=0)
     waitlist_cap = models.IntegerField(default=0)

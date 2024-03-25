@@ -20,10 +20,10 @@ import {useRowSelectColumn} from "@lineup-lite/hooks";
 import axios from "axios";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
+import DropdownTerm from "./DropdownTerm";
 
 export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
     const [value, setValue] = useState(globalFilter);
-
     const onChange = useAsyncDebounce((value) => {
         setGlobalFilter(value || undefined);
     }, 200);
@@ -51,12 +51,13 @@ const Table = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [hiddenColumns, setHiddenColumns] = useState([]);
     const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
+    const [selectedTerm, setSelectedTerm] = useState('')
 
     const fetchData = async (endpoint) => {
         setIsLoading(true);
         try {
             const storedToken = localStorage.getItem("access_token");
-            const response = await axios.get(`http://localhost:8000${endpoint}/`, {
+            const response = await axios.get(`http://localhost:8000/${selectedTerm}${endpoint}/`, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },
@@ -77,8 +78,8 @@ const Table = () => {
     };
 
     useEffect(() => {
-        fetchData(endpoint);
-    }, [endpoint]);
+    fetchData(endpoint);
+}, [endpoint, selectedTerm]);
 
     const data = tableData;
 
@@ -99,6 +100,10 @@ const Table = () => {
             {
                 Header: "Total Seats",
                 accessor: "total_seats",
+            },
+            {
+                Header: "Term",
+                accessor: "term.term_name",
             },
             {
                 Header: "Width of Room",
@@ -210,7 +215,7 @@ const Table = () => {
             },
             {
                 Header: "Term",
-                accessor: "term",
+                accessor: "term.term_name",
             },
             {
                 Header: "Credits",
@@ -311,6 +316,12 @@ const Table = () => {
         }
     };
 
+    const handleTermChange = (termId) => {
+        console.log(termId)
+        setSelectedTerm(termId);
+        fetchData(endpoint);
+    }
+
     const handleSelectAllChange = () => {
         setIsSelectAllChecked(!isSelectAllChecked);
     };
@@ -372,7 +383,7 @@ const Table = () => {
 
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col sm:w-auto">
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
                     <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -396,6 +407,7 @@ const Table = () => {
                             >
                                 Classrooms
                             </button>
+                            <DropdownTerm onTermChange={handleTermChange}/>
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-auto hover:bg-purple-700 hover:text-white"
                                 onClick={exportSelectedRows}

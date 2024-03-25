@@ -85,9 +85,9 @@ export default function Sidebar({children}) {
                     </div>
                 </nav>
             </aside>
-            <main className="flex-1 p-10">
+            <div className="p-10">
 
-            </main>
+            </div>
         </div>
     )
 }

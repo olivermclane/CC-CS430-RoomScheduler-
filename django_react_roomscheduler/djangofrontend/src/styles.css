@@ -11,16 +11,15 @@
     color: white;
 }
 
-.classroom{
-    height:275px;
-    width:275px;
-    background-size: cover;
+.classroom {
+    height: 275px;
+    width: 275px;
 }
-
 
 .bg-yellow{
     background:#cfb988;
 }
+
 
 .bg-purple{
     background:#3c1952;
@@ -29,3 +28,4 @@
 .bg-white{
     background:#ffffff;
 }
+

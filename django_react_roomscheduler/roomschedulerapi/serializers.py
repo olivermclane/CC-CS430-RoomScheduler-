@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Building, Floor, Classroom, Course, User
+from .models import Building, Floor, Classroom, Course, User, Term, OptiScore
 
 
 class BuildingSerializer(serializers.ModelSerializer):
@@ -16,8 +16,22 @@ class FloorSerializer(serializers.ModelSerializer):
         fields = ['floor_id', 'floor_name', 'building']
 
 
+class OptiScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OptiScore
+        fields = '__all__'
+
+
+class TermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Term
+        fields = ['term_id', 'term_name']
+
+
 class ClassroomSerializer(serializers.ModelSerializer):
     floor = FloorSerializer(read_only=True)
+    optimization_score = OptiScoreSerializer(read_only=True)  # Correct this line
+    term = TermSerializer(read_only=True)
 
     class Meta:
         model = Classroom
@@ -28,6 +42,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
             'width_of_room',
             'length_of_room',
             'projectors',
+            'term',
             'microphone_system',
             'blueray_player',
             'laptop_hdmi',
@@ -38,6 +53,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
             'printer',
             'piano',
             'stereo_system',
+            'optimization_score',
             'total_tv',
             'sinks',
             'notes',
@@ -47,6 +63,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     classroom = ClassroomSerializer(read_only=True)
+    term = TermSerializer(read_only=True)
 
     class Meta:
         model = Course
@@ -73,7 +90,6 @@ class CourseSerializer(serializers.ModelSerializer):
             'saturday',
             'sunday',
             'classroom',
-
         ]
 
 
@@ -90,9 +106,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class ClassroomCourseSerializer(serializers.ModelSerializer):
     classroom = ClassroomSerializer(read_only=True)
-
+    term = TermSerializer(read_only=True)
     class Meta:
         model = Course
         fields = [
