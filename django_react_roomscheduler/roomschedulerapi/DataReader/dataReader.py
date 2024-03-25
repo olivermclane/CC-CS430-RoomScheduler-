@@ -170,6 +170,8 @@ class DataReader(object):
     def loadData(self):
         Building.objects.all().delete()
         Floor.objects.all().delete()
+        # load classes
+        logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
         current_term_name = self.courseData['SEC_TERM'].iloc[0]
         current_term, _ = Term.objects.get_or_create(term_name=current_term_name)
@@ -179,7 +181,11 @@ class DataReader(object):
         Course.objects.filter(term=current_term).delete()
 
         for c in range(len(self.courseData)):
-            b, _ = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c])
+            b, _ = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c],
+                                                  defaults={
+                                                      'image_url': self.data['Image_url'].iloc[c],
+                                                    },
+                                                  )
             f, _ = Floor.objects.get_or_create(
                 floor_name=self.data['Floor Name'].iloc[c],
                 building=b
