@@ -8,14 +8,19 @@ function subscribeTokenRefresh(cb) {
 }
 
 function processQueue(error, token = null) {
-  subscribers.forEach((callback) => callback(token));
+  if (error) {
+    subscribers.forEach((callback) => callback(error, null));
+  } else {
+    subscribers.forEach((callback) => callback(null, token));
+  }
   subscribers = []; // Clear queue after processing
 }
 
 function forceLogout() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  window.location.href = '/login'; // Ensure this is the correct path for your login page
+  // Redirect to login page, ensure this path is correct for your application
+  window.location.href = '/login';
   isRefreshing = false;
 }
 
@@ -38,8 +43,7 @@ axios.interceptors.response.use(
         try {
           const refreshedResponse = await axios.post(
             "http://localhost:8000/login/refresh/",
-            { refresh: refreshToken },
-            { withCredentials: true }
+            { refresh: refreshToken }
           );
 
           const { access: newAccessToken, refresh: newRefreshToken } = refreshedResponse.data;
@@ -48,7 +52,6 @@ axios.interceptors.response.use(
           localStorage.setItem("refresh_token", newRefreshToken);
 
           axios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
           processQueue(null, newAccessToken);
           isRefreshing = false;
@@ -62,8 +65,8 @@ axios.interceptors.response.use(
       } else {
         // Return a new promise for the queued requests
         return new Promise((resolve, reject) => {
-          subscribeTokenRefresh((token) => {
-            if (token) {
+          subscribeTokenRefresh((error, token) => {
+            if (!error && token) {
               originalRequest.headers.Authorization = `Bearer ${token}`;
               resolve(axios(originalRequest));
             } else {

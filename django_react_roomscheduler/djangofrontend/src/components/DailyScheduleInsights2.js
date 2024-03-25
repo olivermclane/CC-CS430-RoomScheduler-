@@ -96,7 +96,12 @@ function DailyScheduleInsight2({ selectedClassroom }) {
                 title: {
                     text: "Total Used Time (hours)"
                 },
-                max: 15
+                labels: {
+                    formatter: (value) => {
+                        return parseInt(value).toString(); // Converts value to integer and then to string for display
+                    }
+                },
+                max: 15 // Maximum value for the y-axis (total hours in a day)
             },
             colors: ["#BA68C8"],
             series: [
@@ -106,8 +111,6 @@ function DailyScheduleInsight2({ selectedClassroom }) {
                 }
             ]
         };
-
-        console.log("Chart options:", options); // Log chart options
 
         setChartOptions(options);
     };
@@ -123,7 +126,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
     }, [chartOptions]);
 
     return (
-        <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
+        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6">
             <div id="daily-schedule-chart2"/>
             <div className="mt-4">
                 <hr className="my-3"/>
