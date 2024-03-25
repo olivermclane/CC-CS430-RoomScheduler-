@@ -84,11 +84,13 @@ class DataReader(object):
         # load classroom data
         self.classRoomData = pd.read_csv(
             'roomschedulerapi/DataReader/Data/ClassroomInformation.csv')
+
         # load course data
         self.courseData = pd.read_excel(file)
         self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + self.courseData['CSM_ROOM']
-
-        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on="Classroom Name")
+        logger.info(self.classRoomData.columns)
+        logger.info(self.courseData.columns)
+        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on='Classroom Name')
 
     def sortData(self):
 
@@ -166,7 +168,8 @@ class DataReader(object):
         self.data.to_csv("saved.csv", index=True)
 
     def loadData(self):
-        logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
+        Building.objects.all().delete()
+        Floor.objects.all().delete()
 
         current_term_name = self.courseData['SEC_TERM'].iloc[0]
         current_term, _ = Term.objects.get_or_create(term_name=current_term_name)
@@ -181,6 +184,7 @@ class DataReader(object):
                 floor_name=self.data['Floor Name'].iloc[c],
                 building=b
             )
+            logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
             # Create or get the classroom without including the optimization_score in this step
             cl, created = Classroom.objects.get_or_create(

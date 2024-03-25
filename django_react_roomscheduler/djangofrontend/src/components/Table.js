@@ -386,7 +386,7 @@ const Table = () => {
         <div className="flex flex-col sm:w-auto">
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
-                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                         <GlobalFilter
                             preGlobalFilteredRows={preGlobalFilteredRows}
                             globalFilter={state.globalFilter}

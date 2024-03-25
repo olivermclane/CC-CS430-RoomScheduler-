@@ -1,9 +1,0 @@
-#heatmap-tooltip {
-    z-index: 1050; /* High z-index */
-    background-color: black; /* Make it visible */
-    color: white; /* Contrast color */
-    padding: 5px;
-    border-radius: 4px;
-    visibility: hidden; /* Initially hidden */
-    position: absolute; /* Required for positioning */
-}

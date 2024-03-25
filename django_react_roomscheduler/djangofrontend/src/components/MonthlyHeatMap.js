@@ -5,6 +5,7 @@ import axios from "axios";
 import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
+import Legend from "cal-heatmap/plugins/Legend";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
@@ -58,24 +59,18 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
         const cal = new CalHeatmap();
         cal.paint({
                 itemSelector: "#cal-heatmap",
-                domain: {type: "month", height: 50, width: 50},
-                subDomain: {type: "day", height: 50, width: 50},
+                domain: {type: "month", height: 35, width: 35},
+                subDomain: {type: "day", height: 35, width: 35},
                 data: {
                     source: data,
                     type: 'json',
                     x: 'date',
                     y: d => +d['p'],
                 },
-                start: new Date(Object.keys(data).sort()[0]),
-                cellSize: 20,
-                range: 3,
-                tooltip: true,
-                legend: [1, 3, 5, 7],
-                legendColors: {
-                    min: "#E0BBE4",
-                    max: "#52057B",
-                    empty: "#ECECEC",
+                date: {
+                    start: new Date(data[0].date),
                 },
+                range: 5,
                 scale: {
                     color: {
                         scheme: 'Purples',
@@ -88,21 +83,20 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                 [
                     Tooltip,
                     {
-                        text: function (date, value) {
-                            console.log(date, value); // Check the values being passed
-                            return value ? `${value} course${value > 1 ? 's' : ''} on ${date}` : 'No courses';
+                        text: function (date, value, dayjsDate) {
+                            return (
+                                (value ? value + ' Courses' : 'No data') + ' on ' + dayjsDate.format('LL')
+                            );
                         },
                     },
                 ],
                 [
-                    CalendarLabel,
+                    Legend,
                     {
-                        position: 'left',
-                        key: 'left',
-                        text: () => ['Sun', 'Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat'],
-                        textAlign: 'end',
-                        width: 30,
-                        padding: [0, 5, 0, 0],
+                        tickSize: 0,
+                        width: 500,
+                        itemSelector: '#cal-heatmap-legend',
+                        label: 'Courses Scheduled',
                     },
                 ],
             ]);
@@ -132,6 +126,7 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
         <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6 mt-4">
             <div className="mt-4">
                 <div id="cal-heatmap"></div>
+                <div id="cal-heatmap-legend"></div>
             </div>
             <div className="mt-4">
                 <hr className='my-3'/>
