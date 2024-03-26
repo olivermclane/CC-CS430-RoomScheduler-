@@ -168,8 +168,6 @@ class DataReader(object):
         self.data.to_csv("saved.csv", index=True)
 
     def loadData(self):
-        Building.objects.all().delete()
-        Floor.objects.all().delete()
         # load classes
         logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
@@ -181,14 +179,18 @@ class DataReader(object):
         Course.objects.filter(term=current_term).delete()
 
         for c in range(len(self.courseData)):
-            b, _ = Building.objects.get_or_create(building_name=self.data['CSM_BLDG'].iloc[c],
-                                                  defaults={
-                                                      'image_url': self.data['Image_url'].iloc[c],
-                                                    },
-                                                  )
-            f, _ = Floor.objects.get_or_create(
+            building_name = self.data['CSM_BLDG'].iloc[c]
+            image_url = self.data['Image_url'].iloc[c]
+
+            # Update the building if it exists, otherwise create a new one
+            bd, created = Building.objects.update_or_create(
+                building_name=building_name,
+                defaults={'image_url': image_url}
+            )
+
+            fl, floor_created = Floor.objects.update_or_create(
                 floor_name=self.data['Floor Name'].iloc[c],
-                building=b
+                building = bd,
             )
             logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
@@ -215,7 +217,7 @@ class DataReader(object):
                     'total_tv': self.data['TV'].iloc[c],
                     'sinks': self.data['Sink'].iloc[c],
                     'notes': self.data['Notes'].iloc[c],
-                    'floor': f,
+                    'floor': fl,
                 }
             )
             logger.info("Added new classroom to the database")
