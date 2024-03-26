@@ -7,15 +7,6 @@ function ClassroomList({selectedFloor}){
     const [endpoint, setEndpoint] = useState("/classrooms")
     const [classrooms, setClassrooms] = useState([])
 
-
-    /*let url = "http://127.0.0.1:8000/classrooms/"
-    fetch(url)
-        .then(response => response.json())
-        .then((jsonData) => {
-            //console.log(jsonData)
-            setClassrooms(jsonData)
-        })*/
-
     const fetchData = async (endpoint) => {
 
         try {
@@ -52,7 +43,7 @@ function ClassroomList({selectedFloor}){
     }
 
     return (
-        <div className='classroom-list'>
+        <div className='text-white classroom-list'>
             <h2>
                 Classroom list
             </h2>

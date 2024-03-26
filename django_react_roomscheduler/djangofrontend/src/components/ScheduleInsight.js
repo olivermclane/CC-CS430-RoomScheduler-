@@ -104,7 +104,7 @@ function ScheduleInsight({selectedClassroom}) {
 
 
     return (
-        <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
+        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6">
             <div id="bar-chart"/>
             {isLoading && <p>Loading...</p>}
             <div className="mt-4">

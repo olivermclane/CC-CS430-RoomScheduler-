@@ -1,126 +1,182 @@
- import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
+import logger from "../loggers";
 import axios from 'axios';
- import logger from "../loggers";
+import {sortBy} from "lodash";
 
-const DropdownClassBuilding = ({ onClassroomChange }) => {
-  const [buildings, setBuildings] = useState([]);
-  const [selectedBuilding, setSelectedBuilding] = useState('SIMP');
-  const [selectedClassroom, setSelectedClassroom] = useState('101');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedToken = localStorage.getItem('access_token');
-        logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-        const response = await axios.get('http://127.0.0.1:8000/classrooms/', {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        });
-        logger.info("Fetched data:", response.data); // Log fetched data
-        const parsedBuildings = parseData(response.data);
-        setBuildings(parsedBuildings);
-      } catch (err) {
-        if (err.response) {
-          logger.error('Server error:', err.response.data);
-        } else if (err.request) {
-          logger.error('Network error:', err.message);
-        } else {
-          logger.error('Error:', err.message);
+const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
+    const [buildings, setBuildings] = useState([]);
+    const [selectedBuilding, setSelectedBuilding] = useState({id: '', name: 'No Building Selected'});
+    const [showBuildingDropdown, setShowBuildingDropdown] = useState(false);
+    const [selectedClassroom, setSelectedClassroom] = useState({id: '', number: 'No Classroom Selected'});
+    const [showClassroomDropdown, setShowClassroomDropdown] = useState(false);
+    const [terms, setTerms] = useState([]);
+    const [selectedTerm, setSelectedTerm] = useState({term_id: '', term_name: 'No Term Selected'});
+    const [showTermDropdown, setShowTermDropdown] = useState(false);
+
+
+    useEffect(() => {
+        const fetchTerms = async () => {
+            try {
+                const storedToken = localStorage.getItem('access_token');
+                const response = await axios.get('http://127.0.0.1:8000/terms/', {
+                    headers: {
+                        Authorization: `Bearer ${storedToken}`,
+                    },
+                });
+                setTerms(response.data);
+            } catch (error) {
+                console.error('Failed to fetch terms:', error);
+            }
+        };
+
+        fetchTerms();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const storedToken = localStorage.getItem('access_token');
+                const response = await axios.get(`http://127.0.0.1:8000/${selectedTerm.term_id}/classrooms/`, {
+                    headers: {
+                        Authorization: `Bearer ${storedToken}`,
+                    },
+                });
+                const parsedBuildings = parseData(response.data);
+                setBuildings(parsedBuildings);
+            } catch (err) {
+                console.error('Error fetching classrooms:', err);
+            }
+        };
+
+        if (selectedTerm.term_id) {
+            fetchData();
         }
-      }
+    }, [selectedTerm]);
+
+    const handleTermSelect = (term) => {
+        setSelectedTerm(term);
+        setShowTermDropdown(false);
+        setSelectedBuilding({id: '', name: 'No Building Selected'});
+        setSelectedClassroom({id: '', number: 'No Classroom Selected'});
+        onTermChange(term.term_id);
     };
 
-    fetchData();
-  }, []);
+    const handleBuildingSelect = (buildingName) => {
+        setSelectedBuilding({id: buildingName, name: buildingName});
+        setShowBuildingDropdown(false);
+        setSelectedClassroom({id: '', number: 'No Classroom Selected'});
+    };
 
-  const parseData = (data) => {
-    const buildings = {};
+    const handleClassroomSelect = (classroom) => {
+        setSelectedClassroom(classroom);
+        setShowClassroomDropdown(false);
+        onClassroomChange(classroom.id);
+    };
 
-    data.forEach((classroom) => {
-      const buildingName = classroom.floor.building.building_name;
-      if (!buildings[buildingName]) {
-        buildings[buildingName] = [];
-      }
-      buildings[buildingName].push({
-        id: classroom.classroom_id,
-        number: classroom.classroom_number,
-      });
-    });
-    logger.log("Data parsed")
-    return buildings;
-  };
 
-  const handleBuildingChange = (e) => {
-    setSelectedBuilding(e.target.value);
-    setSelectedClassroom('');
-  };
+    const parseData = (data) => {
+        const buildings = {};
 
-  const handleClassroomChange = (e) => {
-    const selectedClassroomId = e.target.value;
-    setSelectedClassroom(selectedClassroomId);
-    // Call the callback function with the selected classroom ID
-    onClassroomChange(selectedClassroomId);
-  };
+        data.forEach((classroom) => {
+            const buildingName = classroom.floor.building.building_name;
+            if (!buildings[buildingName]) {
+                buildings[buildingName] = [];
+            }
+            buildings[buildingName].push({
+                id: classroom.classroom_id,
+                number: classroom.classroom_number,
+            });
+        });
+        return buildings;
+    };
 
-  return (
-    <div className="flex">
-      <div className="relative">
-        <select
-          className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-l-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-          value={selectedBuilding}
-          onChange={handleBuildingChange}
-        >
-          {Object.keys(buildings).map((buildingName, index) => (
-            <option key={index} value={buildingName}>
-              {buildingName}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg
-            className="fill-current h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.293 11.707a1 1 0 001.414-1.414l3-3a1 1 0 00-1.414-1.414L10 9.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
+    return (
+        <div className="flex">
+            {/* Term Dropdown */}
+            <div className="relative">
+                <div
+                    className="block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-50 focus:border-purple-500 w-full"
+                    onClick={() => {
+                        setShowTermDropdown(!showTermDropdown);
+                        setShowBuildingDropdown(false);
+                        setShowClassroomDropdown(false);
+                    }}>
+                    {selectedTerm.term_name}
+                </div>
+                {showTermDropdown && (
+                    <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">
+                        {terms.map((term) => (
+                            <div
+                                key={term.term_id}
+                                className="py-2 px-4 cursor-pointer hover:bg-purple-100"
+                                onClick={() => handleTermSelect(term)}
+                            >
+                                {term.term_name}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Building Dropdown */}
+            <div className="">
+                <div
+                    className={`block cursor-pointer appearance-none bg-white border ${selectedTerm.term_id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedTerm.term_id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
+                    onClick={() => {
+                        if (selectedTerm.term_id) {
+                            setShowBuildingDropdown(!showBuildingDropdown);
+                            setShowTermDropdown(false);
+                            setShowClassroomDropdown(false);
+                        }
+                    }}
+                >
+                    {selectedBuilding.name}
+                </div>
+                {showBuildingDropdown && (
+                    <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">
+                        {Object.keys(buildings).map((buildingName) => (
+                            <div
+                                key={buildingName}
+                                className="py-2 px-4 cursor-pointer hover:bg-purple-100"
+                                onClick={() => handleBuildingSelect(buildingName)}
+                            >
+                                {buildingName}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {/* Classroom Dropdown */}
+            <div className="">
+                <div
+                    className={`block cursor-pointer appearance-none bg-white border ${selectedBuilding.id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedBuilding.id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
+                    onClick={() => {
+                        if (selectedTerm.term_id) {
+                            setShowClassroomDropdown(!showClassroomDropdown);
+                            setShowTermDropdown(false);
+                            setShowBuildingDropdown(false);
+                        }
+                    }}>
+                    {selectedClassroom.number ? ` ${selectedClassroom.number}` : 'No Classroom Selected'}
+                </div>
+                {showClassroomDropdown && (
+                    <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">
+                        {buildings[selectedBuilding.id]?.map((classroom) => (
+                            <div
+                                key={classroom.id}
+                                className="py-2 px-4 cursor-pointer hover:bg-purple-100"
+                                onClick={() => handleClassroomSelect(classroom)}
+                            >
+                                {`Classroom ${classroom.number}`}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-      </div>
-      <div className="relative">
-        <select
-          className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-r-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-          value={selectedClassroom}
-          onChange={handleClassroomChange}
-          disabled={!selectedBuilding}
-        >
-          {selectedBuilding &&
-            buildings[selectedBuilding]?.map((classroom, index) => (
-              <option key={index} value={classroom.id}>
-                {classroom.number}
-              </option>
-            ))}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg
-            className="fill-current h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.293 11.707a1 1 0 001.414-1.414l3-3a1 1 0 00-1.414-1.414L10 9.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+    );
+}
 export default DropdownClassBuilding;
+
+

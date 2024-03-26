@@ -33,12 +33,19 @@ function BuildingList({ updateFloorList }) {
         fetchData(endpoint);
     }, [endpoint]);
 
-    function selectBuilding(building) {
-        updateFloorList(building);
+
+    function selectBuilding(building){
+        updateFloorList(building)
+        let buildings = document.getElementsByClassName("building")
+        for (let i = 0; i < buildings.length; i++) {
+            buildings[i].style.border = "0px";
+        }
+        document.getElementById("building-" + building.building_id).style.border = "10px solid violet"
     }
 
     return (
-        <div className="building-list">
+
+        <div className='text-white building-list'>
             <h2>Building list</h2>
             <div className="row">
                 {buildings.map((building) => (
