@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../service/AuthProvider';
+import {faChevronDown} from 'react-icons/fa';
+import {ChevronDown} from "lucide-react";
 
 const DropdownTerm = ({ onTermChange }) => {
     const [terms, setTerms] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState({ term_id: '', term_name: 'All Terms' });
+    const { axiosInstance } = useAuth();
 
     useEffect(() => {
         const fetchTerms = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get('http://127.0.0.1:8000/terms/', {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
                 console.log(response.data);
                 setTerms(response.data);
             } catch (error) {
@@ -34,15 +33,16 @@ const DropdownTerm = ({ onTermChange }) => {
     return (
         <div className="flex px-3 relative">
             <div
-                className="block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-50 focus:border-purple-500 w-full"
+                className="flex block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-500 focus:border-purple-500 w-full"
                 onClick={() => setShowDropdown(!showDropdown)}
             >
                 {selectedTerm.term_name}
+                <ChevronDown/>
             </div>
             {showDropdown && (
                 <div className="absolute z-10 w-full bg-white mt-1 border border-purple-500 rounded-md">
                     <div
-                        className="py-2 px-4 cursor-pointer hover:bg-purple-100"
+                        className="py-2 px-4 cursor-pointer hover:bg-violet-500"
                         onClick={() => handleTermSelect({ term_id: '', term_name: 'All Terms' })}
                     >
                         All Terms
@@ -50,7 +50,7 @@ const DropdownTerm = ({ onTermChange }) => {
                     {terms.map((term) => (
                         <div
                             key={term.term_id}
-                            className="py-2 px-4 cursor-pointer hover:bg-purple-100"
+                            className="py-2 px-4 cursor-pointer hover:bg-violet-500"
                             onClick={() => handleTermSelect(term)}
                         >
                             {term.term_name}

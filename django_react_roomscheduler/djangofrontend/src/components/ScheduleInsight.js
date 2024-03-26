@@ -1,21 +1,18 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import {useAuth} from "../service/AuthProvider";
 
 function ScheduleInsight({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+    const { axiosInstance } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);
                 setIsLoading(false); // Set loading to false after data is fetched

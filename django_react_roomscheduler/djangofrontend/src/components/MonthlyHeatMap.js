@@ -6,9 +6,13 @@ import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
+import {useAuth} from "../service/AuthProvider";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
+    const [openTimes, setOpenTimes] = useState({})
+    const {axiosInstance} = useAuth();
+
     useEffect(() => {
         const container = document.getElementById('cal-heatmap');
         if (container) {
@@ -23,12 +27,8 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                setOpenTimes(calculateOpenTimes(response.data))
                 const parsedData = parseData(response.data);
                 const transformedData = transformDataForHeatMap(parsedData);
                 setScheduleData(transformedData);
@@ -80,16 +80,14 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                 }
             },
             [
-                [
-                    Tooltip,
-                    {
-                        text: function (date, value, dayjsDate) {
-                            return (
-                                (value ? value + ' Courses' : 'No data') + ' on ' + dayjsDate.format('LL')
-                            );
-                        },
+                /*[
+                    Tooltip, {
+                    // Dynamic text for the tooltip based on the data point
+                    text: function (date, value, dayjsDate) {
+                        return `${value ? value + ' Courses' : 'No data'} on ${dayjsDate.format('LL')}`;
                     },
-                ],
+                }
+                ],*/
                 [
                     Legend,
                     {
@@ -101,6 +99,79 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                 ],
             ]);
     };
+
+    function calculateOpenTimes(courses) {
+        // Initial structure to store busy times for each day
+        const busyTimes = {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: [],
+            friday: [],
+            saturday: [],
+            sunday: [],
+        };
+
+        // Populate busy times based on the course schedules
+        courses.forEach(course => {
+            Object.keys(busyTimes).forEach(day => {
+                if (course[day]) { // If the course runs on this day
+                    busyTimes[day].push(`${course.start_time} - ${course.end_time}`);
+                }
+            });
+        });
+
+        // Function to merge overlapping time ranges and calculate open times
+        const calculateGaps = (busyTimesForDay) => {
+            const sortedTimes = busyTimesForDay.sort((a, b) => a.split('-')[0].localeCompare(b.split('-')[0]));
+
+            let mergedTimes = [];
+            sortedTimes.forEach(time => {
+                if (!mergedTimes.length || mergedTimes[mergedTimes.length - 1].split('-')[1] < time.split('-')[0]) {
+                    mergedTimes.push(time);
+                } else {
+                    let lastTime = mergedTimes.pop();
+                    let endTime = lastTime.split('-')[1] > time.split('-')[1] ? lastTime.split('-')[1] : time.split('-')[1];
+                    mergedTimes.push(`${lastTime.split('-')[0]}-${endTime}`);
+                }
+            });
+
+            const opStart = '08:00', opEnd = '18:00';
+            let openTimes = [], lastEnd = opStart;
+
+            // Helper function to calculate the minute difference between two times
+            const minuteDifference = (startTime, endTime) => {
+                const [startHours, startMinutes] = startTime.split(':').map(Number);
+                const [endHours, endMinutes] = endTime.split(':').map(Number);
+                return (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+            };
+
+            mergedTimes.forEach(time => {
+                let [start, end] = time.split('-');
+                if (lastEnd < start && minuteDifference(lastEnd, start) > 15) { // Only add if gap is more than 10 minutes
+                    openTimes.push(`${tConvert(lastEnd)} - ${tConvert(start)}`);
+                    console.log(`${tConvert(lastEnd)} - ${tConvert(start)}`)
+
+                }
+                lastEnd = end;
+            });
+
+            if (lastEnd < opEnd && minuteDifference(lastEnd, opEnd) > 15) {
+                console.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
+                openTimes.push(`${tConvert(lastEnd)}-${tConvert(opEnd)}`);
+            }
+            console.log(openTimes)
+            return openTimes;
+        };
+
+        // Calculate open times for each day
+        const openTimes = {};
+        Object.keys(busyTimes).forEach(day => {
+            openTimes[day] = calculateGaps(busyTimes[day]);
+        });
+
+        return openTimes;
+    }
 
     const parseData = (courses) => {
         const result = {};
@@ -122,19 +193,61 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
         return result;
     };
 
+    function tConvert(time) {
+        // Check if the input time is already in 12-hour format with AM/PM, return as-is
+        if (/AM|PM/.test(time)) {
+            return time;
+        }
+
+        const [hourComponent, minuteComponent] = time.split(':');
+        let hours = parseInt(hourComponent, 10);
+        const minutes = minuteComponent;
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const strHours = hours < 10 ? `0${hours}` : `${hours}`;
+
+        return ` ${strHours}:${minutes} ${ampm} `;
+    }
+
     return (
-        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6 mt-4">
-            <div className="mt-4">
-                <div id="cal-heatmap"></div>
-                <div id="cal-heatmap-legend"></div>
+        <div className="max-w-full w-full bg-white rounded-lg shadow-lg p-4 md:p-6 mt-4">
+            <div className="flex flex-wrap md:flex-nowrap p-4 md:p-6">
+                <div className="w-full md:w-1/2" id="cal-heatmap">
+                </div>
+                <div className="w-full md:w-1/2 mt-4 md:mt-0 md:ml-6" id="cal-heatmap-legend">
+                </div>
             </div>
-            <div className="mt-4">
-                <hr className='my-3'/>
-                <h3 className="text-lg font-semibold mb-2">Heatmap of schedule</h3>
+            <div className="p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2">Open Schedule Times</h2>
+                <hr className="my-4 w-25"/>
+
+                <div className="flex flex-wrap justify-between">
+                    {Object.entries(openTimes).map(([day, times], index) => (
+                        <div key={index} className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2 mb-4">
+                            <h3 className="text-lg font-semibold capitalize">{day}:</h3>
+                            <ul className="list-disc pl-5">
+                                {times.map((time, timeIndex) => (
+                                    <li key={timeIndex} className="text-sm text-gray-600">
+                                        {time}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <hr className="my-4"/>
+            <div>
+                <h3 className="text-lg font-semibold mb-2">Heatmap of Schedule</h3>
                 <p className="text-sm text-gray-600">This heatmap visualizes the distribution of courses over time.</p>
             </div>
         </div>
-    );
+
+    )
+        ;
 };
 
 export default MonthlyHeatMap;

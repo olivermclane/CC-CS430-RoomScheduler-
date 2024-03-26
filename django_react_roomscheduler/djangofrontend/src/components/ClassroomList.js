@@ -1,21 +1,22 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
 import axios from "axios";
+import {useAuth} from "../service/AuthProvider";
+import DropdownTerm from "./DropdownTerm";
 
 function ClassroomList({selectedFloor}){
     const [endpoint, setEndpoint] = useState("/classrooms")
     const [classrooms, setClassrooms] = useState([])
+    const [selectedTerm, setSelectedTerm] = useState('')
+
+    const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
 
         try {
-            const storedToken = localStorage.getItem("access_token");
-            const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
+            const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm}${endpoint}/`);
             setClassrooms(response.data);
+            console.log(response.data)
         } catch (err) {
             if (err.response) {
                 console.log("Server error:", err.response.data);
@@ -28,7 +29,7 @@ function ClassroomList({selectedFloor}){
     };
     useEffect(() => {
         fetchData(endpoint);
-    }, [endpoint]);
+    }, [endpoint, selectedTerm]);
 
 
     function renderClassroom(classroom){
@@ -39,20 +40,32 @@ function ClassroomList({selectedFloor}){
         }
     }
 
+    const handleTermChange = (termId) => {
+        console.log(termId)
+        setSelectedTerm(termId);
+    }
+
     return (
-        <div className='text-white classroom-list'>
-            <h2>
-                Classroom list
-            </h2>
+        <div className='text-gray-700 classroom-list'>
+            <hr className="my-4 w-full"/>
+
+            <div className="flex items-center justify-between mb-4">
+
+                <h2>
+                    Classroom List
+                </h2>
+                <DropdownTerm onTermChange={handleTermChange}/>
+            </div>
             <div className='row'>
                 {
-                    classrooms.map(classroom =>(
+                    classrooms.map(classroom => (
                             renderClassroom(classroom)
                         )
                     )
                 }
             </div>
         </div>
+
     )
 
 }

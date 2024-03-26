@@ -189,7 +189,7 @@ class DataReader(object):
 
             fl, floor_created = Floor.objects.update_or_create(
                 floor_name=self.data['Floor Name'].iloc[c],
-                building = bd,
+                building=bd,
             )
             logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
@@ -197,7 +197,7 @@ class DataReader(object):
             cl, created = Classroom.objects.get_or_create(
                 classroom_number=self.data['Room Number'].iloc[c],
                 classroom_name=self.data['Classroom Name'].iloc[c],
-                term= current_term,
+                term=current_term,
                 defaults={
                     'total_seats': self.data['Number of Student Seats in Room'].iloc[c],
                     'width_of_room': self.data['Width of Room'].iloc[c],

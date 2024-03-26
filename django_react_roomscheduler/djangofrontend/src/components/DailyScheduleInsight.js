@@ -1,20 +1,17 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import {useAuth} from "../service/AuthProvider";
 
 function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
     const [chartOptions, setChartOptions] = useState(null);
+    const { axiosInstance } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
                 console.log("Fetched data:", response.data); // Log fetched data
                 const parsedData = parseData(response.data);
                 console.log("Parsed data:", parsedData); // Log parsed data
