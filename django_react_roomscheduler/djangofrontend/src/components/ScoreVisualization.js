@@ -8,9 +8,9 @@ import {
     FaTimes,
     FaBookOpen,
     FaRegHourglass,
-    FaArrowUp,
-    FaChartPie
+    FaChartPie, FaCheck
 } from 'react-icons/fa';
+import {useAuth} from "../service/AuthProvider";
 
 const ScoreVisualization = ({selectedClassroom}) => {
     const [chartOptions, setChartOptions] = useState({
@@ -72,16 +72,12 @@ const ScoreVisualization = ({selectedClassroom}) => {
     const [overallScore, setOverallScore] = useState("");
     const [showDetails, setShowDetails] = useState(false);
     const [scoreData, setScoreData] = useState(false);
+    const {axiosInstance} = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
                 const courseData = response.data[0];
                 const optimizationScores = courseData.classroom.optimization_score;
                 setScoreData(optimizationScores)
@@ -120,7 +116,7 @@ const ScoreVisualization = ({selectedClassroom}) => {
         <div className="w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden relative p-10">
             <div className="md:flex">
                 {/* Chart Section */}
-                <div className="flex-1 relative " style={{ height: '500px' }}>
+                <div className="flex-1 relative " style={{height: '500px'}}>
                     <ReactApexChart
                         options={chartOptions}
                         series={chartSeries}
@@ -159,11 +155,12 @@ const ScoreVisualization = ({selectedClassroom}) => {
                 <div className="flex justify-around items-center mt-2 mb-4">
                     <p><FaClock/> Prime Time Utilization: {overallScore}</p>
                     <p>Instructor Methods: {scoreData?.instructor_methods?.join(", ")}</p>
-                    {scoreData?.double_booking_score && (
-                        <p><FaBookOpen/> Double Booking Score: {scoreData?.double_booking_score}</p>
+                    {scoreData && scoreData.double_booking && (
+                        <p><FaTimes/> Double Booking: Yes</p>
                     )}
-                    {typeof scoreData?.double_booking !== 'undefined' && (
-                        <p><FaTimes/> Double Booking: {scoreData.double_booking ? "Present" : "None"}</p>
+
+                    {scoreData && scoreData.double_booking === false && (
+                        <p><FaCheck/> Double Booking: No</p>
                     )}
                 </div>
             </div>

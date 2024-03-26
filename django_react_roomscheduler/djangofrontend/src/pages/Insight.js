@@ -7,6 +7,7 @@ import DropdownClassBuilding from '../components/DropdownClassBuilding';
 import DailyScheduleInsight2 from "../components/DailyScheduleInsights2";
 import ScoreVisualization from "../components/ScoreVisualization";
 import MonthlyHeatMap from "../components/MonthlyHeatMap"
+import CalendarPopup from "../components/CalendarPopup";
 
 export default function Insight() {
     const [selectedClassroom, setSelectedClassroom] = useState('');
@@ -23,8 +24,11 @@ export default function Insight() {
 
     return (
         <div className="flex flex-col">
-            <div className="mt-8 mb-4">
+            <div className="flex mb-2">
                 <DropdownClassBuilding onClassroomChange={handleClassroomChange} onTermChange={handleTermChange}/>
+                <div className="ml-auto">
+                    <CalendarPopup selectedClassroom={selectedClassroom}/>
+                </div>
             </div>
             <div className="flex space-x-10">
                 <UsageChart selectedClassroom={selectedClassroom}/>

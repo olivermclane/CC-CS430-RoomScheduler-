@@ -2,20 +2,17 @@ import React, {useEffect, useState} from 'react'
 
 import Building from "./Building";
 import axios from "axios";
+import {useAuth} from "../service/AuthProvider";
 
 function BuildingList({updateFloorList}){
     const [endpoint, setEndpoint] = useState("/buildings")
     const [buildings, setBuildings] = useState([])
+    const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
 
         try {
-            const storedToken = localStorage.getItem("access_token");
-            const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
+            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
             setBuildings(response.data);
         } catch (err) {
             if (err.response) {
@@ -40,7 +37,7 @@ function BuildingList({updateFloorList}){
         document.getElementById("building-" + building.building_id).style.border = "10px solid violet"
     }
     return (
-        <div className='text-white building-list'>
+        <div className='text-gray-700 building-list'>
             <h2>Building list</h2>
             <div className='row'>
                 {
