@@ -15,7 +15,9 @@ function Classroom({classroom, selectClassroom}) {
           className="classroom card max-w-sm w-full bg-white rounded-lg shadow p-4 mx-2 md:p-6"
       >
         <div className="card-body">
-          Classroom number: {classroom.classroom_number}
+          <strong>Building name: {classroom.floor.building.building_name + ' ' +  classroom.classroom_number}</strong>
+          <br/>
+          <strong>Floor: {classroom.floor.floor_name}</strong>
           <br/>
           Classroom total seats: {classroom.total_seats}
           <br/><br/>

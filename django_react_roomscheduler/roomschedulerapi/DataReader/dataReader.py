@@ -165,7 +165,6 @@ class DataReader(object):
                 self.data.loc[i, 'MilitaryEnd'] = self.data.loc[i, 'EndHour'] + ":" + self.data.loc[i, 'EndMinute'][
                                                                                       0:2] + ":00"
         self.data = optimize_classroom_schedule(self.data)
-        self.data.to_csv("saved.csv", index=True)
 
     def loadData(self):
         # load classes

@@ -36,7 +36,16 @@ export default function RegisterForm() {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen w-screen bg-yellow">
+        <div className="flex justify-center items-center h-screen w-screen">
+            <style>{
+                `
+                body {
+                    background-image: url("/carroll-campus.jpg");
+                    background-size: cover;
+                }
+                `
+            }
+            </style>
             <div className="border-t-8 rounded-sm border-purple-900 bg-white p-12 shadow-2xl w-96">
                 <h1 className="font-bold text-center block text-2xl text-violet-900">Register</h1>
                 <form onSubmit={handleSubmit}>
