@@ -17,11 +17,11 @@ import {
     useRowSelect,
 } from "react-table";
 import {useRowSelectColumn} from "@lineup-lite/hooks";
-import axios from "axios";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
 import logger from "../loggers";
 import DropdownTerm from "./DropdownTerm";
+import {useAuth} from "../service/AuthProvider";
 
 export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
     const [value, setValue] = useState(globalFilter);
@@ -53,35 +53,36 @@ const Table = () => {
     const [hiddenColumns, setHiddenColumns] = useState([]);
     const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState('')
-
+    const {axiosInstance} = useAuth();
+    console.log(isLoading)
     const fetchData = async (endpoint) => {
-        setIsLoading(true);
-        try {
-            const storedToken = localStorage.getItem("access_token");
-            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-            const response = await axios.get(`http://localhost:8000/${selectedTerm}${endpoint}/`, {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
-            logger.info("Data received")
+    setIsLoading(true); // Ensure loading starts every time fetchData is called
+    try {
+        const response = await axiosInstance.get(`http://localhost:8000/${selectedTerm}${endpoint}/`);
+        logger.info('Response received', response)
+        // Assuming response.data is the array of data you're interested in
+        if (response.data && response.data.length > 0) {
             setTableData(response.data);
-        } catch (err) {
-            if (err.response) {
-                logger.error("Server error:", err.response.data);
-            } else if (err.request) {
-                logger.error("Network error:", err.message);
-            } else {
-                logger.error("Error:", err.message);
-            }
-        } finally {
-            setIsLoading(false);
+            setIsLoading(false); // Only set loading to false if data is successfully fetched
+        } else {
+            // Handle the case where data is successfully fetched but empty
+            setTableData([]); // Or maintain the old data, based on your needs
+            setIsLoading(false); // Consider whether you still want to set loading to false here
         }
-    };
+    } catch (err) {
+        if (err.response) {
+            logger.error("Server error:", err.response.data);
+        } else if (err.request) {
+            logger.error("Network error:", err.message);
+        } else {
+            logger.error("Error:", err.message);
+        }
+    }
+};
 
     useEffect(() => {
-    fetchData(endpoint);
-}, [endpoint, selectedTerm]);
+        fetchData(endpoint);
+    }, [endpoint, selectedTerm]);
 
     const data = tableData;
 
@@ -319,9 +320,8 @@ const Table = () => {
     };
 
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.log(termId)
         setSelectedTerm(termId);
-        fetchData(endpoint);
     }
 
     const handleSelectAllChange = () => {
@@ -385,7 +385,7 @@ const Table = () => {
 
 
     return (
-        <div className="flex flex-col sm:w-auto">
+        <div className="flex flex-col md:max-w">
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
                     <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">

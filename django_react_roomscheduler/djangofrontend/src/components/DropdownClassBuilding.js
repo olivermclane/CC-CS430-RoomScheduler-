@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import logger from "../loggers";
 import axios from 'axios';
 import {sortBy} from "lodash";
+import {useAuth} from "../service/AuthProvider";
+import {ChevronDown} from "lucide-react";
 
 
 const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
@@ -13,17 +15,13 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     const [terms, setTerms] = useState([]);
     const [selectedTerm, setSelectedTerm] = useState({term_id: '', term_name: 'No Term Selected'});
     const [showTermDropdown, setShowTermDropdown] = useState(false);
+    const { axiosInstance } = useAuth();
 
 
     useEffect(() => {
         const fetchTerms = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get('http://127.0.0.1:8000/terms/', {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
                 setTerms(response.data);
             } catch (error) {
                 console.error('Failed to fetch terms:', error);
@@ -36,12 +34,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedToken = localStorage.getItem('access_token');
-                const response = await axios.get(`http://127.0.0.1:8000/${selectedTerm.term_id}/classrooms/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm.term_id}/classrooms/`);
                 const parsedBuildings = parseData(response.data);
                 setBuildings(parsedBuildings);
             } catch (err) {
@@ -96,13 +89,15 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
             {/* Term Dropdown */}
             <div className="relative">
                 <div
-                    className="block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-50 focus:border-purple-500 w-full"
+                    className="flex block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-50 focus:border-purple-500 w-full"
                     onClick={() => {
                         setShowTermDropdown(!showTermDropdown);
                         setShowBuildingDropdown(false);
                         setShowClassroomDropdown(false);
                     }}>
                     {selectedTerm.term_name}
+                    <ChevronDown/>
+
                 </div>
                 {showTermDropdown && (
                     <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">
@@ -122,7 +117,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
             {/* Building Dropdown */}
             <div className="">
                 <div
-                    className={`block cursor-pointer appearance-none bg-white border ${selectedTerm.term_id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedTerm.term_id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
+                    className={`flex block cursor-pointer appearance-none bg-white border ${selectedTerm.term_id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedTerm.term_id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
                     onClick={() => {
                         if (selectedTerm.term_id) {
                             setShowBuildingDropdown(!showBuildingDropdown);
@@ -132,6 +127,8 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                     }}
                 >
                     {selectedBuilding.name}
+                                    <ChevronDown/>
+
                 </div>
                 {showBuildingDropdown && (
                     <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">
@@ -150,7 +147,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
             {/* Classroom Dropdown */}
             <div className="">
                 <div
-                    className={`block cursor-pointer appearance-none bg-white border ${selectedBuilding.id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedBuilding.id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
+                    className={`flex block cursor-pointer appearance-none bg-white border ${selectedBuilding.id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedBuilding.id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
                     onClick={() => {
                         if (selectedTerm.term_id) {
                             setShowClassroomDropdown(!showClassroomDropdown);
@@ -159,6 +156,8 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                         }
                     }}>
                     {selectedClassroom.number ? ` ${selectedClassroom.number}` : 'No Classroom Selected'}
+                                    <ChevronDown/>
+
                 </div>
                 {showClassroomDropdown && (
                     <div className="absolute z-10 w-auto bg-white mt-1 border border-purple-500 rounded-md">

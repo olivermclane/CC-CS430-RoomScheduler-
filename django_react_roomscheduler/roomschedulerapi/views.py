@@ -26,8 +26,6 @@ class DefaultView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
-
     def post(self, request):
         # Blacklist the current token
         if request.auth and hasattr(request.auth, 'get_token'):
@@ -160,8 +158,7 @@ class ClassroomTermView(APIView):
 
     def get(self, request, term):
         classrooms = Classroom.objects.all().filter(term=term)
-        logger.info(f"Classrooms Term  accessed by {request.user.username}")
-
+        logger.info(f"Classrooms Term {term}  accessed by {request.user.username}")
         serializer = ClassroomSerializer(classrooms, many=True)
         return Response(serializer.data)
 

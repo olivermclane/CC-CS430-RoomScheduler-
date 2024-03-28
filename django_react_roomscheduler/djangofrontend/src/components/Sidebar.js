@@ -86,7 +86,7 @@ export default function Sidebar({children}) {
                     </div>
                 </nav>
             </aside>
-            <div className="p-10">
+            <div className="p-10 bg-black">
 
             </div>
         </div>

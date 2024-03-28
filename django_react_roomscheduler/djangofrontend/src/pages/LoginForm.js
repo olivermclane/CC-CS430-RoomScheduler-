@@ -41,7 +41,16 @@ export default function LoginForm() {
 
     return (
         <div className="bg-dark-purple-900 flex justify-center items-center h-screen w-screen">
-            <div className="border-t-8 rounded-sm border-purple-900 bg-dark-purple-800 p-12 shadow-2xl w-96">
+            <style>{
+                `
+                body {
+                    background-image: url("/carroll-campus.jpg");
+                    background-size: cover;
+                }
+                `
+            }
+            </style>
+            <div className="border-t-8 rounded-sm border-purple-900 bg-dark-purple-800 p-12 shadow-2xl w-96 bg-white">
                 <h1 className="font-bold text-center block text-2xl text-purple-950">Login</h1>
                 <div className="bg-dark-purple-800 rounded-t-lg overflow-hidden mb-8">
                     <img src="/icons/shield.png" alt="Login Image" className="w-48 mx-auto"/>

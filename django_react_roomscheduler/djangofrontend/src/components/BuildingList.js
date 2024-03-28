@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Building from './Building';
-import axios from 'axios';
 import logger from "../loggers";
+import {useAuth} from "../service/AuthProvider";
 
-function BuildingList({ updateFloorList }) {
-    const [endpoint, setEndpoint] = useState('/buildings');
-    const [buildings, setBuildings] = useState([]);
+function BuildingList({updateFloorList}){
+    const [endpoint, setEndpoint] = useState("/buildings")
+    const [buildings, setBuildings] = useState([])
+    const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
         try {
-            const storedToken = localStorage.getItem('access_token');
             logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-            const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
-            logger.info('Response received:', response.data); // Log the response received
+            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
             setBuildings(response.data);
+            logger.info('Response received:', response.data); // Log the response received
+
         } catch (err) {
             if (err.response) {
                 logger.error('Server error:', err.response.data);
@@ -44,8 +41,7 @@ function BuildingList({ updateFloorList }) {
     }
 
     return (
-
-        <div className='text-white building-list'>
+        <div className='text-gray-700 building-list'>
             <h2>Building list</h2>
             <div className="row">
                 {buildings.map((building) => (

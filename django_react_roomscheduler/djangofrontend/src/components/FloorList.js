@@ -2,21 +2,17 @@ import React, {useEffect, useState} from "react";
 import Floor from "./Floor";
 import axios from "axios";
 import logger from "../loggers";
+import {useAuth} from "../service/AuthProvider";
 
 function FloorList({selectedBuilding, updateClassroomList}){
     const [endpoint, setEndpoint] = useState("/floors")
     const [floors, setFloors] = useState([])
+    const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
 
         try {
-            const storedToken = localStorage.getItem("access_token");
-            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-            const response = await axios.get(`http://127.0.0.1:8000${endpoint}/`, {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
+            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
             logger.info('Response received:', response.data); // Log the response received
             setFloors(response.data);
         } catch (err) {
@@ -43,7 +39,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
     }
 
     function renderFloor(floor){
-        if(selectedBuilding != null && floor.building.building_id == selectedBuilding.building_id) {
+        if(selectedBuilding != null && floor.building.building_id === selectedBuilding.building_id) {
             return <Floor floor={floor} selectFloor={selectFloor}/>
         } else {
             return null
@@ -51,13 +47,15 @@ function FloorList({selectedBuilding, updateClassroomList}){
     }
 
     return (
-        <div className='text-white floor-list'>
+        <div className='text-gray-700 floor-list'>
+            <hr className="my-4 w-full"/>
+
             <h2>
                 Floor list
             </h2>
             <div className='row'>
                 {
-                    floors.map(floor =>(
+                    floors.map(floor => (
                             renderFloor(floor)
                         )
                     )

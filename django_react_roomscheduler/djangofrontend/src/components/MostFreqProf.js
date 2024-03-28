@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
 import logger from "../loggers";
+import {useAuth} from "../service/AuthProvider";
 
 function MostFreqProf({ selectedClassroom }) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -19,17 +20,13 @@ function MostFreqProf({ selectedClassroom }) {
         return instructorCounts;
     };
 
+    const { axiosInstance } = useAuth();
+
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
-                const storedToken = localStorage.getItem('access_token');
-                logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-                const response = await axios.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`, {
-                    headers: {
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                });
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
                 logger.info('Response received:', response.data); // Log the response received
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);
