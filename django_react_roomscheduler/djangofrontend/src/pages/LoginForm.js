@@ -34,7 +34,7 @@ export default function LoginForm() {
       window.location.href = '/dashboard';
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
-      logger.error('Login failed for user', data.username)
+      logger.error('Login failed for user', email)
 
     }
   };

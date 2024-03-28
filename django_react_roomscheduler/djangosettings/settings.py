@@ -136,7 +136,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/djangofrontend/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'djangofrontend/src/')
 
 AUTH_USER_MODEL = 'roomschedulerapi.User'
 
@@ -146,7 +148,7 @@ AUTH_USER_MODEL = 'roomschedulerapi.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'djangofrontend/build/static')
+    os.path.join(BASE_DIR, 'djangofrontend/build/static'),
 ]
 
 ## SIMPLE JWT Configuration
