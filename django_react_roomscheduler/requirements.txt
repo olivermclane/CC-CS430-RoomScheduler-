@@ -7,4 +7,3 @@ psycopg_binary
 djangorestframework-simplejwt
 django-cors-headers
 pandas
-openpyxl

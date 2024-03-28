@@ -250,10 +250,6 @@ class LoadView(APIView):
         return Response()
 
 
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-
 class PostLogView(APIView):
     def post(self, request):
         try:

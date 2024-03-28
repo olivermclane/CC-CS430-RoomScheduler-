@@ -1,0 +1,27 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <!-- Root element for React rendering -->
+    <div id="dashboard-root"></div>
+
+    <!-- Include React and ReactDOM -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+    <!-- Include your compiled Dashboard.js file -->
+    <script src="{% static 'django_react_roomscheduler/djangofrontend/src/pages/Dashboard.js' %}"></script>
+
+    <!-- Initialize React rendering -->
+    <script>
+        // Mount the Dashboard component to the root element
+        ReactDOM.render(
+            React.createElement(Dashboard),
+            document.getElementById('dashboard-root')
+        );
+    </script>
+</body>
+</html>
