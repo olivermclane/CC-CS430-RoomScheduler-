@@ -23,6 +23,7 @@ export default function Sidebar({children}) {
         axios.post('http://localhost:8000/logout/')
             .then(() => {
                 if (onSuccess) {
+                    logger.info('User logged out:', username)
                     onSuccess(); // Call the success callback if provided
                 } else {
                     window.location.href = '/login'; // Redirect to login (if not using callback)

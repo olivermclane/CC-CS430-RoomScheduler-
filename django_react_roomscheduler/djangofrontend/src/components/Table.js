@@ -58,8 +58,9 @@ const Table = () => {
     const fetchData = async (endpoint) => {
     setIsLoading(true); // Ensure loading starts every time fetchData is called
     try {
+        logger.info('Requested data from courses')
         const response = await axiosInstance.get(`http://localhost:8000/${selectedTerm}${endpoint}/`);
-        logger.info('Response received', response)
+        logger.info('Received data from courses')
         // Assuming response.data is the array of data you're interested in
         if (response.data && response.data.length > 0) {
             setTableData(response.data);
@@ -320,7 +321,7 @@ const Table = () => {
     };
 
     const handleTermChange = (termId) => {
-        logger.log(termId)
+        logger.info("The term Id is now", termId)
         setSelectedTerm(termId);
     }
 

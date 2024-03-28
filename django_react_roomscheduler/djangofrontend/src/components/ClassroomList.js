@@ -17,7 +17,7 @@ function ClassroomList({selectedFloor}){
         try {
 
             const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm}${endpoint}/`);
-            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
+            logger.info('Fetching data from endpoint:', selectedTerm, endpoint); // Log the endpoint being called
             setClassrooms(response.data);
 
         } catch (err) {

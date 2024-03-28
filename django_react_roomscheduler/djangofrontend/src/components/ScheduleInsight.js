@@ -12,8 +12,9 @@ function ScheduleInsight({selectedClassroom}) {
         const fetchData = async () => {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
+                logger.info('Requested data from classroom-courses'); // Log the response received
                 const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-                logger.info('Response received:', response.data); // Log the response received
+                logger.info('Received data from classroom-courses'); // Log the response received
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);
                 setIsLoading(false); // Set loading to false after data is fetched

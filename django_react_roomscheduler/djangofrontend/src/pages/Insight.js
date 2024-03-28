@@ -8,17 +8,18 @@ import DailyScheduleInsight2 from "../components/DailyScheduleInsights2";
 import ScoreVisualization from "../components/ScoreVisualization";
 import MonthlyHeatMap from "../components/MonthlyHeatMap"
 import CalendarPopup from "../components/CalendarPopup";
+import logger from "../loggers";
 
 export default function Insight() {
     const [selectedClassroom, setSelectedClassroom] = useState('');
     const [selectedTerm, setSelectedTerm] = useState('')
     const handleClassroomChange = (classroomId) => {
-        console.log(classroomId)
+        logger.info("Classroom ID: ", classroomId)
         setSelectedClassroom(classroomId);
     };
 
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.info("Term ID: ")
         setSelectedTerm(termId)
     }
 

@@ -12,9 +12,9 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
         const fetchData = async () => {
             try {
 
-                logger.info('Fetching data from endpoint:', selectedClassroom); // Log the endpoint being called
+                logger.info('Fetching data from endpoint:', 'classroom-courses'); // Log the endpoint being called
                 const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-                logger.info("Fetched data:", response.data); // Log fetched data
+                logger.info("Fetched data:"); // Log fetched data
                 const parsedData = parseData(response.data);
                 logger.info("Parsed data:", parsedData); // Log parsed data
                 setScheduleData(parsedData);

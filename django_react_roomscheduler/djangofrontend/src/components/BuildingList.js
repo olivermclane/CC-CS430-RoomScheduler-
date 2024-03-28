@@ -13,7 +13,7 @@ function BuildingList({updateFloorList}){
             logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
             const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
             setBuildings(response.data);
-            logger.info('Response received:', response.data); // Log the response received
+            logger.info('Response received:'); // Log the response received
 
         } catch (err) {
             if (err.response) {
