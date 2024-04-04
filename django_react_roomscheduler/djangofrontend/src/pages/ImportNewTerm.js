@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 const requiredColumns = [
     'CSM_BLDG',

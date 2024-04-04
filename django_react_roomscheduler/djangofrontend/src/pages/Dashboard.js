@@ -5,13 +5,14 @@ import TableTiles from './TableTiles'
 import {BarChart3, Calendar, FileUp, LayoutDashboard, Settings, UserIcon} from "lucide-react";
 import Insight from "./Insight";
 import ImportNewTerm from "./ImportNewTerm";
+import {useNavigate} from "react-router-dom";
 export default function Dashboard() {
-
+    const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = useState("dashboard");
 
     useEffect(() => {
         if (localStorage.getItem('access_token') === null) {
-            window.location.href = '/login'
+            navigate('/login')
         }
     }, []);
 

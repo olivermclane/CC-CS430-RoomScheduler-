@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../service/AuthProvider';
 import {faChevronDown} from 'react-icons/fa';
 import {ChevronDown} from "lucide-react";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 const DropdownTerm = ({ onTermChange }) => {
     const [terms, setTerms] = useState([]);

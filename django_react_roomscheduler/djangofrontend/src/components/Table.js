@@ -19,7 +19,7 @@ import {
 import {useRowSelectColumn} from "@lineup-lite/hooks";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
-import logger from "../loggers";
+import logger from "../loggers/logger";
 import DropdownTerm from "./DropdownTerm";
 import {useAuth} from "../service/AuthProvider";
 

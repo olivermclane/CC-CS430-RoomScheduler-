@@ -8,7 +8,7 @@ import DailyScheduleInsight2 from "../components/DailyScheduleInsights2";
 import ScoreVisualization from "../components/ScoreVisualization";
 import MonthlyHeatMap from "../components/MonthlyHeatMap"
 import CalendarPopup from "../components/CalendarPopup";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 export default function Insight() {
     const [selectedClassroom, setSelectedClassroom] = useState('');

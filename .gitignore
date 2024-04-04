@@ -6,3 +6,8 @@ dockerfile.yaml
 django_react_roomscheduler/djangofrontend/src/loggers/log.txt
 django_debug.log
 django_info.log
+
+django_react_roomscheduler/static
+
+django_react_roomscheduler/djangofrontend/node_modules
+

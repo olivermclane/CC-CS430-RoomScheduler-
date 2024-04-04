@@ -5,7 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import logger from "../loggers";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 const Calendar = ({selectedClassroom}) => {

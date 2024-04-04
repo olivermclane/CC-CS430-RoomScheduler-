@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function MostFreqProf({ selectedClassroom }) {

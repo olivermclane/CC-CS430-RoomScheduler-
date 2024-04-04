@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
 import axios from "axios";
-import logger from "../loggers"
+import logger from "../loggers/logger"
 import {useAuth} from "../service/AuthProvider";
 import DropdownTerm from "./DropdownTerm";
 

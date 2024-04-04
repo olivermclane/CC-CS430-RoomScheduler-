@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import logger from "../loggers";
+import logger from "../loggers/logger";
 import axios from 'axios';
 import {sortBy} from "lodash";
 import {useAuth} from "../service/AuthProvider";

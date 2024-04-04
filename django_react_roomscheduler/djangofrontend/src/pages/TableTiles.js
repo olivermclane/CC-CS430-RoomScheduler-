@@ -4,7 +4,7 @@ import BuildingList from "../components/BuildingList";
 import FloorList from "../components/FloorList";
 import ClassroomList from "../components/ClassroomList";
 import Calendar from "../components/Calendar";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 export default function DashboardPage() {
     const [selectedClassroom, setSelectedClassroom] = useState(null);

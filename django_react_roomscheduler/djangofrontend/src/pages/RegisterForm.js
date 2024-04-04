@@ -2,7 +2,9 @@ import React, {useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
-import logger from "../loggers";
+import logger from "../loggers/logger";
+import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+
 
 export default function RegisterForm() {
 
@@ -30,7 +32,7 @@ export default function RegisterForm() {
         const username = formData.get('username')
         try {
             const data = await login(email, password, username);
-            window.location.href = '/login';
+            navigate('/login')
         } catch (error) {
             setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
             logger.info("Registration failed for user with email ", email)
@@ -42,7 +44,7 @@ export default function RegisterForm() {
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `

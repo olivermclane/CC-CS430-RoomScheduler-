@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import {useAuth} from "../service/AuthProvider";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 function ScheduleInsight({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);

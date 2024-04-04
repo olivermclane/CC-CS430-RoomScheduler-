@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function DailyScheduleInsight({selectedTerm, selectedClassroom}) {

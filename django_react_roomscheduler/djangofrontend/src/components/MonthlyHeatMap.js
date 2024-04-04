@@ -7,7 +7,7 @@ import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
 import {useAuth} from "../service/AuthProvider";
-import logger from "../loggers";
+import logger from "../loggers/logger";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
