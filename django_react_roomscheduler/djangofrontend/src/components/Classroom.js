@@ -17,13 +17,17 @@ function Classroom({classroom}) {
 
     return (
         <div className="max-w-sm w-full bg-white rounded-lg shadow-md p-4 mx-2 my-4">
-            <div className="mb-4">
-               <strong>Classroom name: {classroom.floor.building.building_name + ' ' +  classroom.classroom_number}</strong>
-               <strong>Floor: {classroom.floor.floor_name}</strong>
+            <div className="flex-row mb-4">
+                <strong>Classroom
+                    name: {classroom.floor.building.building_name + ' ' + classroom.classroom_number}</strong>
+                <br></br>
+                <strong>Term: {classroom.term.term_name}</strong>
+                <br></br>
+                <strong>Floor: {classroom.floor.floor_name}</strong>
                 <p>Classroom total seats: {classroom.total_seats}</p>
             </div>
             <div className="flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0">
-                <button
+            <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 focus:outline-none w-full sm:w-auto"
                 >
