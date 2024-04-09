@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import logger from "../loggers/logger";
+import { BeatLoader } from 'react-spinners';
 
 const requiredColumns = [
     'CSM_BLDG',
@@ -111,7 +112,7 @@ function ImportNewTerm() {
             <div className="flex mb-6">
                 <input type="file" accept=".xlsx" onChange={handleFileUpload} className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300" />
             </div>
-            {loading && <div>Loading...</div>}
+            {loading && <BeatLoader color="#3c1952" loading={true} />}
             {error && <div className="text-red-500">{error}</div>}
             {success && <div className="text-green-500">File successfully loaded.</div>}
             <div>
