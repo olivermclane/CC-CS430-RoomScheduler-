@@ -248,3 +248,19 @@ class LoadView(APIView):
         dr.loadData()
         logger.info(f"Data reader loaded data into database - User: {request.user.username}")
         return Response()
+
+
+class PostLogView(APIView):
+    def post(self, request):
+        try:
+            # Extract the log event from the request data
+            log_event = request.data  # Assuming log events are sent as JSON data in the request body
+            # Write the log event to a log file
+            with open('../django_react_roomscheduler/django_debug.log', 'a') as file:
+                file.write(str(log_event) + '\n')
+            # Return a success response
+            return Response({"message": "Log event received and processed successfully"}, status=200)
+        except Exception as e:
+            # Handle any exceptions that occur during processing
+            return Response({"error": str(e)}, status=500)
+

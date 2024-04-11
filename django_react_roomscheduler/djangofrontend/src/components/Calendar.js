@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 const Calendar = ({selectedClassroom}) => {
@@ -18,8 +18,9 @@ const Calendar = ({selectedClassroom}) => {
         try {
             const response = await axiosInstance.get(`classroom-courses/${selectedClassroom}/`);
             setCalendarData(response.data);
+            logger.info("Calendar data set")
         } catch (err) {
-            console.error("Error fetching calendar data:", err);
+            logger.error("Error fetching calendar data:", err);
         }
     };
 
@@ -47,6 +48,8 @@ const Calendar = ({selectedClassroom}) => {
                     backgroundColor: color,
                 };
             });
+        logger.trace("Events loaded", events)
+
 
             if (generatedEvents.length > 0) {
                 // Parsing the first event's start date
@@ -85,7 +88,7 @@ const Calendar = ({selectedClassroom}) => {
             slotMaxTime={'22:00:00'}
             initialDate={firstReoccur} // Now guaranteed to be defined
             eventClick={(info) => {
-                console.log(`You've clicked an event: ${info.event.title}`);
+                logger.trace(`You've clicked an event: ${info.event.title}`);
             }}
         />
     );

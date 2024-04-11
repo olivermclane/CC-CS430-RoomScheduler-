@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import logger from "../loggers/logger";
 
 const requiredColumns = [
     'CSM_BLDG',
@@ -45,6 +46,7 @@ function ImportNewTerm() {
     const handleSubmit = async () => {
         if (!file) {
             setError('Please select a file.');
+            logger.error("No file selected to upload")
             return;
         }
 
@@ -71,6 +73,7 @@ function ImportNewTerm() {
                 if (missingColumns.length > 0) {
                     setLoading(false);
                     setError(`Missing columns: ${missingColumns.join(', ')}`);
+                    logger.error(`Missing columns: ${missingColumns.join(', ')}`);
                     return;
                 }
 
@@ -86,18 +89,18 @@ function ImportNewTerm() {
                 }).then(response => {
                     setLoading(false);
                     setSuccess(true);
-                    console.log('Response from server:', response.data);
+                    logger.info('Response from server:', response.data);
                     // Add any further handling for successful upload if needed
                 }).catch(error => {
                     setLoading(false);
-                    console.error('Error uploading file:', error);
+                    logger.error('Error uploading file:', error);
                     setError('Error uploading file. Please try again.');
                 });
             };
             fileReader.readAsBinaryString(file);
         } catch (error) {
             setLoading(false);
-            console.error('Error uploading file:', error);
+            logger.error('Error uploading file:', error);
             setError('Error uploading file. Please try again.');
         }
     };

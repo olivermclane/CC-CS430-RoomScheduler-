@@ -1,6 +1,8 @@
 import {LogOut, ChevronLast, ChevronFirst} from "lucide-react"
 import {useContext, createContext, useState} from "react"
 import axios from "axios";
+import logger from "../loggers/logger";
+import horizontalImage from '../icons/cc_logo_horiz.jpg';
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -22,13 +24,14 @@ export default function Sidebar({children}) {
         axios.post('http://localhost:8000/logout/')
             .then(() => {
                 if (onSuccess) {
+                    logger.info('User logged out:', username)
                     onSuccess(); // Call the success callback if provided
                 } else {
                     window.location.href = '/login'; // Redirect to login (if not using callback)
                 }
             })
             .catch(error => {
-                console.error('Logout failed:', error);
+                logger.error('Logout failed:', error);
                 // Handle errors
             });
     }
@@ -39,7 +42,7 @@ export default function Sidebar({children}) {
                 <nav className="h-full flex flex-col bg-white border-r shadow-sm fixed">
                     <div className="p-4 pb-2 flex justify-between items-center">
                         <img
-                            src="/icons/cc_logo_horiz.jpg"
+                            src={horizontalImage}
                             className={`overflow-hidden transition-all ${
                                 expanded ? "w-32" : "w-0"
                             }`}

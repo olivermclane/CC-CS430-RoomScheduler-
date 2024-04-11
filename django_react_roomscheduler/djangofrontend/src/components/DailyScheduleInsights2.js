@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function DailyScheduleInsight2({ selectedClassroom }) {
@@ -15,13 +16,13 @@ function DailyScheduleInsight2({ selectedClassroom }) {
     const fetchData = async () => {
         try {
             const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-            console.log("Fetched data:", response.data); // Log fetched data
+            logger.info("Fetched data:"); // Log fetched data
             const parsedData = parseData(response.data);
-            console.log("Parsed data:", parsedData); // Log parsed data
+            logger.info("Parsed data:"); // Log parsed data
             setScheduleData(parsedData);
             updateTotalUsedTimeChartOptions(parsedData);
         } catch (err) {
-            console.error('Error fetching data:', err);
+            logger.error('Error fetching data:', err);
         }
     };
 
@@ -56,7 +57,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
 
                     // Calculate the time difference in minutes
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
-                    console.log("Time Difference (minutes):", timeDiff);
+                    logger.debug("Time Difference (minutes):", timeDiff);
 
                     // Calculate used time
                     const usedTime = timeDiff / 60; // Convert minutes to hours
@@ -65,7 +66,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             });
         });
 
-        console.log("Total used time:", totalUsedTime); // Log total used time
+        logger.debug("Total used time:", totalUsedTime); // Log total used time
 
         const days = Object.keys(totalUsedTime);
         const usedTimes = Object.values(totalUsedTime);
@@ -109,6 +110,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             ]
         };
 
+        logger.debug("Chart options:", options); // Log chart options
         setChartOptions(options);
     };
 

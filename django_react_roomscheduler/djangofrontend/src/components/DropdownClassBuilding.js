@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
+import logger from "../loggers/logger";
 import axios from 'axios';
 import {sortBy} from "lodash";
 import {useAuth} from "../service/AuthProvider";
 import {ChevronDown} from "lucide-react";
+
 
 const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     const [buildings, setBuildings] = useState([]);
@@ -15,13 +17,16 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     const [showTermDropdown, setShowTermDropdown] = useState(false);
     const { axiosInstance } = useAuth();
 
+
     useEffect(() => {
         const fetchTerms = async () => {
             try {
+                logger.info("Requesting data from terms"); // Log fetched data
                 const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
+                logger.info("Received data from terms");
                 setTerms(response.data);
             } catch (error) {
-                console.error('Failed to fetch terms:', error);
+                logger.error('Failed to fetch terms:', error);
             }
         };
 
@@ -35,7 +40,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                 const parsedBuildings = parseData(response.data);
                 setBuildings(parsedBuildings);
             } catch (err) {
-                console.error('Error fetching classrooms:', err);
+                logger.error('Error fetching classrooms:', err);
             }
         };
 
@@ -63,6 +68,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
         setShowClassroomDropdown(false);
         onClassroomChange(classroom.id);
     };
+
 
     const parseData = (data) => {
         const buildings = {};

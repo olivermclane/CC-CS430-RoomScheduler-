@@ -5,8 +5,8 @@ Author: Hank Rugg
 
 '''
 import warnings
-
 import pandas as pd
+from roomschedulerapi.models import Building, Floor, Classroom, Course
 import logging
 
 logger = logging.getLogger("django_react_roomscheduler")
@@ -56,6 +56,7 @@ def getMonthNum(month):
 
 class DataReader(object):
 
+
     # columns to verify
     # CSM_BLDG
     # CSM_ROOM
@@ -98,11 +99,11 @@ class DataReader(object):
 
         for i in range(len(self.data)):
             if self.data['CSM_BLDG'].iloc[i] == 0:
-                self.data['CSM_BLDG'].iloc[i] = "No Building Assigned"
+                self.data.loc[i, 'CSM_BLDG'] = "No Building Assigned"
             if self.data['Floor Name'].iloc[i] == 0:
-                self.data['Floor Name'].iloc[i] = "No Floor Assigned"
+                self.data.loc[i, 'Floor Name'] = "No Floor Assigned"
             if self.data['Room Number'].iloc[i] == 0:
-                self.data['Room Number'].iloc[i] = "No Room Assigned"
+                self.data.loc[i, 'Room Number'] = "No Room Assigned"
 
         self.data['CSM_SUNDAY'] = self.data['CSM_SUNDAY'].replace({'Y': True, '-': False})
         self.data['CSM_MONDAY'] = self.data['CSM_MONDAY'].replace({'Y': True, '-': False})

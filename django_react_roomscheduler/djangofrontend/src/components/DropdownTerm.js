@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../service/AuthProvider';
 import {faChevronDown} from 'react-icons/fa';
 import {ChevronDown} from "lucide-react";
+import logger from "../loggers/logger";
 
 const DropdownTerm = ({ onTermChange }) => {
     const [terms, setTerms] = useState([]);
@@ -16,8 +17,10 @@ const DropdownTerm = ({ onTermChange }) => {
                 const response = await axiosInstance.get('/terms/');
                 console.log(response.data);
                 setTerms(response.data);
+                logger.info('Received data from terms');
+
             } catch (error) {
-                console.error('Failed to fetch terms:', error);
+                logger.error('Failed to fetch terms:', error);
             }
         };
 

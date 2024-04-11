@@ -2,6 +2,9 @@ import React, {useState, useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import logger from "../loggers/logger";
+import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+import shieldImage from '../icons/shield.png';
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -9,8 +12,10 @@ export default function LoginForm() {
     const login = async (email, password) => {
       try {
         const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
+        logger.info("User attempted login", email.toString()); // Log the endpoint being called
         return response.data;
       } catch (error) {
+        logger.error("Error ", error)
         throw error;
       }
     }
@@ -29,9 +34,14 @@ export default function LoginForm() {
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
+
+      // window.location.href = '/dashboard';
+
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
+      logger.error('Login failed for user', email)
+
     }
   };
 
@@ -40,7 +50,7 @@ export default function LoginForm() {
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `
@@ -49,7 +59,7 @@ export default function LoginForm() {
             <div className="border-t-8 rounded-sm border-purple-900 bg-dark-purple-800 p-12 shadow-2xl w-96 bg-white">
                 <h1 className="font-bold text-center block text-2xl text-purple-950">Login</h1>
                 <div className="bg-dark-purple-800 rounded-t-lg overflow-hidden mb-8">
-                    <img src="/icons/shield.png" alt="Login Image" className="w-48 mx-auto"/>
+                    <img src={shieldImage} alt="Login Image" className="w-48 mx-auto"/>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Input
@@ -69,10 +79,12 @@ export default function LoginForm() {
                                 >
                                     Login In
                                 </Button>
-                                <a href="/register/"
-                                   className="inline-block ml-4 text-sm font-medium text-purple-900 hover:text-purple-400">
+                                <Button
+                                    className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
+                                    onClick={() => navigate('/register')}
+                                >
                                     Sign Up
-                                </a>
+                                </Button>
                             </div>
                             <div className="text-center mt-4">
                                 <a

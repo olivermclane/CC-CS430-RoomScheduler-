@@ -19,6 +19,7 @@ import {
 import {useRowSelectColumn} from "@lineup-lite/hooks";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
+import logger from "../loggers/logger";
 import DropdownTerm from "./DropdownTerm";
 import {useAuth} from "../service/AuthProvider";
 
@@ -63,9 +64,8 @@ const Table = () => {
         }else{
             requestUrl += "/" + selectedTerm + endpoint;
         }
-
-        //const response = await axiosInstance.get(`http://localhost:8000/${selectedTerm}${endpoint}/`);
         const response = await axiosInstance.get(requestUrl)
+
         // Assuming response.data is the array of data you're interested in
         if (response.data && response.data.length > 0) {
             setTableData(response.data);
@@ -77,11 +77,11 @@ const Table = () => {
         }
     } catch (err) {
         if (err.response) {
-            console.log("Server error:", err.response.data);
+            logger.error("Server error:", err.response.data);
         } else if (err.request) {
-            console.log("Network error:", err.message);
+            logger.error("Network error:", err.message);
         } else {
-            console.log("Error:", err.message);
+            logger.error("Error:", err.message);
         }
     }
 };
@@ -326,7 +326,7 @@ const Table = () => {
     };
 
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.info("The term Id is now", termId)
         setSelectedTerm(termId);
     }
 

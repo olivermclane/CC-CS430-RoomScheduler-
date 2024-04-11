@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Floor from "./Floor";
 import axios from "axios";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function FloorList({selectedBuilding, updateClassroomList}){
@@ -11,16 +12,17 @@ function FloorList({selectedBuilding, updateClassroomList}){
     const fetchData = async (endpoint) => {
 
         try {
-            const storedToken = localStorage.getItem("access_token");
+            logger.info('Requesting received from floors');
             const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
+            logger.info('Received data from floors'); // Log the response received
             setFloors(response.data);
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error("Server error:", err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error("Network error:", err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error("Error:", err.message);
             }
         }
     };
@@ -38,7 +40,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
     }
 
     function renderFloor(floor){
-        if(selectedBuilding != null && floor.building.building_id == selectedBuilding.building_id) {
+        if(selectedBuilding != null && floor.building.building_id === selectedBuilding.building_id) {
             return <Floor floor={floor} selectFloor={selectFloor}/>
         } else {
             return null

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function MostFreqProf({ selectedClassroom }) {
@@ -14,6 +15,7 @@ function MostFreqProf({ selectedClassroom }) {
             const instructor = course.instructor;
             instructorCounts[instructor] = (instructorCounts[instructor] || 0) + 1;
         });
+        logger.info("Instructor counts set")
 
         return instructorCounts;
     };
@@ -24,18 +26,20 @@ function MostFreqProf({ selectedClassroom }) {
         const fetchData = async () => {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
+                logger.info('Requested data from classroom-courses'); // Log the response received
                 const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                logger.info('Received data from classroom-courses'); // Log the response received
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);
                 setIsLoading(false); // Set loading to false after data is fetched
             } catch (err) {
                 setIsLoading(false); // Set loading to false in case of error
                 if (err.response) {
-                    console.log('Server error:', err.response.data);
+                    logger.error('Server error:', err.response.data);
                 } else if (err.request) {
-                    console.log('Network error:', err.message);
+                    logger.error('Network error:', err.message);
                 } else {
-                    console.log('Error:', err.message);
+                    logger.error('Error:', err.message);
                 }
             }
         };
@@ -83,6 +87,7 @@ function MostFreqProf({ selectedClassroom }) {
 
             const chart = new ApexCharts(document.getElementById("MostFreqProfChart"), options);
             chart.render();
+            logger.info("Chart rendered")
 
             // Return a cleanup function to remove the chart when the component unmounts
             return () => chart.destroy();

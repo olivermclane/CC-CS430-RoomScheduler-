@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
 import axios from "axios";
+import logger from "../loggers/logger"
 import {useAuth} from "../service/AuthProvider";
 import DropdownTerm from "./DropdownTerm";
 
@@ -14,16 +15,18 @@ function ClassroomList({selectedFloor}){
     const fetchData = async (endpoint) => {
 
         try {
+
             const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm}${endpoint}/`);
+            logger.info('Fetching data from endpoint:', selectedTerm, endpoint); // Log the endpoint being called
             setClassrooms(response.data);
-            console.log(response.data)
+
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error("Server error:", err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error("Network error:", err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error("Error:", err.message);
             }
         }
     };

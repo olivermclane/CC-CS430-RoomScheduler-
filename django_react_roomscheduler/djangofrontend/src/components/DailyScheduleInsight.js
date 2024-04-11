@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
-import axios from "axios";
+import logger from "../loggers/logger";
 import {useAuth} from "../service/AuthProvider";
 
 function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
@@ -11,14 +11,16 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
     useEffect(() => {
         const fetchData = async () => {
             try {
+
+                logger.info('Fetching data from endpoint:', 'classroom-courses'); // Log the endpoint being called
                 const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-                console.log("Fetched data:", response.data); // Log fetched data
+                logger.info("Fetched data:"); // Log fetched data
                 const parsedData = parseData(response.data);
-                console.log("Parsed data:", parsedData); // Log parsed data
+                logger.info("Parsed data:", parsedData); // Log parsed data
                 setScheduleData(parsedData);
                 updateChartOptions(parsedData);
             } catch (err) {
-                console.error('Error fetching data:', err);
+                logger.info('Error fetching data:', err);
             }
         };
         fetchData();
@@ -55,7 +57,7 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
 
                     // Calculate the time difference in minutes
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
-                    console.log("Time Difference (minutes):", timeDiff);
+                    logger.debug("Time Difference (minutes):", timeDiff);
 
                     // Calculate unused time
                     const unusedTime = timeDiff / 60; // Convert minutes to hours
@@ -68,7 +70,7 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             });
         });
 
-        console.log("Total unused time:", totalUnusedTime); // Log total unused time
+        logger.debug("Total unused time:", totalUnusedTime); // Log total unused time
 
         const days = Object.keys(totalUnusedTime);
         const unusedTimes = Object.values(totalUnusedTime);
@@ -113,6 +115,7 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             ]
         };
 
+        logger.debug("Chart options:", options); // Log chart options
         setChartOptions(options);
     };
 

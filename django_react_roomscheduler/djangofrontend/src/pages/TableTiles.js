@@ -4,6 +4,7 @@ import BuildingList from "../components/BuildingList";
 import FloorList from "../components/FloorList";
 import ClassroomList from "../components/ClassroomList";
 import Calendar from "../components/Calendar";
+import logger from "../loggers/logger";
 
 export default function DashboardPage() {
     const [selectedClassroom, setSelectedClassroom] = useState(null);
@@ -16,15 +17,18 @@ export default function DashboardPage() {
 
     function updateFloorList(building) {
         setSelectedBuilding(building);
+        logger.info("Selected building updated")
         setSelectedFloor(null);
     }
 
     function updateClassroomList(floor) {
         setSelectedFloor(floor);
+        logger.info("Classroom list updated")
     }
 
     function updateClassroom(classroom){
         setSelectedClassroom(classroom)
+        logger.info("Classroom updated")
     }
 
 
