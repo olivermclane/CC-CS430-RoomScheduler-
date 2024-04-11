@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render
 from rest_framework import status
@@ -6,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.http import FileResponse
+from pathlib import Path
 
 import logging
 
@@ -30,7 +34,8 @@ class LogoutView(APIView):
         # Blacklist the current token
         if request.auth and hasattr(request.auth, 'get_token'):
             token = request.auth.get_token()
-            logger.info(f"User logged out. Blacklisted access token - User: {request.data.get('email')} - Body: {request.data.get('body')}")
+            logger.info(
+                f"User logged out. Blacklisted access token - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         logout(request)
         return Response({"message": "Successfully logged out"})
 
@@ -77,7 +82,6 @@ class RegisterView(APIView):
         })
 
 
-
 class BuildingView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -105,7 +109,6 @@ class BuildingDetailView(APIView):
 class CourseView(APIView):
     permission_classes = (IsAuthenticated,)
 
-
     def get(self, request):
         # Retrieve buildings data for authenticated user
         courses = Course.objects.all()
@@ -131,7 +134,6 @@ class CourseDetailView(APIView):
 class ClassroomView(APIView):
     permission_classes = (IsAuthenticated,)
 
-
     def get(self, request):
         classrooms = Classroom.objects.all()
         logger.info(f"Classrooms  accessed by {request.user.username}")
@@ -153,6 +155,7 @@ class ClassroomDetailView(APIView):
         except Classroom.DoesNotExist:
             return Response({'error': 'Classroom not found'}, status=404)
 
+
 class ClassroomTermView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -161,6 +164,7 @@ class ClassroomTermView(APIView):
         logger.info(f"Classrooms Term {term}  accessed by {request.user.username}")
         serializer = ClassroomSerializer(classrooms, many=True)
         return Response(serializer.data)
+
 
 class FloorView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -264,3 +268,14 @@ class PostLogView(APIView):
             # Handle any exceptions that occur during processing
             return Response({"error": str(e)}, status=500)
 
+
+
+class DownloadExampleExcel(APIView):
+    def get(self, request):
+        file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"
+        if not os.path.exists(file_path):
+            return Response("File not found", status=404)
+        try:
+            return FileResponse(open(file_path, 'rb'), as_attachment=True, filename='example.xlsx')
+        except Exception as e:
+            return Response(f"Error: {e}", status=500)

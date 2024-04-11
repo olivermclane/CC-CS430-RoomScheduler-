@@ -5,7 +5,7 @@ from rest_framework_simplejwt import views as jwt_views
 from django.views.generic import TemplateView
 from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
      BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView, \
-     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView
+     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel
 
 urlpatterns = [
      ## INDEX ENDPOINT
@@ -43,5 +43,6 @@ urlpatterns = [
 
      path('post-log/', PostLogView.as_view(), name='post-log'),
      path('terms/', TermView.as_view(), name='term-classroom-courses'),
-     path('load/', LoadView.as_view(), name='load')
+     path('load/', LoadView.as_view(), name='load'),
+     path('load-example-excel/', DownloadExampleExcel.as_view(), name='load-example-excel'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

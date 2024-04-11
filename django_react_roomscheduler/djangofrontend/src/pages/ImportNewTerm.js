@@ -31,19 +31,29 @@ const requiredColumns = [
 
 function ImportNewTerm() {
     const [file, setFile] = useState(null);
+    const [fileData, setFileData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
-    // Function to handle file upload
     const handleFileUpload = (event) => {
-        setFile(event.target.files[0]);
-        setError(''); // Clear any previous errors
-        setSuccess(false); // Reset success state
-        setLoading(false)
+        const uploadedFile = event.target.files[0];
+        setFile(uploadedFile);
+        setError('');
+        setSuccess(false);
+        setLoading(false);
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            const workbook = XLSX.read(content, { type: 'binary' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+            setFileData(jsonData);
+        };
+        reader.readAsBinaryString(uploadedFile);
     };
 
-    // Function to handle form submission
     const handleSubmit = async () => {
         if (!file) {
             setError('Please select a file.');
@@ -56,20 +66,14 @@ function ImportNewTerm() {
         setLoading(true);
 
         try {
-            // Read the file content
             const fileReader = new FileReader();
             fileReader.onload = (e) => {
                 const content = e.target.result;
-                // Parse Excel file
                 const workbook = XLSX.read(content, { type: 'binary' });
-                // Get the first sheet
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                // Get column headers
                 const columns = Object.keys(firstSheet);
-                // Get column names as the value of the keys
                 const columnNames = columns.map(key => firstSheet[key].v);
 
-                // Check if all required columns are present
                 const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
                 if (missingColumns.length > 0) {
                     setLoading(false);
@@ -78,11 +82,9 @@ function ImportNewTerm() {
                     return;
                 }
 
-                // Create FormData object
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // Send POST request to backend API
                 axios.post('http://localhost:8000/load/', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -91,7 +93,6 @@ function ImportNewTerm() {
                     setLoading(false);
                     setSuccess(true);
                     logger.info('Response from server:', response.data);
-                    // Add any further handling for successful upload if needed
                 }).catch(error => {
                     setLoading(false);
                     logger.error('Error uploading file:', error);
@@ -106,6 +107,29 @@ function ImportNewTerm() {
         }
     };
 
+    const handleDownloadExampleFile = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/load-example-excel/', {
+                responseType: 'blob'
+            });
+
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'example.xlsx';
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            logger.error('Error downloading example file:', error);
+        }
+    };
+
     return (
         <div className="mx-auto p-6">
             <h1 className="flex text-gray-700 text-3xl font-bold mb-6">Import New Term </h1>
@@ -115,8 +139,34 @@ function ImportNewTerm() {
             {loading && <BeatLoader color="#3c1952" loading={true} />}
             {error && <div className="text-red-500">{error}</div>}
             {success && <div className="text-green-500">File successfully loaded.</div>}
+            {fileData && (
+                <div className="mb-6 mx-auto border border-gray-300 bg-white rounded-lg overflow-y-auto" style={{ maxWidth: '100%', maxHeight: '20%' }}>
+                    <h2 className="text-gray-700 font-bold mb-2">File Preview:</h2>
+                    <table className="w-full table-auto">
+                        <thead>
+                            <tr className="bg-gray-200">
+                                {fileData[0].map((header, index) => (
+                                    <th key={index} className="px-4 py-2">{header}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fileData.slice(1, 6).map((row, rowIndex) => (
+                                <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''} style={{ maxHeight: '20%' }}>
+                                    {row.map((cell, cellIndex) => (
+                                        <td key={cellIndex} className="px-4 py-2 text-sm">{cell}</td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
             <div>
-                <button onClick={handleSubmit} className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white">
+                <button onClick={handleDownloadExampleFile} className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
+                    Download Example File
+                </button>
+                <button onClick={handleSubmit} className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
                     Submit
                 </button>
             </div>
