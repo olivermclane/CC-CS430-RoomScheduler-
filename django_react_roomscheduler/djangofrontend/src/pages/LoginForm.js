@@ -24,6 +24,7 @@ export default function LoginForm() {
     try {
       const data = await login( email, password );
       localStorage.setItem('access_token', data.access);
+      console.log(localStorage.getItem('access_token'))
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)

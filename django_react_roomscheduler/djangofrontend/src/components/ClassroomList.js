@@ -56,7 +56,7 @@ function ClassroomList({selectedFloor}){
                 </h2>
                 <DropdownTerm onTermChange={handleTermChange}/>
             </div>
-            <div className='row'>
+            <div className='row pr-3'>
                 {
                     classrooms.map(classroom => (
                             renderClassroom(classroom)
