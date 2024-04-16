@@ -5,11 +5,16 @@ from rest_framework_simplejwt import views as jwt_views
 from django.views.generic import TemplateView
 from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
      BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView, \
-     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel
+     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel, \
+     IndexView
 
 urlpatterns = [
      ## INDEX ENDPOINT
      path('', DefaultView.as_view()),
+     path('register', IndexView.as_view()),
+     path('login', IndexView.as_view()),
+     path('dashboard', IndexView.as_view()),
+
 
      ## AUTH ENDPOINTS
      path('login/',
