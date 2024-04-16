@@ -1,3 +1,4 @@
 .DS_Store
 node_modules
 djangofrontend/build/
+django_debug.log.1

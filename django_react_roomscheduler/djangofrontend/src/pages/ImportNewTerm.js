@@ -36,6 +36,17 @@ function ImportNewTerm() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
+    const validateFile = (jsonData) => {
+        const columnNames = jsonData[0];
+        const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
+        if (missingColumns.length > 0) {
+            setError(`Missing columns: ${missingColumns.join(', ')}`);
+            logger.error(`Missing columns: ${missingColumns.join(', ')}`);
+            return false;
+        }
+        return true;
+    };
+
     const handleFileUpload = (event) => {
         const uploadedFile = event.target.files[0];
         setFile(uploadedFile);
@@ -49,57 +60,37 @@ function ImportNewTerm() {
             const workbook = XLSX.read(content, { type: 'binary' });
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
             const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-            setFileData(jsonData);
+            if (validateFile(jsonData)) {
+                setFileData(jsonData);
+            }
         };
         reader.readAsBinaryString(uploadedFile);
     };
 
     const handleSubmit = async () => {
-        if (!file) {
+        if (!file || !fileData) {
             setError('Please select a file.');
             logger.error("No file selected to upload")
             return;
         }
 
-        setSuccess(false)
-        setError('')
+        setSuccess(false);
+        setError('');
         setLoading(true);
 
+        const formData = new FormData();
+        formData.append('file', file);
+
         try {
-            const fileReader = new FileReader();
-            fileReader.onload = (e) => {
-                const content = e.target.result;
-                const workbook = XLSX.read(content, { type: 'binary' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const columns = Object.keys(firstSheet);
-                const columnNames = columns.map(key => firstSheet[key].v);
-
-                const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
-                if (missingColumns.length > 0) {
-                    setLoading(false);
-                    setError(`Missing columns: ${missingColumns.join(', ')}`);
-                    logger.error(`Missing columns: ${missingColumns.join(', ')}`);
-                    return;
+            const response = await axios.post('http://localhost:8000/load/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
+            });
 
-                const formData = new FormData();
-                formData.append('file', file);
-
-                axios.post('http://localhost:8000/load/', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }).then(response => {
-                    setLoading(false);
-                    setSuccess(true);
-                    logger.info('Response from server:', response.data);
-                }).catch(error => {
-                    setLoading(false);
-                    logger.error('Error uploading file:', error);
-                    setError('Error uploading file. Please try again.');
-                });
-            };
-            fileReader.readAsBinaryString(file);
+            setLoading(false);
+            setSuccess(true);
+            logger.info('Response from server:', response.data);
         } catch (error) {
             setLoading(false);
             logger.error('Error uploading file:', error);
@@ -134,42 +125,44 @@ function ImportNewTerm() {
         <div className="mx-auto p-6">
             <h1 className="flex text-gray-700 text-3xl font-bold mb-6">Import New Term </h1>
             <div className="flex mb-6">
-                <input type="file" accept=".xlsx" onChange={handleFileUpload} className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300" />
+                <input type="file" accept=".xlsx" onChange={handleFileUpload}
+                       className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300"/>
+                <button onClick={handleDownloadExampleFile}
+                        className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
+                    Download Example File
+                </button>
+                <button onClick={handleSubmit}
+                        className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
+                    Save
+                </button>
             </div>
-            {loading && <BeatLoader color="#3c1952" loading={true} />}
+            {loading && <BeatLoader color="#3c1952" loading={true}/>}
             {error && <div className="text-red-500">{error}</div>}
             {success && <div className="text-green-500">File successfully loaded.</div>}
             {fileData && (
-                <div className="mb-6 mx-auto border border-gray-300 bg-white rounded-lg overflow-y-auto" style={{ maxWidth: '100%', maxHeight: '20%' }}>
-                    <h2 className="text-gray-700 font-bold mb-2">File Preview:</h2>
+                <div className="mb-6 mx-auto border border-gray-300 bg-white rounded-lg overflow-y-auto"
+                     style={{maxWidth: '100%', maxHeight: '20%'}}>
                     <table className="w-full table-auto">
                         <thead>
-                            <tr className="bg-gray-200">
-                                {fileData[0].map((header, index) => (
-                                    <th key={index} className="px-4 py-2">{header}</th>
-                                ))}
-                            </tr>
+                        <tr className="bg-gray-200">
+                            {fileData[0].map((header, index) => (
+                                <th key={index} className="px-4 py-2">{header}</th>
+                            ))}
+                        </tr>
                         </thead>
                         <tbody>
-                            {fileData.slice(1, 6).map((row, rowIndex) => (
-                                <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''} style={{ maxHeight: '20%' }}>
-                                    {row.map((cell, cellIndex) => (
-                                        <td key={cellIndex} className="px-4 py-2 text-sm">{cell}</td>
-                                    ))}
-                                </tr>
-                            ))}
+                        {fileData.slice(1, 6).map((row, rowIndex) => (
+                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''}
+                                style={{maxHeight: '20%'}}>
+                                {row.map((cell, cellIndex) => (
+                                    <td key={cellIndex} className="px-4 py-2 text-sm">{cell}</td>
+                                ))}
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
             )}
-            <div>
-                <button onClick={handleDownloadExampleFile} className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
-                    Download Example File
-                </button>
-                <button onClick={handleSubmit} className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
-                    Submit
-                </button>
-            </div>
         </div>
     );
 }
