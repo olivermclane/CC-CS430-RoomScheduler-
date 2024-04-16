@@ -1,21 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { useAuth } from '../service/AuthProvider';
+import {useAuth} from '../service/auth/AuthProvider';
 import {faChevronDown} from 'react-icons/fa';
 import {ChevronDown} from "lucide-react";
 
-const DropdownTerm = ({ onTermChange }) => {
+const DropdownTerm = ({onTermChange}) => {
     const [terms, setTerms] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedTerm, setSelectedTerm] = useState({ term_id: '', term_name: 'All Terms' });
-    const { axiosInstance } = useAuth();
+    const [selectedTerm, setSelectedTerm] = useState({term_id: '', term_name: 'All Terms'});
+    const {axiosInstance} = useAuth();
 
     useEffect(() => {
         const fetchTerms = async () => {
             try {
-                const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
-                console.log(response.data);
-                setTerms(response.data);
+                const authToken = localStorage.getItem('access_token');
+                if (authToken) {
+                    const response = await axiosInstance.get('/terms/', {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`
+                        }
+                    });
+                    setTerms(response.data);
+                } else {
+                    // Handle the case where access token is not available
+                }
             } catch (error) {
                 console.error('Failed to fetch terms:', error);
             }
@@ -43,7 +51,7 @@ const DropdownTerm = ({ onTermChange }) => {
                 <div className="absolute z-10 w-full bg-white mt-1 border border-purple-500 rounded-md">
                     <div
                         className="py-2 px-4 cursor-pointer hover:bg-violet-500"
-                        onClick={() => handleTermSelect({ term_id: '', term_name: 'All Terms' })}
+                        onClick={() => handleTermSelect({term_id: '', term_name: 'All Terms'})}
                     >
                         All Terms
                     </div>

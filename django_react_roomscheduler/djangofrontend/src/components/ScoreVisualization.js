@@ -10,13 +10,16 @@ import {
     FaRegHourglass,
     FaChartPie, FaCheck
 } from 'react-icons/fa';
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 const ScoreVisualization = ({selectedClassroom}) => {
     const [chartOptions, setChartOptions] = useState({
         chart: {
             height: 600,
             type: "radar",
+        },
+        toolbar: {
+            show: false
         },
         xaxis: {
             categories: ['Prime Time Score', 'Capacity Score', 'Instructor Score', 'Idle Time Score', 'Double Booking Penalty'],
@@ -77,7 +80,7 @@ const ScoreVisualization = ({selectedClassroom}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                 const courseData = response.data[0];
                 const optimizationScores = courseData.classroom.optimization_score;
                 setScoreData(optimizationScores)
@@ -115,7 +118,6 @@ const ScoreVisualization = ({selectedClassroom}) => {
     return (
         <div className="w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden relative p-10">
             <div className="md:flex">
-                {/* Chart Section */}
                 <div className="flex-1 relative " style={{height: '500px'}}>
                     <ReactApexChart
                         options={chartOptions}
@@ -125,7 +127,6 @@ const ScoreVisualization = ({selectedClassroom}) => {
                     />
                 </div>
 
-                {/* Hover Arrow for Score Details */}
                 <div className="absolute bottom-10 right-2 p-4">
                     <FaChartPie
                         className="text-2xl cursor-pointer"
@@ -136,7 +137,6 @@ const ScoreVisualization = ({selectedClassroom}) => {
                 </div>
             </div>
 
-            {/* Sliding Score Details Panel */}
             <div
                 className="absolute bottom-0 left-0 w-full bg-gray-100 p-4 text-sm shadow-lg"
                 style={detailPanelStyles}
@@ -165,7 +165,6 @@ const ScoreVisualization = ({selectedClassroom}) => {
                 </div>
             </div>
 
-            {/* Overall Score and Additional Information */}
             <div className="text-center p-4">
                 <p className="text-xl font-semibold">Overall Score: {overallScore}</p>
                 <hr className="my-4"/>

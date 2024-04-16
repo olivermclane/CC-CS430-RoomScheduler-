@@ -8,6 +8,7 @@ import DailyScheduleInsight2 from "../components/DailyScheduleInsights2";
 import ScoreVisualization from "../components/ScoreVisualization";
 import MonthlyHeatMap from "../components/MonthlyHeatMap"
 import CalendarPopup from "../components/CalendarPopup";
+import ClassroomDetails from "../components/ClassroomDetails";
 
 export default function Insight() {
     const [selectedClassroom, setSelectedClassroom] = useState('');
@@ -39,7 +40,9 @@ export default function Insight() {
             <div className="mt-4">
                 <ScoreVisualization selectedClassroom={selectedClassroom}/>
             </div>
-            <div>
+            <div className="flex space-x-10">
+                <ClassroomDetails selectedClassroom={selectedClassroom}/>
+
                 <MonthlyHeatMap selectedClassroom={selectedClassroom}/>
             </div>
         </div>

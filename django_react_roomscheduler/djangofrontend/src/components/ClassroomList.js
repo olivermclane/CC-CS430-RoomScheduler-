@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
 import axios from "axios";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 import DropdownTerm from "./DropdownTerm";
 
 function ClassroomList({selectedFloor}){
@@ -12,9 +12,14 @@ function ClassroomList({selectedFloor}){
     const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
-
+        let complete_url = ""
+        if(selectedTerm == ""){
+            complete_url += endpoint;
+        }else{
+            complete_url = `/${selectedTerm}${endpoint}`
+        }
         try {
-            const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm}${endpoint}/`);
+            const response = await axiosInstance.get(`${complete_url}/`);
             setClassrooms(response.data);
             console.log(response.data)
         } catch (err) {

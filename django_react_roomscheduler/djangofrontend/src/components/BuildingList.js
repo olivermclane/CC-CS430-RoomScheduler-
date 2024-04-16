@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 
 import Building from "./Building";
 import axios from "axios";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 function BuildingList({updateFloorList}){
     const [endpoint, setEndpoint] = useState("/buildings")
@@ -12,7 +12,7 @@ function BuildingList({updateFloorList}){
     const fetchData = async (endpoint) => {
 
         try {
-            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
+            const response = await axiosInstance.get(`${endpoint}/`);
             setBuildings(response.data);
         } catch (err) {
             if (err.response) {

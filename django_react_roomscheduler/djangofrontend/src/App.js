@@ -2,11 +2,10 @@ import React, {useState} from 'react';
 import LoginForm from './pages/LoginForm';
 import RegisterForm from "./pages/RegisterForm";
 import Dashboard from "./pages/Dashboard";
-import Insight from './pages/Insight'
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {AuthProvider} from "./service/AuthProvider";
+import {AuthProvider} from "./service/auth/AuthProvider";
 
 function App() {
 

@@ -6,7 +6,7 @@ import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
@@ -27,7 +27,7 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                 setOpenTimes(calculateOpenTimes(response.data))
                 const parsedData = parseData(response.data);
                 const transformedData = transformDataForHeatMap(parsedData);

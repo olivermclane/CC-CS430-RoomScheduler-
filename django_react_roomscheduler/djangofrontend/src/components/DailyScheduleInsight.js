@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import axios from "axios";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -11,10 +11,8 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-                console.log("Fetched data:", response.data); // Log fetched data
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                 const parsedData = parseData(response.data);
-                console.log("Parsed data:", parsedData); // Log parsed data
                 setScheduleData(parsedData);
                 updateChartOptions(parsedData);
             } catch (err) {
@@ -55,7 +53,6 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
 
                     // Calculate the time difference in minutes
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
-                    console.log("Time Difference (minutes):", timeDiff);
 
                     // Calculate unused time
                     const unusedTime = timeDiff / 60; // Convert minutes to hours
@@ -68,7 +65,6 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             });
         });
 
-        console.log("Total unused time:", totalUnusedTime); // Log total unused time
 
         const days = Object.keys(totalUnusedTime);
         const unusedTimes = Object.values(totalUnusedTime);
@@ -95,11 +91,11 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             },
             yaxis: {
                 title: {
-                    text: "Total Unused Time (hours)"
+                    text: "Total Idle Time (hours)"
                 },
                 labels: {
                     formatter: (value) => {
-                        return parseInt(value).toString(); // Converts value to integer and then to string for display
+                        return parseInt(value).toString();
                     }
                 },
                 max: 15 // Maximum value for the y-axis (total hours in a day)
@@ -107,7 +103,7 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             colors: ["#BA68C8"],
             series: [
                 {
-                    name: "Total Unused Time",
+                    name: "Free hours",
                     data: unusedTimes
                 }
             ]
@@ -121,7 +117,6 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             const chart = new ApexCharts(document.getElementById("daily-schedule-chart"), chartOptions);
             chart.render();
 
-            // Return a cleanup function to remove the chart when the component unmounts
             return () => chart.destroy();
         }
     }, [chartOptions]);
@@ -131,9 +126,9 @@ function DailyScheduleInsight({selectedTerm, selectedClassroom}) {
             <div id="daily-schedule-chart"/>
             <div className="mt-4">
                 <hr className="my-3"/>
-                <h3 className="text-lg font-semibold mb-2">Unused Time Insight</h3>
+                <h3 className="text-lg font-semibold mb-2">Total Idle Time</h3>
                 <p className="text-sm text-gray-600">
-                    Total unused time for each day based on the class schedule (in a 12-hour day)
+                    Total idle time for each day based on the class schedule (in a 15-hour day)
                 </p>
             </div>
         </div>

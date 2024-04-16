@@ -8,6 +8,9 @@ class Building(models.Model):
     building_name = models.CharField(max_length=100, unique=True)
     image_url = models.URLField(null=True, blank=True)
 
+    class Meta:
+        app_label = 'roomschedulerapi'
+
     def __str__(self):
         return f"{self.building_name} (ID: {self.building_id})"
 
@@ -18,6 +21,9 @@ class Floor(models.Model):
     building_name = models.CharField(max_length=50, default=0)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
 
+    class Meta:
+        app_label = 'roomschedulerapi'
+
     def __str__(self):
         return f"{self.floor_name} (ID: {self.floor_id})"
 
@@ -27,6 +33,9 @@ class Term(models.Model):
     term_name = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'roomschedulerapi'
 
     def __str__(self):
         return f"{self.term_name} (ID: {self.term_id})"
@@ -43,6 +52,10 @@ class OptiScore(models.Model):
     idle_time_score = models.DecimalField(max_digits=5, decimal_places=2)
     double_booking = models.BooleanField(default=False)
     overall_score = models.DecimalField(max_digits=5, decimal_places=2)
+
+
+    class Meta:
+        app_label = 'roomschedulerapi'
 
     def __str__(self):
         return f"{self.overall_score} (ID: {self.score_id})"
@@ -74,6 +87,9 @@ class Classroom(models.Model):
     floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
     optimization_score = models.ForeignKey(OptiScore, on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        app_label = 'roomschedulerapi'
+
     def __str__(self):
         return f"{self.classroom_name} (ID: {self.classroom_id})"
 
@@ -101,6 +117,9 @@ class Course(models.Model):
     friday = models.BooleanField(default=False)
     saturday = models.BooleanField(default=False)
     sunday = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = 'roomschedulerapi'
 
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
@@ -148,6 +167,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     objects = UserManager()
+
+    class Meta:
+        app_label = 'roomschedulerapi'
 
     def __str__(self):
         return self.email

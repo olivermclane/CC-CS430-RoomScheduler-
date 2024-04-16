@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Floor from "./Floor";
 import axios from "axios";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 function FloorList({selectedBuilding, updateClassroomList}){
     const [endpoint, setEndpoint] = useState("/floors")
@@ -12,7 +12,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
 
         try {
             const storedToken = localStorage.getItem("access_token");
-            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
+            const response = await axiosInstance.get(`${endpoint}/`);
             setFloors(response.data);
         } catch (err) {
             if (err.response) {

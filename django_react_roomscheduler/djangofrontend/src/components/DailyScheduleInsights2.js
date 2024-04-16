@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
-import axios from "axios";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
 function DailyScheduleInsight2({ selectedClassroom }) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -14,10 +13,8 @@ function DailyScheduleInsight2({ selectedClassroom }) {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
-            console.log("Fetched data:", response.data); // Log fetched data
+            const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
             const parsedData = parseData(response.data);
-            console.log("Parsed data:", parsedData); // Log parsed data
             setScheduleData(parsedData);
             updateTotalUsedTimeChartOptions(parsedData);
         } catch (err) {
@@ -56,7 +53,6 @@ function DailyScheduleInsight2({ selectedClassroom }) {
 
                     // Calculate the time difference in minutes
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
-                    console.log("Time Difference (minutes):", timeDiff);
 
                     // Calculate used time
                     const usedTime = timeDiff / 60; // Convert minutes to hours
@@ -65,7 +61,6 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             });
         });
 
-        console.log("Total used time:", totalUsedTime); // Log total used time
 
         const days = Object.keys(totalUsedTime);
         const usedTimes = Object.values(totalUsedTime);
@@ -95,7 +90,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
                 },
                 labels: {
                     formatter: (value) => {
-                        return parseInt(value).toString(); // Converts value to integer and then to string for display
+                        return parseInt(value).toString();
                     }
                 },
                 max: 15 // Maximum value for the y-axis (total hours in a day)
@@ -103,7 +98,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             colors: ["#BA68C8"],
             series: [
                 {
-                    name: "Total Used Time",
+                    name: "Hours Used",
                     data: usedTimes
                 }
             ]
@@ -117,7 +112,6 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             const chart = new ApexCharts(document.getElementById("daily-schedule-chart2"), chartOptions);
             chart.render();
 
-            // Return a cleanup function to remove the chart when the component unmounts
             return () => chart.destroy();
         }
     }, [chartOptions]);
@@ -127,7 +121,7 @@ function DailyScheduleInsight2({ selectedClassroom }) {
             <div id="daily-schedule-chart2"/>
             <div className="mt-4">
                 <hr className="my-3"/>
-                <h3 className="text-lg font-semibold mb-2">Used Time Insight</h3>
+                <h3 className="text-lg font-semibold mb-2">Total Used Time</h3>
                 <p className="text-sm text-gray-600">
                     Total used time for each day based on the class schedule (in a 12-hour day)
                 </p>

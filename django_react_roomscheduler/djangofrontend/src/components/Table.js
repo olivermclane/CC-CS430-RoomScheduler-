@@ -1,11 +1,15 @@
 import {useMemo, useEffect, useState} from "react";
 import React from "react";
+import ExportComponent from "./ExportComponent"
+import * as XLSX from 'xlsx';
 
 import {
     ChevronsLeft,
     ChevronLeft,
     ChevronsRight,
     ChevronRight,
+    Minus,
+    Plus,
 } from "lucide-react";
 import {DOTS, useCustomPagination} from "./pagination/CustomPagination";
 
@@ -20,9 +24,13 @@ import {useRowSelectColumn} from "@lineup-lite/hooks";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
 import DropdownTerm from "./DropdownTerm";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 
-export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
+export function GlobalFilter({
+                                 globalFilter,
+                                 setGlobalFilter,
+                                 placeholder,
+                             }) {
     const [value, setValue] = useState(globalFilter);
     const onChange = useAsyncDebounce((value) => {
         setGlobalFilter(value || undefined);
@@ -46,43 +54,19 @@ export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
 
 const Table = () => {
     const [tableData, setTableData] = useState([]);
-    const [endpoint, setEndpoint] = useState("/courses"); // Default endpoint
+    const [endpoint, setEndpoint] = useState("/courses/"); // Default endpoint
     const [selectedRows, setSelectedRows] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [hiddenColumns, setHiddenColumns] = useState([]);
     const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState('')
-    const {axiosInstance} = useAuth();
-    console.log(isLoading)
-    const fetchData = async (endpoint) => {
-    setIsLoading(true); // Ensure loading starts every time fetchData is called
-    try {
-        const response = await axiosInstance.get(`http://localhost:8000/${selectedTerm}${endpoint}/`);
-        // Assuming response.data is the array of data you're interested in
-        if (response.data && response.data.length > 0) {
-            setTableData(response.data);
-            setIsLoading(false); // Only set loading to false if data is successfully fetched
-        } else {
-            // Handle the case where data is successfully fetched but empty
-            setTableData([]); // Or maintain the old data, based on your needs
-            setIsLoading(false); // Consider whether you still want to set loading to false here
-        }
-    } catch (err) {
-        if (err.response) {
-            console.log("Server error:", err.response.data);
-        } else if (err.request) {
-            console.log("Network error:", err.message);
-        } else {
-            console.log("Error:", err.message);
-        }
-    }
-};
+    const [columnOrder, setColumnOrder] = useState([]);
+    const [isExportModalOpen, setExportModalOpen] = useState(false);
 
-    useEffect(() => {
-        fetchData(endpoint);
-    }, [endpoint, selectedTerm]);
+    const {axiosInstance} = useAuth();
 
     const data = tableData;
+
 
     const columnsClassroom = useMemo(
         () => [
@@ -245,25 +229,141 @@ const Table = () => {
         ], []
     );
 
-    const toggleColumnVisibility = (columnId) => {
-        setHiddenColumns((prevHiddenColumns) => {
-            if (prevHiddenColumns.includes(columnId)) {
-                return prevHiddenColumns.filter((col) => col !== columnId);
+    const fetchData = async (endpoint) => {
+        setIsLoading(true); // Ensure loading starts every time fetchData is called
+        try {
+            const authToken = localStorage.getItem('access_token');
+            if (authToken) {
+                let requestUrl = "";
+                if (selectedTerm === "") {
+                    requestUrl += endpoint;
+                } else {
+                    requestUrl += `/${selectedTerm}${endpoint}`;
+                }
+                const response = await axiosInstance.get(requestUrl, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                });
+                if (response.data && response.data.length > 0) {
+                    setTableData(response.data);
+                    setIsLoading(false);
+                } else {
+                    // Handle the case where data is successfully fetched but empty
+                    setTableData([]);
+                    setIsLoading(false);
+                }
             } else {
-                return [...prevHiddenColumns, columnId];
+                // Handle the case where access token is not available
             }
+        } catch (err) {
+            if (err.response) {
+                console.log("Server error:", err.response.data);
+            } else if (err.request) {
+                console.log("Network error:", err.message);
+            } else {
+                console.log("Error:", err.message);
+            }
+        }
+    };
+
+
+    const orderedColumns = useMemo(() => {
+        const baseColumns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
+        return columnOrder
+            .map(accessor => baseColumns.find(col => col.accessor === accessor))
+            .filter(Boolean);
+    }, [columnOrder, endpoint, columnsCourses, columnsClassroom]);
+
+    const handleExportButtonClick = () => {
+        setExportModalOpen(true);
+    };
+
+    const toggleColumnVisibility = (columnId) => {
+        setHiddenColumns(prevHiddenColumns => {
+            const isNowHidden = !prevHiddenColumns.includes(columnId);
+            const newHiddenColumns = isNowHidden
+                ? [...prevHiddenColumns, columnId]
+                : prevHiddenColumns.filter(id => id !== columnId);
+
+            if (isNowHidden) {
+                setColumnOrder(prevOrder => {
+                    const newOrder = prevOrder.filter(id => id !== columnId);
+                    newOrder.push(columnId); // Move to end
+                    return newOrder;
+                });
+            } else {
+                setColumnOrder(prevOrder => {
+                    const newOrder = prevOrder.filter(id => id !== columnId);
+                    newOrder.unshift(columnId); // Move to beginning
+                    return newOrder;
+                });
+            }
+
+            return newHiddenColumns;
         });
     };
 
-    const columns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
+
+    const moveColumn = (dragIndex, hoverIndex) => {
+        const dragColumn = columnOrder[dragIndex];
+        const newColumnOrder = [...columnOrder];
+        newColumnOrder.splice(dragIndex, 1);
+        newColumnOrder.splice(hoverIndex, 0, dragColumn);
+        console.log(columnOrder)
+        setColumnOrder(newColumnOrder);
+    };
+
+    const columns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
 
     const modifiedColumns = useMemo(() => {
+        const orderedColumnAccessors = orderedColumns.map(col => col.accessor);
         return columns.map((column) => ({
             ...column,
-            show: !hiddenColumns.includes(column.accessor),
+            show: orderedColumnAccessors.includes(column.accessor) && !hiddenColumns.includes(column.accessor),
         }));
+    }, [columns, hiddenColumns, orderedColumns]);
 
-    }, [columns, hiddenColumns]);
+
+    const handleRowCheckboxChange = (row) => {
+        if (selectedRows.includes(row)) {
+            setSelectedRows(selectedRows.filter(selectedRow => selectedRow !== row));
+        } else {
+            setSelectedRows([...selectedRows, row]);
+        }
+    };
+    const handleTermChange = (termId) => {
+        console.log(termId)
+        setSelectedTerm(termId);
+    }
+
+    const handleSelectAllChange = () => {
+        setIsSelectAllChecked(!isSelectAllChecked);
+    };
+
+
+    useEffect(() => {
+        if (isSelectAllChecked) {
+            setSelectedRows([...tableData]);
+        } else {
+            setSelectedRows([]);
+        }
+    }, [isSelectAllChecked, tableData]);
+
+
+    useEffect(() => {
+        fetchData(endpoint);
+        const initialOrder = endpoint === "/courses/" ? columnsCourses.map(c => c.accessor) : columnsClassroom.map(c => c.accessor);
+        setColumnOrder(initialOrder);
+    }, [endpoint, selectedTerm]);
+
+    useEffect(() => {
+        console.log(orderedColumns);
+    }, [orderedColumns]);
+
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
 
 
     const {
@@ -272,6 +372,7 @@ const Table = () => {
         headerGroups,
         prepareRow,
         page,
+        rows,
         canPreviousPage,
         canNextPage,
         nextPage,
@@ -292,39 +393,7 @@ const Table = () => {
         useRowSelect,
         useRowSelectColumn
     );
-
-
     const {pageIndex} = state;
-    const paginationRange = useCustomPagination({
-        totalPageCount: pageCount,
-        currentPage: pageIndex,
-    });
-
-
-    useEffect(() => {
-        if (isSelectAllChecked) {
-            setSelectedRows([...tableData]); // Select all rows if "Select All" checkbox is checked
-        } else {
-            setSelectedRows([]); // Deselect all rows if "Select All" checkbox is unchecked
-        }
-    }, [isSelectAllChecked, tableData]);
-
-    const handleRowCheckboxChange = (row) => {
-        if (selectedRows.includes(row)) {
-            setSelectedRows(selectedRows.filter(selectedRow => selectedRow !== row));
-        } else {
-            setSelectedRows([...selectedRows, row]);
-        }
-    };
-
-    const handleTermChange = (termId) => {
-        console.log(termId)
-        setSelectedTerm(termId);
-    }
-
-    const handleSelectAllChange = () => {
-        setIsSelectAllChecked(!isSelectAllChecked);
-    };
 
 
     const loadingRows = isLoading ? Array.from({length: 13}).map((_, rowIndex) => (
@@ -348,37 +417,43 @@ const Table = () => {
         </tr>
     )) : null;
 
+    const exportSelectedRows = (fileName, fileType) => {
+        // Filter columns based on columnOrder
+        const orderedColumns = columnOrder.map(accessor => {
+            return (endpoint === "/courses/" ? columnsCourses : columnsClassroom).find(col => col.accessor === accessor);
+        });
 
-    const exportSelectedRows = () => {
-        const allColumns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
-        const visibleColumns = allColumns.filter(column => !hiddenColumns.includes(column.accessor));
-        const headers = visibleColumns.map(column => column.Header);
-        const visibleRows = page.map(row => row.original);
-        const selectedVisibleRows = selectedRows.filter(row => visibleRows.includes(row));
+        // Filter visible columns
+        const visibleColumns = orderedColumns.filter(column => !hiddenColumns.includes(column.accessor));
+        const headers = visibleColumns.map(column => ({header: column.Header, key: column.accessor}));
 
-        // Include only visible columns in the export
-        const data = selectedVisibleRows.map(row => visibleColumns.map(column => {
-            // Wrap each field value in double quotes to handle commas
-            const cellValue = row[column.accessor];
-            return typeof cellValue === 'string' && cellValue.includes(',') ? `"${cellValue}"` : cellValue;
-        }));
+        const selectedVisibleRows = selectedRows.map(selectedRow => {
+            const correspondingRow = rows.find(row => row.original.course_id === selectedRow.course_id);
+            return correspondingRow ? correspondingRow.original : null;
+        }).filter(row => row);
 
-        // Construct CSV content
-        const csvContent = [
-            headers.join(','),
-            ...data.map(row => row.join(','))
-        ].join('\n');
+        // Map data to array of objects for each row
+        const data = selectedVisibleRows.map(row => {
+            const rowData = {};
+            visibleColumns.forEach(column => {
+                rowData[column.Header] = row[column.accessor];
+            });
+            return rowData;
+        });
 
-        // Download the CSV file
-        const blob = new Blob([csvContent], {type: 'text/csv'});
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Carroll_X_X.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        if (fileType === 'csv') {
+            // Convert to CSV
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data");
+            XLSX.writeFile(wb, `${fileName}.csv`);
+        } else {
+            // Convert to Excel
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data");
+            XLSX.writeFile(wb, `${fileName}.xlsx`);
+        }
     };
 
 
@@ -397,36 +472,65 @@ const Table = () => {
                         <div className="flex p-4">
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
-                                onClick={() => setEndpoint("/courses")}
+                                onClick={() => setEndpoint("/courses/")}
                             >
                                 Courses
                             </button>
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white"
-                                onClick={() => setEndpoint("/classrooms")}
+                                onClick={() => setEndpoint("/classrooms/")}
                             >
                                 Classrooms
                             </button>
                             <DropdownTerm onTermChange={handleTermChange}/>
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-auto hover:bg-purple-700 hover:text-white"
-                                onClick={exportSelectedRows}
+                                onClick={handleExportButtonClick}
                             >
                                 Export Selected
                             </button>
+                            <ExportComponent
+                                isOpen={isExportModalOpen}
+                                onClose={() => setExportModalOpen(false)}
+                                onExport={(fileName, fileType) => exportSelectedRows(fileName, fileType)}  // Here we pass the parameters to the function
+                            />
                         </div>
-
                         <div className="flex p-4">
-                            {modifiedColumns.map((column) => (
-                                <button
-                                    key={column.Header}
-                                    onClick={() => toggleColumnVisibility(column.accessor)}
-                                    className={`${
-                                        column.show ? "bg-violet-300" : "bg-gray-300"
-                                    } text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white`}
-                                >
-                                    {column.Header}
-                                </button>
+                            {orderedColumns.map((column, index) => (
+                                <div key={column.Header} className="flex flex-col items-center mr-4">
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => index > 0 && moveColumn(index, index - 1)}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            <ChevronLeft/>
+                                        </button>
+                                        <button
+                                            className={`text-white font-bold px-4 py-2 rounded min-h-10 ${
+                                                !hiddenColumns.includes(column.accessor) ? "bg-violet-300" : "bg-gray-300"
+                                            }`}
+                                            disabled={true}
+                                        >
+                                            {column.Header}
+                                        </button>
+                                        <button
+                                            onClick={() => index < orderedColumns.length - 1 && moveColumn(index, index + 1)}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            <ChevronRight/>
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={() => toggleColumnVisibility(column.accessor)}
+                                        className={`mt-2 ${!hiddenColumns.includes(column.accessor) ? "text-red-500 hover:text-red-700" : "text-green-500 hover:text-green-700"}`}
+                                    >
+                                        {!hiddenColumns.includes(column.accessor) ? (
+                                            <Minus/>
+                                        ) : (
+                                            <Plus/>
+                                        )}
+                                    </button>
+                                </div>
                             ))}
                         </div>
 
@@ -469,7 +573,7 @@ const Table = () => {
                                 page.map((row, i) => {
                                     prepareRow(row);
                                     return (
-                                        <tr {...row.getRowProps()}>
+                                        <tr {...row.getRowProps()} key={`row-${i}`}>
                                             <td>
                                                 <input
                                                     type="checkbox"
@@ -483,6 +587,7 @@ const Table = () => {
                                                 cell.column.show && (
                                                     <td
                                                         {...cell.getCellProps()}
+                                                        key={`cell-${cellIndex}`}
                                                         className="px-6 py-10 whitespace-nowrap"
                                                     >
                                                         {cell.render("Cell")}
@@ -501,16 +606,16 @@ const Table = () => {
             </div>
             <div className="py-3 flex items-center text-center justify-center pt-10">
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                    <ChevronsLeft/>
+                    <ChevronsLeft size={50}/>
                 </button>
                 <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                    <ChevronLeft/>
+                    <ChevronLeft size={50}/>
                 </button>
                 <button onClick={() => nextPage()} disabled={!canNextPage}>
-                    <ChevronRight/>
+                    <ChevronRight size={50}/>
                 </button>
                 <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-                    <ChevronsRight/>
+                    <ChevronsRight size={50}/>
                 </button>
                 <span>
                 Page{" "}
