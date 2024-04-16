@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Building from './Building';
+import React, {useEffect, useState} from 'react'
+
+import Building from "./Building";
+import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
-import {useAuth} from "../service/AuthProvider";
 
 function BuildingList({updateFloorList}){
     const [endpoint, setEndpoint] = useState("/buildings")
@@ -10,8 +11,7 @@ function BuildingList({updateFloorList}){
 
     const fetchData = async (endpoint) => {
         try {
-            logger.info('Fetching data from endpoint:', endpoint); // Log the endpoint being called
-            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
+            const response = await axiosInstance.get(`${endpoint}/`);
             setBuildings(response.data);
             logger.info('Response received:'); // Log the response received
 

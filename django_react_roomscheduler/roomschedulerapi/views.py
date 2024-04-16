@@ -88,7 +88,7 @@ class BuildingView(APIView):
     def get(self, request):
         # Retrieve buildings data for authenticated user
         buildings = Building.objects.all()
-        logger.info(f"Buildings accessed by {request.user.username}")
+        logger.info(f"Buildings accessed by {request.user.username}{request.user.email}")
         serializer = BuildingSerializer(buildings, many=True)
         return Response(serializer.data)
 
@@ -160,7 +160,9 @@ class ClassroomTermView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term):
-        classrooms = Classroom.objects.all().filter(term=term)
+        classrooms = Classroom.objects.filter(term=term)
+        if not classrooms:
+            return Response({'error': 'Classroom Term not found.'}, status=404)
         logger.info(f"Classrooms Term {term}  accessed by {request.user.username}")
         serializer = ClassroomSerializer(classrooms, many=True)
         return Response(serializer.data)
@@ -169,7 +171,6 @@ class ClassroomTermView(APIView):
 class FloorView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    # permission_classes = (AllowAny,)
     def get(self, request):
         floors = Floor.objects.all()
         logger.info(f"Floors accessed by {request.user.username}")
@@ -183,7 +184,7 @@ class FloorDetailView(APIView):
     def get(self, request, pk):
         try:
             floor = Floor.objects.get(floor_id=pk)
-            logger.info(f"Floor accessed by {request.user.username}")
+            logger.info(f"Floor accessed by {request.user.username}{floor.floor_name}{floor.building_name}")
             serializer = FloorSerializer(floor)
             return Response(serializer.data)
         except Floor.DoesNotExist:
@@ -194,14 +195,12 @@ class ClassroomCoursesView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, fk):
-        try:
-            classroomCourse = Course.objects.all().filter(classroom_id=fk)
-            serializer = ClassroomCourseSerializer(classroomCourse, many=True)
-            logger.info(f"Classroom Courses accessed by {request.user.username}")
-            return Response(serializer.data)
-        except Floor.DoesNotExist:
-            return Response({'error': 'Classroom and course combination not found'}, status=404)
-
+        courses = Course.objects.filter(classroom_id=fk)
+        if not courses.exists():
+            return Response({'error': 'No courses found for the specified classroom and term.'}, status=404)
+        serializer = ClassroomCourseSerializer(courses, many=True)
+        logger.info(f"Classroom Courses accessed by {request.user.username}")
+        return Response(serializer.data)
 
 class TermView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -220,26 +219,26 @@ class CoursesTermView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term):
-        try:
-            classroomCourseTerm = Course.objects.all().filter(term=term)
-            serializer = ClassroomCourseSerializer(classroomCourseTerm, many=True)
-            logger.info(f"Courses for term accessed by {request.user.username}")
-            return Response(serializer.data)
-        except Floor.DoesNotExist:
-            return Response({'error': 'Classroom and course combination not found'}, status=404)
+        classroomCourseTerm = Course.objects.filter(term=term)
+        if not classroomCourseTerm.exists():
+            return Response({'error': 'No courses found for the specified term.'}, status=404)
+        serializer = ClassroomCourseSerializer(classroomCourseTerm, many=True)
+        logger.info(f"Courses for term accessed by {request.user.username}")
+        return Response(serializer.data)
+
 
 
 class ClassroomCoursesTermView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term, fk):
-        try:
-            classroomCourse = Course.objects.get(term=term, classroom_id=fk)
-            serializer = ClassroomCourseSerializer(classroomCourse, many=True)
-            logger.info(f"Classroom courses for term: {classroomCourse} accessed by {request.user.username}")
-            return Response(serializer.data)
-        except Floor.DoesNotExist:
-            return Response({'error': 'Classroom and course combination not found'}, status=404)
+        courses = Course.objects.filter(classroom_id=fk, term_id=term)
+        if not courses.exists():
+            return Response({'error': 'No courses found for the specified classroom and term.'}, status=404)
+
+        serializer = CourseSerializer(courses, many=True)
+        logger.info(f"Classroom courses for term: {courses} accessed by {request.user.username}")
+        return Response(serializer.data)
 
 
 class LoadView(APIView):
