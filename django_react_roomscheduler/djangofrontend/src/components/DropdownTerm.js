@@ -14,8 +14,8 @@ const DropdownTerm = ({ onTermChange }) => {
     useEffect(() => {
         const fetchTerms = async () => {
             try {
-                logger.info('Requested data from terms');
-                const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
+                const response = await axiosInstance.get('/terms/');
+                console.log(response.data);
                 setTerms(response.data);
                 logger.info('Received data from terms');
 

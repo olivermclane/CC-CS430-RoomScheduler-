@@ -5,9 +5,9 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
     const [authToken, setAuthToken] = useState(localStorage.getItem('access_token'));
-
+    console.log(authToken)
     const axiosInstance = axios.create({
-        baseURL: 'http://localhost:8000/',
+        baseURL: 'http://localhost:8000',
         timeout: 20000,
     });
 
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
                 throw new Error("No refresh token available");
             }
 
-            const refreshedResponse = await axios.post('/login/refresh/', {refresh: refreshToken});
+            const refreshedResponse = await axiosInstance.post('/login/refresh/', {refresh: refreshToken});
             const {access: newAccessToken} = refreshedResponse.data;
 
             localStorage.setItem('access_token', newAccessToken);

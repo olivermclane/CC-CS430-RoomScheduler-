@@ -47,7 +47,7 @@ export function GlobalFilter({globalFilter, setGlobalFilter, placeholder}) {
 
 const Table = () => {
     const [tableData, setTableData] = useState([]);
-    const [endpoint, setEndpoint] = useState("/courses"); // Default endpoint
+    const [endpoint, setEndpoint] = useState("/courses/"); // Default endpoint
     const [selectedRows, setSelectedRows] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [hiddenColumns, setHiddenColumns] = useState([]);
@@ -58,9 +58,14 @@ const Table = () => {
     const fetchData = async (endpoint) => {
     setIsLoading(true); // Ensure loading starts every time fetchData is called
     try {
-        logger.info('Requested data from courses')
-        const response = await axiosInstance.get(`http://localhost:8000/${selectedTerm}${endpoint}/`);
-        logger.info('Received data from courses')
+        let requestUrl = ""
+        if(selectedTerm == ""){
+            requestUrl += endpoint;
+        }else{
+            requestUrl += "/" + selectedTerm + endpoint;
+        }
+        const response = await axiosInstance.get(requestUrl)
+
         // Assuming response.data is the array of data you're interested in
         if (response.data && response.data.length > 0) {
             setTableData(response.data);
@@ -258,7 +263,7 @@ const Table = () => {
         });
     };
 
-    const columns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
+    const columns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
 
     const modifiedColumns = useMemo(() => {
         return columns.map((column) => ({
@@ -353,7 +358,7 @@ const Table = () => {
 
 
     const exportSelectedRows = () => {
-        const allColumns = endpoint === "/courses" ? columnsCourses : columnsClassroom;
+        const allColumns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
         const visibleColumns = allColumns.filter(column => !hiddenColumns.includes(column.accessor));
         const headers = visibleColumns.map(column => column.Header);
         const visibleRows = page.map(row => row.original);
@@ -386,7 +391,7 @@ const Table = () => {
 
 
     return (
-        <div className="flex flex-col md:max-w">
+        <div className="flex flex-col md:max-w" style={{fontSize: "0.5em"}}>
             <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
                     <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -400,13 +405,13 @@ const Table = () => {
                         <div className="flex p-4">
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
-                                onClick={() => setEndpoint("/courses")}
+                                onClick={() => setEndpoint("/courses/")}
                             >
                                 Courses
                             </button>
                             <button
                                 className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white"
-                                onClick={() => setEndpoint("/classrooms")}
+                                onClick={() => setEndpoint("/classrooms/")}
                             >
                                 Classrooms
                             </button>
@@ -419,19 +424,6 @@ const Table = () => {
                             </button>
                         </div>
 
-                        <div className="flex p-4">
-                            {modifiedColumns.map((column) => (
-                                <button
-                                    key={column.Header}
-                                    onClick={() => toggleColumnVisibility(column.accessor)}
-                                    className={`${
-                                        column.show ? "bg-violet-300" : "bg-gray-300"
-                                    } text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white`}
-                                >
-                                    {column.Header}
-                                </button>
-                            ))}
-                        </div>
 
                         {isLoading && (
                             <div
@@ -442,6 +434,23 @@ const Table = () => {
                         )}
                         <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-10">
+                            <tr>
+                                <th>&nbsp;</th>
+                                {modifiedColumns.map((column) => (
+
+                                    <th>
+                                        <button
+                                            key={column.Header}
+                                            onClick={() => toggleColumnVisibility(column.accessor)}
+                                            className={`${
+                                                column.show ? "bg-violet-300" : "bg-gray-300"
+                                            } text-white font-bold py-2 px-2 rounded w-100 whitespace-nowrap hover:bg-purple-700 hover:text-white`}
+                                        >
+                                            {column.Header}
+                                        </button>
+                                    </th>
+                            ))}
+                            </tr>
                             <tr>
                                 <th>
                                     <input
@@ -457,7 +466,7 @@ const Table = () => {
                                         column.show && (
                                             <th
                                                 {...column.getHeaderProps()}
-                                                className="px-6 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
+                                                className="px-2 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
                                             >
                                                 {column.render("Header")}
                                             </th>
