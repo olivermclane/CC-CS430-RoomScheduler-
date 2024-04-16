@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import CalHeatmap from 'cal-heatmap';
 import 'cal-heatmap/cal-heatmap.css';
-import axios from "axios";
-import Tooltip from 'cal-heatmap/plugins/Tooltip';
-import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
 import {useAuth} from "../service/auth/AuthProvider";
+import logger from "../loggers/logger";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
@@ -33,7 +31,7 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                 const transformedData = transformDataForHeatMap(parsedData);
                 setScheduleData(transformedData);
             } catch (err) {
-                console.error(err);
+                logger.error(err);
             }
         };
 

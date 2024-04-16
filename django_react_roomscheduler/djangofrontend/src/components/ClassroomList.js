@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Classroom from "./Classroom";
-import axios from "axios";
 import {useAuth} from "../service/auth/AuthProvider";
+import logger from "../loggers/logger"
 import DropdownTerm from "./DropdownTerm";
 
 function ClassroomList({selectedFloor}){
@@ -20,15 +20,16 @@ function ClassroomList({selectedFloor}){
         }
         try {
             const response = await axiosInstance.get(`${complete_url}/`);
+            logger.info('Fetching data from endpoint:', selectedTerm, endpoint); // Log the endpoint being called
             setClassrooms(response.data);
-            console.log(response.data)
+
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error("Server error:", err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error("Network error:", err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error("Error:", err.message);
             }
         }
     };
@@ -61,7 +62,7 @@ function ClassroomList({selectedFloor}){
                 </h2>
                 <DropdownTerm onTermChange={handleTermChange}/>
             </div>
-            <div className='row'>
+            <div className='row pr-3'>
                 {
                     classrooms.map(classroom => (
                             renderClassroom(classroom)

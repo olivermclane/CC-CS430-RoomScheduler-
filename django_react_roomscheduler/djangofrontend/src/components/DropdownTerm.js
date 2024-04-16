@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
 import {useAuth} from '../service/auth/AuthProvider';
-import {faChevronDown} from 'react-icons/fa';
 import {ChevronDown} from "lucide-react";
+import logger from "../loggers/logger";
 
 const DropdownTerm = ({onTermChange}) => {
     const [terms, setTerms] = useState([]);
@@ -13,19 +12,12 @@ const DropdownTerm = ({onTermChange}) => {
     useEffect(() => {
         const fetchTerms = async () => {
             try {
-                const authToken = localStorage.getItem('access_token');
-                if (authToken) {
-                    const response = await axiosInstance.get('/terms/', {
-                        headers: {
-                            Authorization: `Bearer ${authToken}`
-                        }
-                    });
-                    setTerms(response.data);
-                } else {
-                    // Handle the case where access token is not available
-                }
+                const response = await axiosInstance.get('/terms/');
+                console.log(response.data);
+                setTerms(response.data);
+                logger.info('Received data from terms');
             } catch (error) {
-                console.error('Failed to fetch terms:', error);
+                logger.error('Failed to fetch terms:', error);
             }
         };
 

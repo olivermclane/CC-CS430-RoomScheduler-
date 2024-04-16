@@ -29,7 +29,7 @@ const ClassroomDetails = ({ selectedClassroom }) => {
                     <p>Sinks: {classroomData.sinks}</p>
                     <p>Total Seats: {classroomData.total_seats}</p>
                     <p>Total TVs: {classroomData.total_tv}</p>
-                    <p>Width of Room: {classroomData.width_of_room}</p>
+                    <p>Width of Room: {classroomData.width_of_room} ft</p>
                     <p>Blu-ray Player: <span
                         className={`badge ${classroomData.blueray_player ? 'bg-success' : 'bg-danger'}`}>{classroomData.blueray_player ? 'Yes' : 'No'}</span>
                     </p>
@@ -71,7 +71,7 @@ const ClassroomDetails = ({ selectedClassroom }) => {
             <hr className="my-3"/>
             <h3 className="text-lg font-semibold mb-2">Classroom Details</h3>
             <p className="text-sm text-gray-600">
-                Basic information regarding the currently selected classroom, including total seats, TV's/Projectors, etc.
+                Basic information regarding the currently selected classroom, including insights into classroom aspects such as number of projectors, storage, chairs, along with the notes attached to the classroom.
             </p>
         </div>
     );

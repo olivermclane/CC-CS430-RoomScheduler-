@@ -62,7 +62,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'djangofrontend/build')
+            os.path.join(BASE_DIR, 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -136,7 +136,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 AUTH_USER_MODEL = 'roomschedulerapi.User'
 
@@ -146,8 +149,9 @@ AUTH_USER_MODEL = 'roomschedulerapi.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'djangofrontend/build/static')
+    os.path.join(BASE_DIR, 'djangofrontend/build/static/'),
 ]
+
 
 ## SIMPLE JWT Configuration
 SIMPLE_JWT = {

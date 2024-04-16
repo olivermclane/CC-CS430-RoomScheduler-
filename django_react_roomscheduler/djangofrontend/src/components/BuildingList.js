@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 
 import Building from "./Building";
-import axios from "axios";
 import {useAuth} from "../service/auth/AuthProvider";
+import logger from "../loggers/logger";
 
 function BuildingList({updateFloorList}){
     const [endpoint, setEndpoint] = useState("/buildings")
@@ -10,23 +10,26 @@ function BuildingList({updateFloorList}){
     const { axiosInstance } = useAuth();
 
     const fetchData = async (endpoint) => {
-
         try {
             const response = await axiosInstance.get(`${endpoint}/`);
             setBuildings(response.data);
+            logger.info('Response received:'); // Log the response received
+
         } catch (err) {
             if (err.response) {
-                console.log("Server error:", err.response.data);
+                logger.error('Server error:', err.response.data);
             } else if (err.request) {
-                console.log("Network error:", err.message);
+                logger.error('Network error:', err.message);
             } else {
-                console.log("Error:", err.message);
+                logger.error('Error:', err.message);
             }
         }
     };
+
     useEffect(() => {
         fetchData(endpoint);
     }, [endpoint]);
+
 
     function selectBuilding(building){
         updateFloorList(building)
@@ -36,20 +39,17 @@ function BuildingList({updateFloorList}){
         }
         document.getElementById("building-" + building.building_id).style.border = "10px solid violet"
     }
+
     return (
         <div className='text-gray-700 building-list'>
             <h2>Building list</h2>
-            <div className='row'>
-                {
-                    buildings.map(building=>(
-                        <Building building={building} selectBuilding = {selectBuilding} />
-                        )
-                    )
-                }
+            <div className="row">
+                {buildings.map((building) => (
+                    <Building key={building.id} building={building} selectBuilding={selectBuilding} />
+                ))}
             </div>
         </div>
-    )
-
+    );
 }
 
-export default BuildingList
+export default BuildingList;

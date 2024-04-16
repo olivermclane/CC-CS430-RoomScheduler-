@@ -20,7 +20,7 @@ function ImportPage() {
     // Function to handle CSV data submission
     const handleSubmit = () => {
         // Perform actions with the imported CSV data
-        console.log('CSV data:', csvData);
+        logger.info('CSV data loaded');
         // Example: send data to backend API for processing
     };
 

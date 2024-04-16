@@ -11,18 +11,18 @@ import {
     Minus,
     Plus,
 } from "lucide-react";
-import {DOTS, useCustomPagination} from "./pagination/CustomPagination";
 
 import {
     useTable,
     useGlobalFilter,
     useAsyncDebounce,
     usePagination,
-    useRowSelect,
+    useRowSelect, useFlexLayout,
 } from "react-table";
 import {useRowSelectColumn} from "@lineup-lite/hooks";
 import {GridLoader} from "react-spinners";
 import './loadingstyle.css'
+import logger from "../loggers/logger";
 import DropdownTerm from "./DropdownTerm";
 import {useAuth} from "../service/auth/AuthProvider";
 
@@ -62,10 +62,46 @@ const Table = () => {
     const [selectedTerm, setSelectedTerm] = useState('')
     const [columnOrder, setColumnOrder] = useState([]);
     const [isExportModalOpen, setExportModalOpen] = useState(false);
-
     const {axiosInstance} = useAuth();
-
     const data = tableData;
+
+    const fetchData = async (endpoint) => {
+        setIsLoading(true); // Ensure loading starts every time fetchData is called
+        try {
+            const authToken = localStorage.getItem('access_token');
+            if (authToken) {
+                let requestUrl = "";
+                if (selectedTerm === "") {
+                    requestUrl += endpoint;
+                } else {
+                    requestUrl += `/${selectedTerm}${endpoint}`;
+                }
+                const response = await axiosInstance.get(requestUrl, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                });
+                if (response.data && response.data.length > 0) {
+                    setTableData(response.data);
+                    setIsLoading(false);
+                } else {
+                    // Handle the case where data is successfully fetched but empty
+                    setTableData([]);
+                    setIsLoading(false);
+                }
+            } else {
+                // Handle the case where access token is not available
+            }
+        } catch (err) {
+            if (err.response) {
+                logger.error("Server error:", err.response.data);
+            } else if (err.request) {
+                logger.error("Network error:", err.message);
+            } else {
+                logger.error("Error:", err.message);
+            }
+        }
+    };
 
 
     const columnsClassroom = useMemo(
@@ -108,23 +144,8 @@ const Table = () => {
                 Cell: ({value}) => value ? "Yes" : "No",
             },
             {
-                Header: "Blu-ray Player",
-                accessor: "blueray_player",
-                Cell: ({value}) => value ? "Yes" : "No",
-            },
-            {
                 Header: "Laptop HDMI",
                 accessor: "laptop_hdmi",
-                Cell: ({value}) => value ? "Yes" : "No",
-            },
-            {
-                Header: "Zoom Camera",
-                accessor: "zoom_camera",
-                Cell: ({value}) => value ? "Yes" : "No",
-            },
-            {
-                Header: "Document Camera",
-                accessor: "document_camera",
                 Cell: ({value}) => value ? "Yes" : "No",
             },
             {
@@ -143,13 +164,28 @@ const Table = () => {
                 Cell: ({value}) => value ? "Yes" : "No",
             },
             {
-                Header: "Piano",
-                accessor: "piano",
+                Header: "Stereo System",
+                accessor: "stereo_system",
                 Cell: ({value}) => value ? "Yes" : "No",
             },
             {
-                Header: "Stereo System",
-                accessor: "stereo_system",
+                Header: "Blu-ray Player",
+                accessor: "blueray_player",
+                Cell: ({value}) => value ? "Yes" : "No",
+            },
+            {
+                Header: "Zoom Camera",
+                accessor: "zoom_camera",
+                Cell: ({value}) => value ? "Yes" : "No",
+            },
+            {
+                Header: "Document Camera",
+                accessor: "document_camera",
+                Cell: ({value}) => value ? "Yes" : "No",
+            },
+            {
+                Header: "Piano",
+                accessor: "piano",
                 Cell: ({value}) => value ? "Yes" : "No",
             },
             {
@@ -229,44 +265,6 @@ const Table = () => {
         ], []
     );
 
-    const fetchData = async (endpoint) => {
-        setIsLoading(true); // Ensure loading starts every time fetchData is called
-        try {
-            const authToken = localStorage.getItem('access_token');
-            if (authToken) {
-                let requestUrl = "";
-                if (selectedTerm === "") {
-                    requestUrl += endpoint;
-                } else {
-                    requestUrl += `/${selectedTerm}${endpoint}`;
-                }
-                const response = await axiosInstance.get(requestUrl, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`
-                    }
-                });
-                if (response.data && response.data.length > 0) {
-                    setTableData(response.data);
-                    setIsLoading(false);
-                } else {
-                    // Handle the case where data is successfully fetched but empty
-                    setTableData([]);
-                    setIsLoading(false);
-                }
-            } else {
-                // Handle the case where access token is not available
-            }
-        } catch (err) {
-            if (err.response) {
-                console.log("Server error:", err.response.data);
-            } else if (err.request) {
-                console.log("Network error:", err.message);
-            } else {
-                console.log("Error:", err.message);
-            }
-        }
-    };
-
 
     const orderedColumns = useMemo(() => {
         const baseColumns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
@@ -304,15 +302,17 @@ const Table = () => {
         });
     };
 
-
-    const moveColumn = (dragIndex, hoverIndex) => {
-        const dragColumn = columnOrder[dragIndex];
-        const newColumnOrder = [...columnOrder];
-        newColumnOrder.splice(dragIndex, 1);
-        newColumnOrder.splice(hoverIndex, 0, dragColumn);
-        console.log(columnOrder)
-        setColumnOrder(newColumnOrder);
-    };
+    const moveColumn = (
+            dragIndex, hoverIndex
+        ) => {
+            const dragColumn = columnOrder[dragIndex];
+            const newColumnOrder = [...columnOrder];
+            newColumnOrder.splice(dragIndex, 1);
+            newColumnOrder.splice(hoverIndex, 0, dragColumn);
+            console.log(columnOrder)
+            setColumnOrder(newColumnOrder);
+        }
+    ;
 
     const columns = endpoint === "/courses/" ? columnsCourses : columnsClassroom;
 
@@ -383,6 +383,7 @@ const Table = () => {
         state,
         preGlobalFilteredRows,
         setGlobalFilter,
+
     } = useTable(
         {
             columns: modifiedColumns,
@@ -394,6 +395,15 @@ const Table = () => {
         useRowSelectColumn
     );
     const {pageIndex} = state;
+
+
+    useEffect(() => {
+        if (isSelectAllChecked) {
+            setSelectedRows([...tableData]); // Select all rows if "Select All" checkbox is checked
+        } else {
+            setSelectedRows([]); // Deselect all rows if "Select All" checkbox is unchecked
+        }
+    }, [isSelectAllChecked, tableData]);
 
 
     const loadingRows = isLoading ? Array.from({length: 13}).map((_, rowIndex) => (
@@ -422,9 +432,10 @@ const Table = () => {
         const orderedColumns = columnOrder.map(accessor => {
             return (endpoint === "/courses/" ? columnsCourses : columnsClassroom).find(col => col.accessor === accessor);
         });
-
         // Filter visible columns
-        const visibleColumns = orderedColumns.filter(column => !hiddenColumns.includes(column.accessor));
+        const visibleColumns = orderedColumns.filter(column => !hiddenColumns.includes(column.accessor)
+            )
+        ;
         const headers = visibleColumns.map(column => ({header: column.Header, key: column.accessor}));
 
         const selectedVisibleRows = selectedRows.map(selectedRow => {
@@ -458,8 +469,8 @@ const Table = () => {
 
 
     return (
-        <div className="flex flex-col md:max-w">
-            <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
+        <div className="flex flex-col w-full overflow-hidden">
+            <div className="overflow-x-auto">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-2 lg:px-8">
                     <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                         <GlobalFilter
@@ -469,22 +480,22 @@ const Table = () => {
                             placeholder="Search..."
                         />
 
-                        <div className="flex p-4">
+                        <div className="flex flex-wrap p-4 gap-4">
                             <button
-                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white"
+                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white flex-1 sm:flex-none"
                                 onClick={() => setEndpoint("/courses/")}
                             >
                                 Courses
                             </button>
                             <button
-                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white"
+                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white flex-1 sm:flex-none"
                                 onClick={() => setEndpoint("/classrooms/")}
                             >
                                 Classrooms
                             </button>
-                            <DropdownTerm onTermChange={handleTermChange}/>
+                            <DropdownTerm onTermChange={handleTermChange} className="flex-grow sm:flex-grow-0"/>
                             <button
-                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-auto hover:bg-purple-700 hover:text-white"
+                                className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 hover:text-white flex-1 sm:flex-none ml-auto"
                                 onClick={handleExportButtonClick}
                             >
                                 Export Selected
@@ -492,21 +503,21 @@ const Table = () => {
                             <ExportComponent
                                 isOpen={isExportModalOpen}
                                 onClose={() => setExportModalOpen(false)}
-                                onExport={(fileName, fileType) => exportSelectedRows(fileName, fileType)}  // Here we pass the parameters to the function
+                                onExport={(fileName, fileType) => exportSelectedRows(fileName, fileType)}
                             />
                         </div>
-                        <div className="flex p-4">
+                        <div className="flex flex-wrap p-4 gap-4">
                             {orderedColumns.map((column, index) => (
-                                <div key={column.Header} className="flex flex-col items-center mr-4">
-                                    <div className="flex items-center">
+                                <div key={column.Header} className="flex flex-col items-center">
+                                    <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => index > 0 && moveColumn(index, index - 1)}
-                                            className="text-gray-500 hover:text-gray-700"
+                                            className="text-gray-500 shrink hover:text-gray-700 px-2 sm:px-3 text-xs"
                                         >
                                             <ChevronLeft/>
                                         </button>
                                         <button
-                                            className={`text-white font-bold px-4 py-2 rounded min-h-10 ${
+                                            className={`text-white font-bold px-4 py-2 rounded min-h-10 min-w-0 shrink ${
                                                 !hiddenColumns.includes(column.accessor) ? "bg-violet-300" : "bg-gray-300"
                                             }`}
                                             disabled={true}
@@ -515,14 +526,14 @@ const Table = () => {
                                         </button>
                                         <button
                                             onClick={() => index < orderedColumns.length - 1 && moveColumn(index, index + 1)}
-                                            className="text-gray-500 hover:text-gray-700"
+                                            className="text-gray-500 hover:text-gray-700 shrink px-2 sm:px-3 text-xs"
                                         >
                                             <ChevronRight/>
                                         </button>
                                     </div>
                                     <button
                                         onClick={() => toggleColumnVisibility(column.accessor)}
-                                        className={`mt-2 ${!hiddenColumns.includes(column.accessor) ? "text-red-500 hover:text-red-700" : "text-green-500 hover:text-green-700"}`}
+                                        className={`mt-2 shrink ${!hiddenColumns.includes(column.accessor) ? "text-red-500 hover:text-red-700" : "text-green-500 hover:text-green-700"}     px-2 sm:px-3 text-xs`}
                                     >
                                         {!hiddenColumns.includes(column.accessor) ? (
                                             <Minus/>
@@ -533,7 +544,6 @@ const Table = () => {
                                 </div>
                             ))}
                         </div>
-
                         {isLoading && (
                             <div
                                 className="table-loading-overlay absolute top-0 left-0 w-full h-full flex items-center justify-center"
@@ -558,7 +568,7 @@ const Table = () => {
                                         column.show && (
                                             <th
                                                 {...column.getHeaderProps()}
-                                                className="px-6 py-3 text-left text-20 font-medium text-gray-400 uppercase rounded-sm tracking-wider"
+                                                className="px-2 py-2 text-left text-xs font-medium text-gray-400 uppercase rounded-sm tracking-wider"
                                             >
                                                 {column.render("Header")}
                                             </th>
@@ -588,7 +598,7 @@ const Table = () => {
                                                     <td
                                                         {...cell.getCellProps()}
                                                         key={`cell-${cellIndex}`}
-                                                        className="px-6 py-10 whitespace-nowrap"
+                                                        className="px-2 py-4 whitespace-nowrap"
                                                     >
                                                         {cell.render("Cell")}
                                                     </td>
@@ -600,22 +610,21 @@ const Table = () => {
                             </tbody>
                         </table>
 
-
                     </div>
                 </div>
             </div>
             <div className="py-3 flex items-center text-center justify-center pt-10">
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                    <ChevronsLeft size={50}/>
+                    <ChevronsLeft size={30}/>
                 </button>
                 <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                    <ChevronLeft size={50}/>
+                    <ChevronLeft size={30}/>
                 </button>
                 <button onClick={() => nextPage()} disabled={!canNextPage}>
-                    <ChevronRight size={50}/>
+                    <ChevronRight size={30}/>
                 </button>
                 <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-                    <ChevronsRight size={50}/>
+                    <ChevronsRight size={30}/>
                 </button>
                 <span>
                 Page{" "}
