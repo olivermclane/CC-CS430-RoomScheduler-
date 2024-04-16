@@ -14,32 +14,30 @@ urlpatterns = [
      ## AUTH ENDPOINTS
      path('login/',
           LoginView.as_view(),
-          name ='token_obtain_pair'),
+          name ='token_obtain_pair'),#Tested
      path('login/refresh/',
           jwt_views.TokenRefreshView.as_view(),
           name ='token_refresh'),
-     path('register/', RegisterView.as_view(), name='register'),
-     path('logout/', LogoutView.as_view()),
+     path('register/', RegisterView.as_view(), name='register'), #Tested
+     path('logout/', LogoutView.as_view(), name='logout'), #Tested
 
      ## APPLICATION ENDPOINTS
-     path('buildings/', BuildingView.as_view(), name='buildings'),
-     path('buildings/<int:pk>/', BuildingDetailView.as_view(), name='building-detail'),
+     path('buildings/', BuildingView.as_view(), name='buildings'), #Tested
+     path('buildings/<int:pk>/', BuildingDetailView.as_view(), name='building-detail'), #Tested
 
-     path('floors/', FloorView.as_view(), name='floors'),
-     path('floors/<int:pk>/', FloorDetailView.as_view(), name='floor-detail'),
+     path('floors/', FloorView.as_view(), name='floors'), #Tested
+     path('floors/<int:pk>/', FloorDetailView.as_view(), name='floor-detail'), #Tested
 
-     path('classrooms/', ClassroomView.as_view(), name='classrooms'),
-     path('classrooms/<int:pk>/', ClassroomDetailView.as_view(), name='classrooms-detail'),
-     path('<int:term>/classrooms/', ClassroomTermView.as_view(), name='classrooms-detail'),
+     path('classrooms/', ClassroomView.as_view(), name='classrooms'), # Tested
+     path('classrooms/<int:pk>/', ClassroomDetailView.as_view(), name='classrooms-detail'),# Tested
+     path('<int:term>/classrooms/', ClassroomTermView.as_view(), name='classrooms-term'), # Tested
 
-     path('courses/', CourseView.as_view(), name='courses'),
-     path('courses/<int:pk>/', CourseDetailView.as_view(), name='courses-detail'),
-     path('<str:term>/courses/', CoursesTermView.as_view(), name='term-courses'),
+     path('courses/', CourseView.as_view(), name='courses'),# Tested
+     path('courses/<int:pk>/', CourseDetailView.as_view(), name='courses-detail'), # Tested
+     path('<str:term>/courses/', CoursesTermView.as_view(), name='term-courses'), # Tested
 
-     path('classroom-courses/<int:fk>/', ClassroomCoursesView.as_view(), name='classroom-courses'),
-     path('<str:term>/classroom-courses/<int:fk>/', ClassroomCoursesTermView.as_view(), name='term-classroom-courses'),
-
-     path('load/', LoadView.as_view(), name='load'),
+     path('classroom-courses/<int:fk>/', ClassroomCoursesView.as_view(), name='classroom-courses'), #Tested
+     path('<str:term>/classroom-courses/<int:fk>/', ClassroomCoursesTermView.as_view(), name='term-classroom-courses'), #Tested
 
      path('post-log/', PostLogView.as_view(), name='post-log'),
      path('terms/', TermView.as_view(), name='term-classroom-courses'),

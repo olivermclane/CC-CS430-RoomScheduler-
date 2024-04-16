@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
-import axios from "axios";
+import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
-import {useAuth} from "../service/AuthProvider";
+
 
 function MostFreqProf({ selectedClassroom }) {
     const [scheduleData, setScheduleData] = useState([]);
@@ -27,7 +27,7 @@ function MostFreqProf({ selectedClassroom }) {
             setIsLoading(true); // Set loading to true before fetching new data
             try {
                 logger.info('Requested data from classroom-courses'); // Log the response received
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                 logger.info('Received data from classroom-courses'); // Log the response received
                 const parsedData = parseData(response.data);
                 setScheduleData(parsedData);

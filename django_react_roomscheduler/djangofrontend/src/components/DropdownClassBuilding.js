@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import logger from "../loggers/logger";
 import axios from 'axios';
 import {sortBy} from "lodash";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
 import {ChevronDown} from "lucide-react";
 
 
@@ -15,14 +15,14 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     const [terms, setTerms] = useState([]);
     const [selectedTerm, setSelectedTerm] = useState({term_id: '', term_name: 'No Term Selected'});
     const [showTermDropdown, setShowTermDropdown] = useState(false);
-    const { axiosInstance } = useAuth();
+    const {axiosInstance} = useAuth();
 
 
     useEffect(() => {
         const fetchTerms = async () => {
             try {
                 logger.info("Requesting data from terms"); // Log fetched data
-                const response = await axiosInstance.get('http://127.0.0.1:8000/terms/');
+                const response = await axiosInstance.get('/terms/');
                 logger.info("Received data from terms");
                 setTerms(response.data);
             } catch (error) {
@@ -36,7 +36,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/${selectedTerm.term_id}/classrooms/`);
+                const response = await axiosInstance.get(`/${selectedTerm.term_id}/classrooms/`);
                 const parsedBuildings = parseData(response.data);
                 setBuildings(parsedBuildings);
             } catch (err) {
@@ -88,7 +88,6 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
 
     return (
         <div className="flex">
-            {/* Term Dropdown */}
             <div className="relative">
                 <div
                     className="flex block cursor-pointer appearance-none bg-white border border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-violet-50 focus:border-purple-500 w-full"
@@ -115,8 +114,6 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                     </div>
                 )}
             </div>
-
-            {/* Building Dropdown */}
             <div className="">
                 <div
                     className={`flex block cursor-pointer appearance-none bg-white border ${selectedTerm.term_id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedTerm.term_id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
@@ -129,7 +126,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                     }}
                 >
                     {selectedBuilding.name}
-                                    <ChevronDown/>
+                    <ChevronDown/>
 
                 </div>
                 {showBuildingDropdown && (
@@ -146,7 +143,6 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                     </div>
                 )}
             </div>
-            {/* Classroom Dropdown */}
             <div className="">
                 <div
                     className={`flex block cursor-pointer appearance-none bg-white border ${selectedBuilding.id ? 'border-purple-500' : 'border-gray-300'} text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none ${selectedBuilding.id ? 'focus:bg-violet-50 focus:border-purple-500' : ''} w-full`}
@@ -158,7 +154,7 @@ const DropdownClassBuilding = ({onClassroomChange, onTermChange}) => {
                         }
                     }}>
                     {selectedClassroom.number ? ` ${selectedClassroom.number}` : 'No Classroom Selected'}
-                                    <ChevronDown/>
+                    <ChevronDown/>
 
                 </div>
                 {showClassroomDropdown && (

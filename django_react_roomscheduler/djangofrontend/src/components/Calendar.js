@@ -5,8 +5,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
-import {useAuth} from "../service/AuthProvider";
 
 const Calendar = ({selectedClassroom}) => {
     const [calendarData, setCalendarData] = useState([]);
@@ -16,7 +16,7 @@ const Calendar = ({selectedClassroom}) => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`classroom-courses/${selectedClassroom}/`);
+            const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
             setCalendarData(response.data);
             logger.info("Calendar data set")
         } catch (err) {

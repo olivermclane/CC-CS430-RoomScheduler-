@@ -108,9 +108,33 @@ cd djangofrontend
 npm start
 ```
 
-## Deployment
-
-This application can be deployed using various methods. Here are a few suggestions:
+## Deployment & Requirements
+### Requirements 
+#### CPU:
+- Minimum: 1 CPU core
+- Recommended: 2 CPU cores
+- Explanation: A single CPU core should be sufficient for handling the expected load of 10-20 users, but having two CPU cores can provide better performance and scalability, especially if the application experiences occasional spikes in traffic or concurrent requests.
+#### Memory (RAM):
+- Minimum: 2 GB RAM
+- Recommended: 4 GB RAM
+- Explanation: Allocate sufficient memory to ensure smooth operation of both the Django backend and the PostgreSQL database. 2 GB should be adequate for basic usage, but 4 GB is recommended for better performance, especially if the application grows or handles more concurrent users.
+#### Storage:
+- Minimum: 20 GB SSD
+- Recommended: 50-100 GB SSD
+- Explanation: Allocate enough storage space for the Django application code, database files, and any additional files or static files. SSD storage is preferred for better performance compared to HDD.
+#### Operating System:
+- Linux-based operating system (e.g., Ubuntu Server)
+ - Explanation: Linux is a common choice for hosting web applications due to its stability, security, and compatibility with Django and PostgreSQL.
+#### Database:
+- PostgreSQL database server
+#### Web Server:
+- Gunicorn or uWSGI as the Django application server
+- Explanation: Gunicorn or uWSGI can serve as the interface between Django and the web server (e.g., Nginx) and handle incoming HTTP requests efficiently.
+#### Web Server +:
+- Nginx as the reverse proxy server
+- Explanation: Nginx can serve static files, cache requests, and act as a reverse proxy for handling incoming requests to the Django application. It improves performance and security.
+### Deployment
+This application will need to be deployed. Here is our suggestion:
 
 -   **Docker Compose**: For simplifying multi-container Docker applications. You can define and run multi-container Docker applications with a single file.
 

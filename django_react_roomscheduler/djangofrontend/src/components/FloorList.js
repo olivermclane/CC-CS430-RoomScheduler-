@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import Floor from "./Floor";
-import axios from "axios";
+import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
-import {useAuth} from "../service/AuthProvider";
+
 
 function FloorList({selectedBuilding, updateClassroomList}){
     const [endpoint, setEndpoint] = useState("/floors")
@@ -13,7 +13,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
 
         try {
             logger.info('Requesting received from floors');
-            const response = await axiosInstance.get(`http://127.0.0.1:8000${endpoint}/`);
+            const response = await axiosInstance.get(`${endpoint}/`);
             logger.info('Received data from floors'); // Log the response received
             setFloors(response.data);
         } catch (err) {
