@@ -29,11 +29,9 @@ class DefaultView(APIView):
         return render(request, 'index.html')
 
 class IndexView(APIView):
-
     def get(self, request):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         return render(request, 'index.html')
-
 
 class LogoutView(APIView):
     def post(self, request):

@@ -15,7 +15,6 @@ urlpatterns = [
      path('login', IndexView.as_view()),
      path('dashboard', IndexView.as_view()),
 
-
      ## AUTH ENDPOINTS
      path('login/',
           LoginView.as_view(),
