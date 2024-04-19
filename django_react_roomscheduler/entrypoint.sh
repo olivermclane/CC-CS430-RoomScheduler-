@@ -1,8 +1,6 @@
 #!/bin/sh
 
-echo "Database: $DATABASE, Host: $DB_HOST, Port: $DB_PORT"
-
-if [ "$DATABASE" = "postgres" ]
+if [ "$DATABASE_TYPE" = "postgres" ]
 then
     echo "Waiting for postgres..."
 
@@ -15,6 +13,8 @@ then
 fi
 
 python manage.py flush --no-input
+
+python manage.py collectstatic --no-input
 python manage.py migrate
 
 exec "$@"

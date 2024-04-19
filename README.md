@@ -24,8 +24,35 @@ Start by cloning the repository to your local machine:
 git clone https://github.com/olivermclane/CSSeniorProject-RoomScheduler
 cd CSSeniorProject-RoomScheduler
 ```
+### Using docker-compose.yaml
+The docker-compose.yml, is a dockerfile containing most of the requirements for the project. It allows us to use services such as Nginix to reverse proxy, serve static and cache request.
+To get started with docker compose:
 
-### Setting Up the Virtual Environment
+Copy the `.env.template` file to create a `.env` file and fill in the required environment variables:
+
+```         
+cp .env.template .env
+```
+These values should be set as such:
+ - DB_NAME: `Name of database`
+ - DB_USER: `Username for database`
+ - DB_PASSWORD: `Password for database`
+ - DB_HOST: `Host for the database` suggested localhost
+ - DEBUG: `1` for `DEBUG` or `2` for `PROD`
+ - SECRET_KEY: `Any string` but do not share
+
+Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
+
+```bash
+docker-compose up -d --build
+```
+Now visit [here](localhost), enjoy the room_scheduler app. 
+
+#### Notes
+- Allows all the services a second to start up otherwise you will be redirected to a NGINX error.
+- Validate the hash from the build directory in the djangofrontend for both css and js are in our templates/index.html.
+
+### Using the Virtual Environment
 
 Create a virtual environment and activate it:
 
@@ -68,7 +95,17 @@ cp .env.template .env
 
 Edit the `.env` file to include your database credentials and other necessary configurations.
 
-### Running the Docker Container
+These values should be set as such:
+ - DB_NAME: `Name of database`
+ - DB_USER: `Username for database`
+ - DB_PASSWORD: `Password for database`
+ - DB_HOST: `Host for the database` suggested localhost
+ - DEBUG: `1` for `DEBUG` or `2` for `PROD`
+ - SECRET_KEY: `Any string` but do not share
+
+Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
+
+### Running the Docker Container for local database
 
 To set up the PostgreSQL database using Docker, build the Docker container with the following command:
 
@@ -107,7 +144,6 @@ For the React frontend, ensure you're in the `djangofrontend` directory, then st
 cd djangofrontend      
 npm start
 ```
-
 ## Deployment & Requirements
 ### Requirements 
 #### CPU:
@@ -137,6 +173,7 @@ npm start
 This application will need to be deployed. Here is our suggestion:
 
 -   **Docker Compose**: For simplifying multi-container Docker applications. You can define and run multi-container Docker applications with a single file.
+
 
 ## Additional Information
 
