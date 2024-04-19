@@ -89,7 +89,7 @@ class DataReader(object):
         # load course data
         self.courseData = pd.read_excel(file)
 
-        self.courseData['Classroom Name'] = str(self.courseData['CSM_BLDG']) + " " + str(self.courseData['CSM_ROOM'])
+        self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + self.courseData['CSM_ROOM']
         logger.info(self.classRoomData.columns)
         logger.info(self.courseData.columns)
         self.data = pd.merge(self.courseData, self.classRoomData, how='left', on='Classroom Name')
