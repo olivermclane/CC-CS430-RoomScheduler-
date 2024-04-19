@@ -38,7 +38,7 @@ These values should be set as such:
  - DB_USER: `Username for database`
  - DB_PASSWORD: `Password for database`
  - DB_HOST: `Host for the database` suggested localhost
- - DEBUG: `1` for `DEBUG` or `2` for `PROD`
+ - DEBUG: `1` for `DEBUG` or `0` for `PROD`
  - SECRET_KEY: `Any string` but do not share
 
 Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
@@ -173,7 +173,6 @@ npm start
 This application will need to be deployed. Here is our suggestion:
 
 -   **Docker Compose**: For simplifying multi-container Docker applications. You can define and run multi-container Docker applications with a single file.
-
 
 ## Additional Information
 
