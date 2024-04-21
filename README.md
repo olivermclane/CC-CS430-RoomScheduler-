@@ -24,7 +24,7 @@ Start by cloning the repository to your local machine:
 git clone https://github.com/olivermclane/CSSeniorProject-RoomScheduler
 cd CSSeniorProject-RoomScheduler
 ```
-### Using docker-compose.yaml
+### Using docker-compose.yaml - Option 1
 The docker-compose.yml, is a dockerfile containing most of the requirements for the project. It allows us to use services such as Nginix to reverse proxy, serve static and cache request.
 To get started with docker compose:
 
@@ -52,11 +52,11 @@ Now visit [here](localhost), enjoy the room_scheduler app.
 - Allows all the services a second to start up otherwise you will be redirected to a NGINX error.
 - Validate the hash from the build directory in the djangofrontend for both css and js are in our templates/index.html.
 
-### Using the Virtual Environment
+### Using the local environment - Option 2
 
 Create a virtual environment and activate it:
 
-### For Mac Users
+### For Mac/Linux Users
 
 ```         
 python -m venv .venv
@@ -83,7 +83,10 @@ For the React frontend, navigate to the `djangofrontend` directory and install t
 ```         
 cd djangofrontend
 npm install
+npm run build
 ```
+
+- Validate the hash from the build directory in the djangofrontend for both css and js are in our templates/index.html.
 
 ### Setting Up Environment Variables
 
@@ -138,10 +141,8 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-For the React frontend, ensure you're in the `djangofrontend` directory, then start the development server:
-
+You can additionally run the React server independently using npm start
 ``` bash
-cd djangofrontend      
 npm start
 ```
 ## Deployment & Requirements
