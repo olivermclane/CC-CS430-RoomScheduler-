@@ -251,12 +251,13 @@ class LoadView(APIView):
 
     def post(self, request):
         dr = DataReader(request.data['file'])
+        print(request.data['file'])
         logger.info(f"User uploaded new term data - User: {request.user.username}")
         dr.sortData()
         logger.info(f"Data reader sorted data for - User: {request.user.username}")
         dr.loadData()
         logger.info(f"Data reader loaded data into database - User: {request.user.username}")
-        return Response()
+        return Response("Data reader has processed new term data", status=201)
 
 
 class PostLogView(APIView):

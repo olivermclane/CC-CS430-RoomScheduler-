@@ -36,7 +36,7 @@ function FloorList({selectedBuilding, updateClassroomList}){
         for (let i = 0; i < floors.length; i++) {
             floors[i].style.border = "0px";
         }
-        document.getElementById("floor-" + floor.floor_id).style.border = "10px solid violet"
+        document.getElementById("floor-" + floor.floor_id).style.border = "10px solid DarkOrchid"
     }
 
     function renderFloor(floor){

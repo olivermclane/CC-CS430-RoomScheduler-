@@ -506,7 +506,7 @@ const Table = () => {
                                 onExport={(fileName, fileType) => exportSelectedRows(fileName, fileType)}
                             />
                         </div>
-                        <div className="flex flex-wrap p-4 gap-4">
+                        <div className="flex flex-wrap p-2 gap-1">
                             {orderedColumns.map((column, index) => (
                                 <div key={column.Header} className="flex flex-col items-center">
                                     <div className="flex items-center gap-2">
