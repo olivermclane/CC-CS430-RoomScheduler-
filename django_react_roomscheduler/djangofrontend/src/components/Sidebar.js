@@ -23,16 +23,20 @@ export default function Sidebar({children}) {
     function handleLogout(onSuccess) {
         axios.post('http://localhost:8000/logout/')
             .then(() => {
+                logger.info('User logged out:', username);
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('email');
+                localStorage.removeItem('username');
+
                 if (onSuccess) {
-                    logger.info('User logged out:', username)
-                    onSuccess(); // Call the success callback if provided
-                } else {
-                    window.location.href = '/login'; // Redirect to login (if not using callback)
+                    onSuccess();
                 }
+
+                window.location.reload(); // Use reload to clear all session data and state
             })
             .catch(error => {
                 logger.error('Logout failed:', error);
-                // Handle errors
             });
     }
 

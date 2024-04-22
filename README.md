@@ -24,12 +24,39 @@ Start by cloning the repository to your local machine:
 git clone https://github.com/olivermclane/CSSeniorProject-RoomScheduler
 cd CSSeniorProject-RoomScheduler
 ```
+### Using docker-compose.yaml - Option 1
+The docker-compose.yml, is a dockerfile containing most of the requirements for the project. It allows us to use services such as Nginix to reverse proxy, serve static and cache request.
+To get started with docker compose:
 
-### Setting Up the Virtual Environment
+Copy the `.env.template` file to create a `.env` file and fill in the required environment variables:
+
+```         
+cp .env.template .env
+```
+These values should be set as such:
+ - DB_NAME: `Name of database`
+ - DB_USER: `Username for database`
+ - DB_PASSWORD: `Password for database`
+ - DB_HOST: `Host for the database` suggested localhost
+ - DEBUG: `1` for `DEBUG` or `0` for `PROD`
+ - SECRET_KEY: `Any string` but do not share
+
+Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
+
+```bash
+docker-compose up -d --build
+```
+Now visit [here](localhost), enjoy the room_scheduler app. 
+
+#### Notes
+- Allows all the services a second to start up otherwise you will be redirected to a NGINX error.
+- Validate the hash from the build directory in the djangofrontend for both css and js are in our templates/index.html.
+
+### Using the local environment - Option 2
 
 Create a virtual environment and activate it:
 
-### For Mac Users
+### For Mac/Linux Users
 
 ```         
 python -m venv .venv
@@ -56,7 +83,10 @@ For the React frontend, navigate to the `djangofrontend` directory and install t
 ```         
 cd djangofrontend
 npm install
+npm run build
 ```
+
+- Validate the hash from the build directory in the djangofrontend for both css and js are in our templates/index.html.
 
 ### Setting Up Environment Variables
 
@@ -68,7 +98,17 @@ cp .env.template .env
 
 Edit the `.env` file to include your database credentials and other necessary configurations.
 
-### Running the Docker Container
+These values should be set as such:
+ - DB_NAME: `Name of database`
+ - DB_USER: `Username for database`
+ - DB_PASSWORD: `Password for database`
+ - DB_HOST: `Host for the database` suggested localhost
+ - DEBUG: `1` for `DEBUG` or `2` for `PROD`
+ - SECRET_KEY: `Any string` but do not share
+
+Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
+
+### Running the Docker Container for local database
 
 To set up the PostgreSQL database using Docker, build the Docker container with the following command:
 
@@ -101,13 +141,10 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-For the React frontend, ensure you're in the `djangofrontend` directory, then start the development server:
-
+You can additionally run the React server independently using npm start
 ``` bash
-cd djangofrontend      
 npm start
 ```
-
 ## Deployment & Requirements
 ### Requirements 
 #### CPU:
