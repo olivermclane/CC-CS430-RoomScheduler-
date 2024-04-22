@@ -21,8 +21,8 @@ To get this project running locally, follow these steps.
 Start by cloning the repository to your local machine:
 
 ```         
-git clone https://github.com/olivermclane/CSSeniorProject-RoomScheduler
-cd CSSeniorProject-RoomScheduler
+git clone https://github.com/olivermclane/CC-CS430-RoomScheduler
+cd CC-CS430-RoomScheduler
 ```
 ### Using docker-compose.yaml - Option 1
 The docker-compose.yml, is a dockerfile containing most of the requirements for the project. It allows us to use services such as Nginix to reverse proxy, serve static and cache request.
@@ -37,11 +37,27 @@ These values should be set as such:
  - DB_NAME: `Name of database`
  - DB_USER: `Username for database`
  - DB_PASSWORD: `Password for database`
- - DB_HOST: `Host for the database` suggested localhost
+ - DB_HOST: `Host for the database` suggested db
  - DEBUG: `1` for `DEBUG` or `0` for `PROD`
  - SECRET_KEY: `Any string` but do not share
 
-Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
+
+Once these values have been filled in we are ready to build the frontend.
+
+Next, run the following commands:
+
+```cd django_react_roomscheduler/djangofrontend```
+
+```npm install```
+
+```npm run build```
+
+```cd ..\..```
+
+Verify that the file in `django_react_roomscheduler/static/js/main.<hash>.js` and `django_react_roomscheduler/static/js/main.<hash>.js`
+match the file names described in templates/index.html.
+
+Once that is done, we are read to our docker-compose.yml. Run the following to start the all the containers:
 
 ```bash
 docker-compose up -d --build
