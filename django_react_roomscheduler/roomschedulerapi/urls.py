@@ -8,7 +8,7 @@ from .views import DefaultView, RegisterView, BuildingView, FloorView, Classroom
      ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel, \
      IndexView
 
-urlpatterns = [
+urlpatterns = ([
      ## INDEX ENDPOINT
      path('', DefaultView.as_view()),
      path('register', IndexView.as_view()),
@@ -47,4 +47,4 @@ urlpatterns = [
      path('terms/', TermView.as_view(), name='term-classroom-courses'),
      path('load/', LoadView.as_view(), name='load'),
      path('load-example-excel/', DownloadExampleExcel.as_view(), name='load-example-excel'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
