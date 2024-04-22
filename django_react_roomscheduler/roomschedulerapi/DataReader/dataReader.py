@@ -6,7 +6,6 @@ Author: Hank Rugg
 '''
 import warnings
 import pandas as pd
-from roomschedulerapi.models import Building, Floor, Classroom, Course
 import logging
 
 logger = logging.getLogger("django_react_roomscheduler")
@@ -56,7 +55,6 @@ def getMonthNum(month):
 
 class DataReader(object):
 
-
     # columns to verify
     # CSM_BLDG
     # CSM_ROOM
@@ -88,13 +86,52 @@ class DataReader(object):
 
         # load course data
         self.courseData = pd.read_excel(file)
+        self.data = None
 
-        self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + self.courseData['CSM_ROOM']
-        logger.info(self.classRoomData.columns)
-        logger.info(self.courseData.columns)
-        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on='Classroom Name')
+    def validate(self):
+        # List of required columns
+        required_columns = ['CSM_BLDG',
+                            'CSM_ROOM',
+                            'CSM_SUNDAY',
+                            'CSM_MONDAY',
+                            'CSM_TUESDAY',
+                            'CSM_WEDNESDAY',
+                            'CSM_THURSDAY',
+                            'CSM_FRIDAY',
+                            'CSM_SATURDAY',
+                            'SEC_START_DATE',
+                            'SEC_END_DATE',
+                            'CSM_START_TIME',
+                            'CSM_END_TIME',
+                            'SEC_SHORT_TITLE',
+                            'SEC_TERM',
+                            'SEC_MIN_CRED',
+                            'SEC_FACULTY_INFO',
+                            'STUDENTS_AND_RESERVED_SEATS',
+                            'SEC_CAPACITY',
+                            'XL_WAITLIST_MAX',
+                            'WAITLIST',
+                            'SEC_COURSE_NO']
+
+        if self.courseData.empty:
+            return False
+
+        # Get columns from the DataFrame
+        data_columns = self.courseData.columns.tolist()
+
+        for req in required_columns:
+            if req not in data_columns:
+                return False
+        return True
 
     def sortData(self):
+        if not self.validate():
+            return False
+        self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + str(self.courseData['CSM_ROOM'])
+        self.data = pd.merge(self.courseData, self.classRoomData, how='left', on='Classroom Name')
+        logger.info(self.classRoomData.columns)
+        logger.info(self.courseData.columns)
+
         self.data.fillna(0, inplace=True)
 
         for i in range(len(self.data)):
@@ -166,6 +203,7 @@ class DataReader(object):
                 self.data.loc[i, 'MilitaryEnd'] = self.data.loc[i, 'EndHour'] + ":" + self.data.loc[i, 'EndMinute'][
                                                                                       0:2] + ":00"
         self.data = optimize_classroom_schedule(self.data)
+        return True
 
     def loadData(self):
         # load classes

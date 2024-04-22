@@ -802,48 +802,17 @@ class TestLoadView(APITestCase):
             for field in required_classroom_fields:
                 self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
-        # @patch('roomschedulerapi.views.logger')
-        # def test_post_load_data_invalid(self, mock_logger):
-        #     # Setup Mocks
-        #     with open('roomschedulerapi/Sample_Excel_Invalid.xlsx', 'rb') as fp:
-        #         request_data = {'file': File(fp)}
-        #         # Execute
-        #         response = self.client.post(reverse("load"), request_data, format='multipart')
-        #         print(response.data)
-        #         # Assertions
-        #         self.assertEqual(response.status_code, 201)
-        #         self.assertEqual(response.data, "Data reader has processed new term data")
-        #
-        #         # Check logger messages
-        #         mock_logger.info.assert_any_call(f"User uploaded new term data - User: {self.user.username}")
-        #         mock_logger.info.assert_any_call(f"Data reader sorted data for - User: {self.user.username}")
-        #         mock_logger.info.assert_any_call(f"Data reader loaded data into database - User: {self.user.username}")
-        #     response = self.client.get("/courses/")
-        #     self.assertEqual(response.status_code, 200)
-        #     self.assertTrue(len(response.data) >= 2, "Should return at least two courses")
-        #
-        #     # Define required fields including where to find nested fields
-        #     required_top_level_fields = [
-        #         'course_id', 'start_time', 'end_time', 'instructor', 'first_day', 'last_day',
-        #         'course_name', 'term', 'credits', 'course_cap', 'waitlist_cap', 'waitlist_total',
-        #         'enrollment_total', 'course_level', 'monday', 'tuesday', 'wednesday', 'thursday',
-        #         'friday', 'saturday', 'sunday', 'classroom'
-        #     ]
-        #
-        #     required_classroom_fields = [
-        #         'classroom_id', 'classroom_number', 'total_seats', 'width_of_room', 'length_of_room',
-        #         'projectors', 'microphone_system', 'blueray_player', 'laptop_hdmi', 'zoom_camera',
-        #         'document_camera', 'storage', 'movable_chairs', 'printer', 'piano', 'stereo_system',
-        #         'optimization_score', 'total_tv', 'sinks', 'notes', 'floor'
-        #     ]
-        #
-        #     # Check each course in the response
-        #     for course_data in response.data:
-        #         # Check for presence of all required top-level fields
-        #         for field in required_top_level_fields:
-        #             self.assertIn(field, course_data, f"{field} is missing in the response data")
-        #
-        #         # Check nested 'classroom' field separately
-        #         classroom_data = course_data['classroom']
-        #         for field in required_classroom_fields:
-        #             self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
+    @patch('roomschedulerapi.views.logger')
+    def test_post_load_data_invalid(self, mock_logger):
+        # Setup Mocks
+        with open('roomschedulerapi/Sample_Excel_Invalid.xlsx', 'rb') as fp:
+            request_data = {'file': File(fp)}
+            # Execute
+            response = self.client.post(reverse("load"), request_data, format='multipart')
+            print(response.data)
+            # Assertions
+            self.assertEqual(response.status_code, 422)
+            self.assertEqual(response.data, {'error': 'This is not a valid file.'})
+
+            # Check logger messages
+            mock_logger.warning.assert_any_call(f"User failed to upload new term data - User: {self.user.username}")
