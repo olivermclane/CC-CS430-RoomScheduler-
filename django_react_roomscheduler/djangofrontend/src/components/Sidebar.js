@@ -3,6 +3,8 @@ import {useContext, createContext, useState} from "react"
 import axios from "axios";
 import logger from "../loggers/logger";
 import horizontalImage from '../icons/cc_logo_horiz.jpg';
+import {useNavigate} from 'react-router-dom';
+
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -13,6 +15,7 @@ import horizontalImage from '../icons/cc_logo_horiz.jpg';
 const SidebarContext = createContext()
 
 export default function Sidebar({children}) {
+    const navigate = useNavigate();
     const email = localStorage.getItem('email');
     const username = localStorage.getItem('username');
     const [expanded, setExpanded] = useState(false)
@@ -27,7 +30,7 @@ export default function Sidebar({children}) {
                     logger.info('User logged out:', username)
                     onSuccess(); // Call the success callback if provided
                 } else {
-                    window.location.href = '/login'; // Redirect to login (if not using callback)
+                    navigate('/login'); // Redirect to login (if not using callback)
                 }
             })
             .catch(error => {

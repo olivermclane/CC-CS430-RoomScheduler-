@@ -75,9 +75,9 @@ export default function LoginForm() {
                             <div className="mt-4">
                                 <Button
                                     className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
-                                    value="Submit" label="Login In"
+                                    value="Submit" label="Login"
                                 >
-                                    Login In
+                                    Login
                                 </Button>
                                 <Button
                                     className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"

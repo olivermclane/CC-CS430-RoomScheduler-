@@ -81,6 +81,8 @@ function ImportNewTerm() {
         const formData = new FormData();
         formData.append('file', file);
 
+        console.log(formData)
+
         try {
             const response = await axios.post('http://localhost:8000/load/', formData, {
                 headers: {
