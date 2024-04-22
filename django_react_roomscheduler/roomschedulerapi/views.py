@@ -250,10 +250,11 @@ class LoadView(APIView):
 
     def post(self, request):
         dr = DataReader(request.data['file'])
-        logger.info(f"User uploaded new term data - User: {request.user.username}")
         if not dr.sortData():
+            logger.warning(f"User failed to upload new term data - User: {request.user.username}")
             return Response({'error': 'This is not a valid file.'}, status=422)
 
+        logger.info(f"User uploaded new term data - User: {request.user.username}")
         logger.info(f"Data reader sorted data for - User: {request.user.username}")
         dr.loadData()
         logger.info(f"Data reader loaded data into database - User: {request.user.username}")
