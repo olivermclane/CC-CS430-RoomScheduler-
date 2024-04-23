@@ -127,7 +127,7 @@ class DataReader(object):
     def sortData(self):
         if not self.validate():
             return False
-        self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + str(self.courseData['CSM_ROOM'])
+        self.courseData['Classroom Name'] = self.courseData['CSM_BLDG'] + " " + self.courseData['CSM_ROOM']
         self.data = pd.merge(self.courseData, self.classRoomData, how='left', on='Classroom Name')
         logger.info(self.classRoomData.columns)
         logger.info(self.courseData.columns)
