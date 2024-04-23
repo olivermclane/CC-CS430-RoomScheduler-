@@ -4,6 +4,10 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class Building(models.Model):
+    """
+    Model for representing a building.
+    """
+
     building_id = models.AutoField(primary_key=True)
     building_name = models.CharField(max_length=100, unique=True)
     image_url = models.URLField(null=True, blank=True)
@@ -16,6 +20,10 @@ class Building(models.Model):
 
 
 class Floor(models.Model):
+    """
+    Model for representing a floor.
+    """
+
     floor_id = models.AutoField(primary_key=True)
     floor_name = models.CharField(max_length=50)
     building_name = models.CharField(max_length=50, default=0)
@@ -29,6 +37,10 @@ class Floor(models.Model):
 
 
 class Term(models.Model):
+    """
+    Model for representing a term.
+    """
+
     term_id = models.AutoField(primary_key=True)
     term_name = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -42,6 +54,10 @@ class Term(models.Model):
 
 
 class OptiScore(models.Model):
+    """
+    Model for representing optimization scores.
+    """
+
     score_id = models.AutoField(primary_key=True)
     prime_time_score = models.DecimalField(max_digits=5, decimal_places=2)
     prime_time_utilization = models.DecimalField(max_digits=5, decimal_places=2)
@@ -53,7 +69,6 @@ class OptiScore(models.Model):
     double_booking = models.BooleanField(default=False)
     overall_score = models.DecimalField(max_digits=5, decimal_places=2)
 
-
     class Meta:
         app_label = 'roomschedulerapi'
 
@@ -62,6 +77,10 @@ class OptiScore(models.Model):
 
 
 class Classroom(models.Model):
+    """
+    Model for representing a classroom.
+    """
+
     classroom_id = models.AutoField(primary_key=True)
     classroom_name = models.CharField(max_length=1000, default=0)
     classroom_number = models.CharField(default=0)
@@ -95,6 +114,10 @@ class Classroom(models.Model):
 
 
 class Course(models.Model):
+    """
+    Model for representing a course.
+    """
+
     course_id = models.AutoField(primary_key=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, default=None)
     start_time = models.TimeField()
@@ -124,29 +147,11 @@ class Course(models.Model):
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
 
-
-class SavedSchedule(models.Model):
-    schedule_id = models.AutoField(primary_key=True)
-    course_ids = models.ManyToManyField(Course)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    notes = models.TextField(blank=True)
-
-
-"""
-DJANGO DOCS
-https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
-
-MEDIUM EXAMPLES 1) React Implementation of JWT, 2) Django JWT 
-https://medium.com/@ronakchitlangya1997/jwt-authentication-with-react-js-and-django-c034aae1e60d
-https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
-
-Follow for a deeper understanding of our authentication backend.
-"""
-
-
 class User(AbstractUser):
-    ## Basic User Fields
+    """
+    Custom User model.
+    """
+
     username = models.CharField(max_length=100, unique=True)
     name = None
     email = models.EmailField(
@@ -159,10 +164,6 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    ## Custom User Fields
-    user_schedules = models.ManyToManyField(SavedSchedule)
-
-    ## User Settings
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 

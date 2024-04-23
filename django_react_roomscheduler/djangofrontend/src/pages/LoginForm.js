@@ -11,7 +11,7 @@ export default function LoginForm() {
     const [loginError, setLoginError] = useState('');
     const login = async (email, password) => {
       try {
-        const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
+        const response = await axios.post('/api/login/', { 'email':email.toString(), 'password':password });
         logger.info("User attempted login", email.toString()); // Log the endpoint being called
         return response.data;
       } catch (error) {

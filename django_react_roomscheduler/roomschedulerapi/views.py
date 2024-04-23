@@ -22,13 +22,23 @@ from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerialize
 
 
 class DefaultView(APIView):
-    permission_classes = (IsAuthenticated,)
+    """
+    get:
+    Returns the main index page to authenticated users.
+
+    Requires authentication.
+    """
 
     def get(self, request):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         return render(request, 'index.html')
 
+
 class IndexView(APIView):
+    """
+    get:
+    Provides the index page without requiring user authentication.
+    """
 
     def get(self, request):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
@@ -36,22 +46,37 @@ class IndexView(APIView):
 
 
 class LogoutView(APIView):
+    """
+    post:
+    Logs out the user by invalidating the user's authentication token.
+
+    Requires authentication and the request must include a valid token.
+    """
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         # Blacklist the current token
         if request.auth and hasattr(request.auth, 'get_token'):
-            token = request.auth.get_token()
-            logger.info(
-                f"User logged out. Blacklisted access token - User: {request.data.get('email')} - Body: {request.data.get('body')}")
+            if request.auth and hasattr(request.auth, 'get_token'):
+                token = request.auth.get_token()
+                logger.info(
+                    f"User logged out. Blacklisted access token - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         logout(request)
         return Response({"message": "Successfully logged out"})
 
 
 class LoginView(TokenObtainPairView):
+    """
+    post:
+    Authenticates a user and returns a JWT token pair (access and refresh).
+
+    Accepts email and password. Returns the token pair along with user basic information if authentication is successful.
+    """
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         logger.info(f"Login attempt for user: {request.data.get('email')}")
-        response = super().post(request, *args, **kwargs)  # Generate tokens first
+        response = super().post(request, *args, **kwargs)
 
         # Access user data after token generation
         try:
@@ -62,33 +87,54 @@ class LoginView(TokenObtainPairView):
             }
             logger.info(f"Successful login for user: {request.data.get('email')}")
 
-            response.data.update(user_data)  # Include user data in response
+            response.data.update(user_data)
         except KeyError:
-            # Handle cases where email is not found (e.g., invalid credentials)
             return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return response
 
 
 class RegisterView(APIView):
+    """
+    post:
+    Registers a new user with the provided details.
+
+    Requires email, username, password, and other necessary user details. Returns the JWT refresh and access tokens upon successful registration.
+    """
+
     permission_classes = (AllowAny,)
     queryset = User.objects.all()
 
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        logger.info(f"User {request.data.get('email')} attempted to register")
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        user = serializer.instance
-        refresh = RefreshToken.for_user(user)
-        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        })
+    def post(self, request, *args, **kwargs):
+        try:
+            serializer = UserSerializer(data=request.data)
+            logger.info(f"Attempting to register user with email: {request.data.get('email')}")
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            user = serializer.instance
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })
+        except Exception as e:
+            logger.error(f"Error during user registration: {str(e)}")
+            return Response({'detail': str(e)}, status=400)
 
 
 class BuildingView(APIView):
+    """
+    get:
+    Retrieves a list of all buildings available in the database.
+
+    Requires user authentication. Returns a list of building details including names, and other related information.
+    Only accessible to authenticated users.
+
+    Error Response:
+        - 401: Returned if no refresh token is provided.
+
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -100,6 +146,22 @@ class BuildingView(APIView):
 
 
 class BuildingDetailView(APIView):
+    """
+    get:
+    Retrieves detailed information about a specific building identified by its ID.
+
+    Requires user authentication. This endpoint is used to fetch detailed information about a building,
+    such as its name, and associated floors or rooms. If the building with the specified ID does not exist,
+    a 404 error is returned.
+
+    Path Parameter:
+    - pk (int): Primary key of the building to retrieve.
+
+    Error Response:
+    - 404: Returned if no building with the provided ID could be found.
+    - 401: Returned if no refresh token is provided.
+
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
@@ -113,10 +175,19 @@ class BuildingDetailView(APIView):
 
 
 class CourseView(APIView):
+    """
+    get:
+    Retrieves a list of courses.
+
+    Requires user authentication. This endpoint is used to fetch a list of all available courses.
+    If no courses are found, an empty array is returned.
+
+    Error Response:
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        # Retrieve buildings data for authenticated user
         courses = Course.objects.all()
         logger.info(f"Courses accessed by {request.user.username}")
 
@@ -125,6 +196,21 @@ class CourseView(APIView):
 
 
 class CourseDetailView(APIView):
+    """
+    get:
+    Retrieves detailed information about a specific course identified by its ID.
+
+    Requires user authentication. This endpoint is used to fetch detailed information about a course,
+    such as its name and description. If the course with the specified ID does not exist,
+    a 404 error is returned.
+
+    Path Parameter:
+    - pk (int): Primary key of the course to retrieve.
+
+    Error Response:
+    - 404: Returned if no course with the provided ID could be found.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
@@ -138,17 +224,42 @@ class CourseDetailView(APIView):
 
 
 class ClassroomView(APIView):
+    """
+    get:
+    Retrieves a list of classrooms.
+
+    Requires user authentication. This endpoint is used to fetch a list of all available classrooms.
+    If no classrooms are found, an empty array is returned.
+
+    Error Response:
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         classrooms = Classroom.objects.all()
-        logger.info(f"Classrooms  accessed by {request.user.username}")
+        logger.info(f"Classrooms accessed by {request.user.username}")
 
         serializer = ClassroomSerializer(classrooms, many=True)
         return Response(serializer.data)
 
 
 class ClassroomDetailView(APIView):
+    """
+    get:
+    Retrieves detailed information about a specific classroom identified by its ID.
+
+    Requires user authentication. This endpoint is used to fetch detailed information about a classroom,
+    such as its name and capacity. If the classroom with the specified ID does not exist,
+    a 404 error is returned.
+
+    Path Parameter:
+    - pk (int): Primary key of the classroom to retrieve.
+
+    Error Response:
+    - 404: Returned if no classroom with the provided ID could be found.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
@@ -163,6 +274,20 @@ class ClassroomDetailView(APIView):
 
 
 class ClassroomTermView(APIView):
+    """
+    get:
+    Retrieves a list of classrooms for a specific term.
+
+    Requires user authentication. This endpoint is used to fetch a list of classrooms available for a specific term.
+    If no classrooms are found for the specified term, a 404 error is returned.
+
+    Path Parameter:
+    - term (str): Term for which classrooms are to be retrieved.
+
+    Error Response:
+    - 404: Returned if no classrooms are found for the specified term.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term):
@@ -175,6 +300,16 @@ class ClassroomTermView(APIView):
 
 
 class FloorView(APIView):
+    """
+    get:
+    Retrieves a list of floors.
+
+    Requires user authentication. This endpoint is used to fetch a list of all available floors.
+    If no floors are found, an empty array is returned.
+
+    Error Response:
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -185,6 +320,21 @@ class FloorView(APIView):
 
 
 class FloorDetailView(APIView):
+    """
+    get:
+    Retrieves detailed information about a specific floor identified by its ID.
+
+    Requires user authentication. This endpoint is used to fetch detailed information about a floor,
+    such as its name and associated building. If the floor with the specified ID does not exist,
+    a 404 error is returned.
+
+    Path Parameter:
+    - pk (int): Primary key of the floor to retrieve.
+
+    Error Response:
+    - 404: Returned if no floor with the provided ID could be found.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
@@ -198,6 +348,20 @@ class FloorDetailView(APIView):
 
 
 class ClassroomCoursesView(APIView):
+    """
+    get:
+    Retrieves a list of courses for a specific classroom.
+
+    Requires user authentication. This endpoint is used to fetch a list of courses available in a specific classroom.
+    If no courses are found for the specified classroom, a 404 error is returned.
+
+    Path Parameter:
+    - fk (int): Foreign key of the classroom for which courses are to be retrieved.
+
+    Error Response:
+    - 404: Returned if no courses are found for the specified classroom.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, fk):
@@ -208,10 +372,22 @@ class ClassroomCoursesView(APIView):
         logger.info(f"Classroom Courses accessed by {request.user.username}")
         return Response(serializer.data)
 
+
 class TermView(APIView):
+    """
+    get:
+    Retrieves a list of terms.
+
+    Requires user authentication. This endpoint is used to fetch a list of all available terms.
+    If no terms are found, an empty array is returned.
+
+    Error Response:
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+
         try:
             terms = Term.objects.all()
             serializer = TermSerializer(terms, many=True)
@@ -222,6 +398,20 @@ class TermView(APIView):
 
 
 class CoursesTermView(APIView):
+    """
+    get:
+    Retrieves a list of courses for a specific term.
+
+    Requires user authentication. This endpoint is used to fetch a list of courses available for a specific term.
+    If no courses are found for the specified term, a 404 error is returned.
+
+    Path Parameter:
+    - term (str): Term for which courses are to be retrieved.
+
+    Error Response:
+    - 404: Returned if no courses are found for the specified term.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term):
@@ -233,8 +423,22 @@ class CoursesTermView(APIView):
         return Response(serializer.data)
 
 
-
 class ClassroomCoursesTermView(APIView):
+    """
+    get:
+    Retrieves a list of courses for a specific classroom and term.
+
+    Requires user authentication. This endpoint is used to fetch a list of courses available for a specific classroom and term.
+    If no courses are found for the specified classroom and term, a 404 error is returned.
+
+    Path Parameters:
+    - term (str): Term for which courses are to be retrieved.
+    - fk (int): Foreign key of the classroom for which courses are to be retrieved.
+
+    Error Response:
+    - 404: Returned if no courses are found for the specified classroom and term.
+    - 401: Returned if no refresh token is provided.
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, term, fk):
@@ -248,6 +452,20 @@ class ClassroomCoursesTermView(APIView):
 
 
 class LoadView(APIView):
+    """
+    post:
+    Process and load data from an uploaded file.
+
+    Requires user authentication. This endpoint is used to process and load data from an uploaded file.
+    The uploaded file is expected to be in a specific format, and the data is processed and loaded into the database.
+    A success response is returned upon successful processing and loading of the data.
+
+    Request Body:
+    - file: The uploaded file containing data to be processed and loaded.
+
+    Error Response:
+    - 401: Returned if no refresh token is provided.
+    """
 
     def post(self, request):
         dr = DataReader(request.data['file'])
@@ -261,12 +479,27 @@ class LoadView(APIView):
 
 
 class PostLogView(APIView):
+    """
+    post:
+    Receives and processes log events.
+
+    This endpoint is used to receive log events and process them by writing them to a log file.
+    A success response is returned upon successful processing of the log event.
+
+    Request Body:
+    - log_event: The log event to be processed.
+
+    Error Response:
+    - 500: Returned if an error occurs during processing of the log event.
+    - 401: Returned if no refresh token is provided. (Needs implementation)
+    """
+
     def post(self, request):
         try:
             # Extract the log event from the request data
             log_event = request.data  # Assuming log events are sent as JSON data in the request body
             # Write the log event to a log file
-            with open('../django_react_roomscheduler/django_debug.log', 'a') as file:
+            with open('../django_debug.log', 'a') as file:
                 file.write(str(log_event) + '\n')
             # Return a success response
             return Response({"message": "Log event received and processed successfully"}, status=200)
@@ -275,8 +508,20 @@ class PostLogView(APIView):
             return Response({"error": str(e)}, status=500)
 
 
-
 class DownloadExampleExcel(APIView):
+    """
+    get:
+    Downloads an example Excel file.
+
+    This endpoint is used to download an example Excel file.
+    If the file is not found, a 404 error is returned.
+    If an error occurs during the download process, a 500 error is returned.
+
+    Error Response:
+    - 404: Returned if the file is not found.
+    - 500: Returned if an error occurs during the download process.
+    """
+
     def get(self, request):
         file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"
         if not os.path.exists(file_path):

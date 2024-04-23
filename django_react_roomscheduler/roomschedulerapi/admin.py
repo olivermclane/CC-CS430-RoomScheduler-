@@ -1,21 +1,31 @@
 from django.contrib import admin
 from .models import Building, Floor, Classroom, Course, User
+from .serializers import BuildingSerializer, FloorSerializer, ClassroomSerializer, CourseSerializer, UserSerializer
 
 
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for Building model.
+    """
     list_display = ['building_id', 'building_name']
     ordering = ['building_id', 'building_name']
 
 
 @admin.register(Floor)
 class FloorAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for Floor model.
+    """
     list_display = ['floor_name', 'building_id']
     ordering = ['building_id', 'floor_name']
 
 
 @admin.register(Classroom)
 class ClassroomAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for Classroom model.
+    """
     list_display = [
         'classroom_id',
         'classroom_number',
@@ -36,6 +46,9 @@ class ClassroomAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for Course model.
+    """
     list_display = [
         'course_id',
         'course_name',

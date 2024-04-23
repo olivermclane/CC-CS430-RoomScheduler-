@@ -3,6 +3,7 @@ import {useContext, createContext, useState} from "react"
 import axios from "axios";
 import logger from "../loggers/logger";
 import horizontalImage from '../icons/cc_logo_horiz.jpg';
+import {useAuth} from "../service/auth/AuthProvider";
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -19,9 +20,10 @@ export default function Sidebar({children}) {
     const baseurl = "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true";
     const fieldParam = `&name=${username}`;
     const profileURL = baseurl + fieldParam;
+    const {axiosInstance} = useAuth();
 
     function handleLogout(onSuccess) {
-        axios.post('http://localhost:8000/logout/')
+        axiosInstance.post('/logout/')
             .then(() => {
                 logger.info('User logged out:', username);
                 localStorage.removeItem('access_token');

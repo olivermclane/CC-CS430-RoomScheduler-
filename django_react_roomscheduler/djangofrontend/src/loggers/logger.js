@@ -14,7 +14,7 @@ const send = async function (level, logEvent, a, b) {
 
 
       // Send the formatted log event to the server
-      const response = await axios.post("http://127.0.0.1:8000/post-log/", formattedLogEvent, {
+      const response = await axios.post("http://127.0.0.1:8000/api/post-log/", formattedLogEvent, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -3,12 +3,20 @@ from .models import Building, Floor, Classroom, Course, User, Term, OptiScore
 
 
 class BuildingSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Building model.
+    """
+
     class Meta:
         model = Building
         fields = '__all__'
 
 
 class FloorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Floor model.
+    """
+
     building = BuildingSerializer(read_only=True)
 
     class Meta:
@@ -17,20 +25,32 @@ class FloorSerializer(serializers.ModelSerializer):
 
 
 class OptiScoreSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the OptiScore model.
+    """
+
     class Meta:
         model = OptiScore
         fields = '__all__'
 
 
 class TermSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Term model.
+    """
+
     class Meta:
         model = Term
         fields = ['term_id', 'term_name']
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Classroom model.
+    """
+
     floor = FloorSerializer(read_only=True)
-    optimization_score = OptiScoreSerializer(read_only=True)  # Correct this line
+    optimization_score = OptiScoreSerializer(read_only=True)
     term = TermSerializer(read_only=True)
 
     class Meta:
@@ -62,6 +82,10 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Course model.
+    """
+
     classroom = ClassroomSerializer(read_only=True)
     term = TermSerializer(read_only=True)
 
@@ -94,6 +118,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model.
+    """
+
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'password']
@@ -108,8 +136,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ClassroomCourseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Course model used in ClassroomCourseView.
+    """
+
     classroom = ClassroomSerializer(read_only=True)
     term = TermSerializer(read_only=True)
+
     class Meta:
         model = Course
         fields = [
