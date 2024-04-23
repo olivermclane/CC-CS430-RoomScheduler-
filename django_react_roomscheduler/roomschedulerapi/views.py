@@ -44,7 +44,6 @@ class IndexView(APIView):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         return render(request, 'index.html')
 
-
 class LogoutView(APIView):
     """
     post:
@@ -466,12 +465,15 @@ class LoadView(APIView):
     Error Response:
     - 401: Returned if no refresh token is provided.
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         dr = DataReader(request.data['file'])
-        print(request.data['file'])
+        if not dr.sortData():
+            logger.warning(f"User failed to upload new term data - User: {request.user.username}")
+            return Response({'error': 'This is not a valid file.'}, status=422)
+
         logger.info(f"User uploaded new term data - User: {request.user.username}")
-        dr.sortData()
         logger.info(f"Data reader sorted data for - User: {request.user.username}")
         dr.loadData()
         logger.info(f"Data reader loaded data into database - User: {request.user.username}")

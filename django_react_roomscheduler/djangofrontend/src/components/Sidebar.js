@@ -1,9 +1,10 @@
 import {LogOut, ChevronLast, ChevronFirst} from "lucide-react"
 import {useContext, createContext, useState} from "react"
-import axios from "axios";
 import logger from "../loggers/logger";
 import horizontalImage from '../icons/cc_logo_horiz.jpg';
 import {useAuth} from "../service/auth/AuthProvider";
+import {useNavigate} from 'react-router-dom';
+
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -14,6 +15,7 @@ import {useAuth} from "../service/auth/AuthProvider";
 const SidebarContext = createContext()
 
 export default function Sidebar({children}) {
+    const navigate = useNavigate();
     const email = localStorage.getItem('email');
     const username = localStorage.getItem('username');
     const [expanded, setExpanded] = useState(false)
@@ -32,7 +34,10 @@ export default function Sidebar({children}) {
                 localStorage.removeItem('username');
 
                 if (onSuccess) {
-                    onSuccess();
+                    onSuccess(); // Call the success callback if provided
+                    logger.info('User logged out:', username)
+                } else {
+                    navigate('/login'); // Redirect to login (if not using callback)
                 }
 
                 window.location.reload(); // Use reload to clear all session data and state

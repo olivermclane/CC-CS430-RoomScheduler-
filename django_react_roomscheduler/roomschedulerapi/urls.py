@@ -6,8 +6,8 @@ from .views import RegisterView, BuildingView, FloorView, ClassroomView, CourseV
      BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView, \
      ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel
 
-urlpatterns = [
 
+urlpatterns = ([
      ## AUTH ENDPOINTS
      path('login/',
           LoginView.as_view(),
@@ -40,4 +40,4 @@ urlpatterns = [
      path('terms/', TermView.as_view(), name='term-classroom-courses'),
      path('load/', LoadView.as_view(), name='load'),
      path('load-example-excel/', DownloadExampleExcel.as_view(), name='load-example-excel'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
