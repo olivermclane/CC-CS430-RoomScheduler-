@@ -44,17 +44,7 @@ These values should be set as such:
 
 Once these values have been filled in we are ready to build the frontend.
 
-Next, run the following commands:
-
-```cd django_react_roomscheduler/djangofrontend```
-
-```npm install```
-
-```npm run build```
-
-```cd ..\..```
-
-Verify that the file in `django_react_roomscheduler/static/js/main.<hash>.js` and `django_react_roomscheduler/static/js/main.<hash>.js`
+Verify that the file in `djangofrontend/build/static/js/main.<hash>.js` and `djangofrontend/build/static/css/main.<hash>.js`
 match the file names described in templates/index.html.
 
 Once that is done, we are read to our docker-compose.yml. Run the following to start the all the containers:
