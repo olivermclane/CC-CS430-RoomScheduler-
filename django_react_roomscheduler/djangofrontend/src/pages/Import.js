@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import logger from "../loggers/logger";
 
 function ImportPage() {
     // State variables to manage input data

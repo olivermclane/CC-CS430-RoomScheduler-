@@ -155,10 +155,10 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
             });
 
             if (lastEnd < opEnd && minuteDifference(lastEnd, opEnd) > 15) {
-                console.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
+                logger.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
                 openTimes.push(`${tConvert(lastEnd)}-${tConvert(opEnd)}`);
             }
-            console.log(openTimes)
+            logger.log(openTimes)
             return openTimes;
         };
 

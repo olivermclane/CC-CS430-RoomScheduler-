@@ -12,10 +12,10 @@ export default function LoginForm() {
     const login = async (email, password) => {
       try {
         const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
-        logger.info("User attempted login", email.toString()); // Log the endpoint being called
+        // logger.info("User attempted login", email.toString()); // Log the endpoint being called
         return response.data;
       } catch (error) {
-        logger.error("Error ", error)
+        // logger.error("Error ", error)
         throw error;
       }
     }
@@ -29,7 +29,7 @@ export default function LoginForm() {
     try {
       const data = await login( email, password );
       localStorage.setItem('access_token', data.access);
-      console.log(localStorage.getItem('access_token'))
+      // console.log(localStorage.getItem('access_token'))
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)
@@ -40,7 +40,7 @@ export default function LoginForm() {
 
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
-      logger.error('Login failed for user', email)
+      // logger.error('Login failed for user', email)
 
     }
   };

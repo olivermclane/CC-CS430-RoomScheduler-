@@ -47,7 +47,7 @@ function ClassroomList({selectedFloor}){
     }
 
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.log(termId)
         setSelectedTerm(termId);
     }
 

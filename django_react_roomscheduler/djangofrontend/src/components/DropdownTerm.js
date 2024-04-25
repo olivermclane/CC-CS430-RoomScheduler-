@@ -13,7 +13,7 @@ const DropdownTerm = ({onTermChange}) => {
         const fetchTerms = async () => {
             try {
                 const response = await axiosInstance.get('/terms/');
-                console.log(response.data);
+                logger.log(response.data);
                 setTerms(response.data);
                 logger.info('Received data from terms');
             } catch (error) {

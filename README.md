@@ -57,12 +57,12 @@ Next, run the following commands:
 Verify that the file in `django_react_roomscheduler/static/js/main.<hash>.js` and `django_react_roomscheduler/static/js/main.<hash>.js`
 match the file names described in templates/index.html.
 
-Once that is done, we are read to our docker-compose.yml. Run the following to start the all the containers:
+Once that is done, we are read to our docker-compose.yml. Make sure docker is open and running then run the following to start the all the containers:
 
 ```bash
 docker-compose up -d --build
 ```
-Now visit [here](localhost), enjoy the room_scheduler app. 
+Now visit [here](http://localhost), enjoy the room_scheduler app. 
 
 #### Notes
 - Allows all the services a second to start up otherwise you will be redirected to a NGINX error.

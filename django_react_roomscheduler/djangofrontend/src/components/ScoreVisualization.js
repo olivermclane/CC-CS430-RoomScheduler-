@@ -11,6 +11,7 @@ import {
     FaChartPie, FaCheck
 } from 'react-icons/fa';
 import {useAuth} from "../service/auth/AuthProvider";
+import logger from "../loggers/logger";
 
 const ScoreVisualization = ({selectedClassroom}) => {
     const [chartOptions, setChartOptions] = useState({
@@ -97,7 +98,7 @@ const ScoreVisualization = ({selectedClassroom}) => {
 
                 setOverallScore(courseData.classroom.optimization_score.overall_score);
             } catch (err) {
-                console.error('Error fetching data:', err);
+                logger.error('Error fetching data:', err);
             }
         };
 

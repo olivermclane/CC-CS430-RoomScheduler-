@@ -1,8 +1,9 @@
 import os
 
 from django.contrib.auth import get_user_model, logout
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -79,7 +80,7 @@ class RegisterView(APIView):
         serializer.save()
         user = serializer.instance
         refresh = RefreshToken.for_user(user)
-        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
+        logger.info(f"User {request.data.get('email')} register")
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -262,22 +263,27 @@ class LoadView(APIView):
 
 
 class PostLogView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
     def post(self, request):
+        if request.user is AnonymousUser:
+            return Response({'error': 'Cannot post log'}, status=401)
         try:
             # Extract the log event from the request data
-            log_event = request.data  # Assuming log events are sent as JSON data in the request body
+            log_event = request.data
             # Write the log event to a log file
-            with open('../django_react_roomscheduler/django_debug.log', 'a') as file:
+            with open('django_debug.log', 'a') as file:
                 file.write(str(log_event) + '\n')
             # Return a success response
-            return Response({"message": "Log event received and processed successfully"}, status=200)
+            return Response({"message": "Log was written"}, status=200)
         except Exception as e:
             # Handle any exceptions that occur during processing
             return Response({"error": str(e)}, status=500)
 
 
-
 class DownloadExampleExcel(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"
         if not os.path.exists(file_path):

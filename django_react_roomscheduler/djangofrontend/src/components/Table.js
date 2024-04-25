@@ -309,7 +309,7 @@ const Table = () => {
             const newColumnOrder = [...columnOrder];
             newColumnOrder.splice(dragIndex, 1);
             newColumnOrder.splice(hoverIndex, 0, dragColumn);
-            console.log(columnOrder)
+            logger.log(columnOrder)
             setColumnOrder(newColumnOrder);
         }
     ;
@@ -333,7 +333,7 @@ const Table = () => {
         }
     };
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.log(termId)
         setSelectedTerm(termId);
     }
 
@@ -358,11 +358,11 @@ const Table = () => {
     }, [endpoint, selectedTerm]);
 
     useEffect(() => {
-        console.log(orderedColumns);
+        logger.log(orderedColumns);
     }, [orderedColumns]);
 
     useEffect(() => {
-        console.log(data);
+        logger.log(data);
     }, [data]);
 
 

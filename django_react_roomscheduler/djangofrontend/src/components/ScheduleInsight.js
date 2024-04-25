@@ -9,7 +9,7 @@ function ScheduleInsight({selectedClassroom}) {
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log(selectedClassroom)
+            logger.log(selectedClassroom)
             try {
                 if (selectedClassroom) {
 
