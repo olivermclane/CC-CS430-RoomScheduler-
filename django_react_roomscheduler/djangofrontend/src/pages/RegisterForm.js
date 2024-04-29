@@ -12,7 +12,7 @@ export default function RegisterForm() {
     const navigate = useNavigate();
     const login = async (email, password, username) => {
         try {
-            const response = await axios.post('http://localhost:8000/register/', {
+            const response = await axios.post('/api/register/', {
                 'email': email.toString(),
                 'username': username,
                 'password': password

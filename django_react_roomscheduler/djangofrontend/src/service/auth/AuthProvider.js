@@ -7,14 +7,17 @@ export function AuthProvider({ children }) {
     const [authToken, setAuthToken] = useState(localStorage.getItem('access_token'));
 
     const axiosInstance = axios.create({
-        baseURL: 'http://localhost:8000',
+        baseURL: '/api',
         timeout: 20000,
     });
 
     const forceLogout = useCallback(() => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        // Redirect to login page
+        // Clearing all tokens and user-related info from localStorage
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('username');
+        // Using window.location.href to force a full page reload and redirect
         window.location.href = '/login';
     }, []);
 
@@ -29,7 +32,7 @@ export function AuthProvider({ children }) {
                 if (error.response && error.response.status === 401 && !originalRequest._retry) {
                     if (!isRefreshing) {
                         isRefreshing = true;
-                        axios.post('http://localhost:8000/login/refresh/', {
+                        axios.post('/api/login/refresh/', {
                             refresh: localStorage.getItem('refresh_token')
                         }).then(response => {
                             const { access, refresh } = response.data;

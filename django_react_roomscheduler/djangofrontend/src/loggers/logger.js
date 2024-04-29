@@ -1,9 +1,6 @@
 import pino from "pino";
 import axios from "axios";
 
-
-
-
 const send = async function (level, logEvent) {
   const authToken = localStorage.getItem('access_token');
   const headers = {'Authorization':`Bearer ${authToken}`}

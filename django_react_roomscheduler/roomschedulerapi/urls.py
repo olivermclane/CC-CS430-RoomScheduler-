@@ -1,20 +1,13 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path, include
+from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
-from django.views.generic import TemplateView
-from .views import DefaultView, RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
+from .views import RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
      BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView, \
-     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel, \
-     IndexView
+     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel
+
 
 urlpatterns = ([
-     ## INDEX ENDPOINT
-     path('', DefaultView.as_view()),
-     path('register', IndexView.as_view()),
-     path('login', IndexView.as_view()),
-     path('dashboard', IndexView.as_view()),
-
      ## AUTH ENDPOINTS
      path('login/',
           LoginView.as_view(),

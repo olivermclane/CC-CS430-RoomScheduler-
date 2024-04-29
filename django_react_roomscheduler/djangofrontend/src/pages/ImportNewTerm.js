@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import logger from "../loggers/logger";
-import { BeatLoader } from 'react-spinners';
+import {BeatLoader} from 'react-spinners';
+import {useAuth} from "../service/auth/AuthProvider";
 
 const requiredColumns = [
     'CSM_BLDG',
@@ -35,6 +36,8 @@ function ImportNewTerm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const {axiosInstance} = useAuth();
+
 
     const validateFile = (jsonData) => {
         const columnNames = jsonData[0];
@@ -55,11 +58,11 @@ function ImportNewTerm() {
         setLoading(false);
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const content = e.target.result;
-            const workbook = XLSX.read(content, { type: 'binary' });
+            const workbook = XLSX.read(content, {type: 'binary'});
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
             if (validateFile(jsonData)) {
                 setFileData(jsonData);
             }
@@ -84,7 +87,7 @@ function ImportNewTerm() {
         logger.log(formData)
 
         try {
-            const response = await axios.post('http://localhost:8000/load/', formData, {
+            const response = await axiosInstance.post('/load/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -102,11 +105,11 @@ function ImportNewTerm() {
 
     const handleDownloadExampleFile = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/load-example-excel/', {
+            const response = await axiosInstance.get('/load-example-excel/', {
                 responseType: 'blob'
             });
 
-            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const blob = new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
             const url = window.URL.createObjectURL(blob);
 
             const link = document.createElement('a');

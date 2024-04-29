@@ -30,9 +30,6 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("insights")}/>
                 <SidebarItem icon={<FileUp size={20}/>} text="Import New Term"
                              onClick={() => handleSidebarItemClick("import new term")}/>
-                <hr className='my-3'/>
-                <SidebarItem icon={<UserIcon size={20}/>} text="Profile"/>
-                <SidebarItem icon={<Settings size={20}/>} text="Settings"/>
             </Sidebar>
         <div className="sm:w-full mt-4 p-4 bg-violet-100 rounded-lg shadow-md flex-1" style={{minHeight: 'calc(100vh - 64px)'}}>
                 {selectedItem === "dashboard" && (
@@ -41,14 +38,8 @@ export default function Dashboard() {
                 {selectedItem === "insights" && (
                     <Insight/>
                 )}
-                {selectedItem === "profile" && (
-                    <p>Profile</p>
-                )}
                 {selectedItem === "import new term" && (
                     <ImportNewTerm/>
-                )}
-                {selectedItem === "settings" && (
-                    <p>Settings</p>
                 )}
             </div>
         </div>
