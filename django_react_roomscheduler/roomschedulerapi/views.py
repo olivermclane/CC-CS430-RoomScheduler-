@@ -263,11 +263,11 @@ class LoadView(APIView):
 
 
 class PostLogView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        if request.user is AnonymousUser:
-            return Response({'error': 'Cannot post log'}, status=401)
+        # if request.user is AnonymousUser:
+        #     return Response({'error': 'Cannot post log'}, status=401)
         try:
             # Extract the log event from the request data
             log_event = request.data
