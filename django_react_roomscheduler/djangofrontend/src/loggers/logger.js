@@ -3,7 +3,6 @@ import axios from "axios";
 
 const send = async function (level, logEvent) {
   const authToken = localStorage.getItem('access_token');
-  const headers = {'Authorization':`Bearer ${authToken}`}
 
   try {
     // Check if the level is above the specified level below
@@ -16,10 +15,15 @@ const send = async function (level, logEvent) {
       ];
 
       // Send the formatted log event to the server
-      const response = await axios.post("/post-log/", formattedLogEvent, {headers});
+      const response = await axios.post("http://127.0.0.1:8000/api/post-log/", formattedLogEvent, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization':`Bearer ${authToken}`
+        },
+      });
     }
   } catch (error) {
-    logger.error("Error sending log event:", error);
+    // logger.error("Error sending log event:", error);
   }
 };
 

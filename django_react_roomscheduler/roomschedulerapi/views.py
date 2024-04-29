@@ -482,7 +482,6 @@ class LoadView(APIView):
 
 
 class PostLogView(APIView):
-    permission_classes = (IsAuthenticated,)
     """
     post:
     Receives and processes log events.
@@ -497,6 +496,8 @@ class PostLogView(APIView):
     - 500: Returned if an error occurs during processing of the log event.
     - 401: Returned if no refresh token is provided. (Needs implementation)
     """
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             # Extract the log event from the request data
@@ -512,7 +513,6 @@ class PostLogView(APIView):
 
 
 class DownloadExampleExcel(APIView):
-    permission_classes = (IsAuthenticated,)
     """
     get:
     Downloads an example Excel file.
@@ -526,6 +526,7 @@ class DownloadExampleExcel(APIView):
     - 500: Returned if an error occurs during the download process.
     """
 
+    permission_classes = (IsAuthenticated,)
     def get(self, request):
         file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"
         if not os.path.exists(file_path):

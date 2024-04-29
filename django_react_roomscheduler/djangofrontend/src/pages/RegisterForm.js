@@ -32,8 +32,7 @@ export default function RegisterForm() {
             const data = await login(email, password, username);
             navigate('/login')
         } catch (error) {
-            setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
-            // logger.info("Registration failed for user with email ", email)
+            setRegistrationError('Registration failed. Try a different username and email or check with your provider.');
         }
     };
 
@@ -74,7 +73,7 @@ export default function RegisterForm() {
                                     >
                                         Register
                                     </Button>
-                                   <Button onClick={navigate('/login')}
+                                   <Button onClick={() => navigate('/login')}
                                         className="rounded-full px-4 py-2 text-sm font-medium text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white"
                                     >
                                         Back to Home
