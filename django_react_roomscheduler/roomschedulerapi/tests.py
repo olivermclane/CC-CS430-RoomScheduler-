@@ -975,10 +975,8 @@ class TestLoadView(APITestCase):
         # Setup Mocks
         with open('roomschedulerapi/Sample_Excel_Upload.xlsx', 'rb') as fp:
             request_data = {'file': File(fp)}
-            print("Testing")
             # Execute
             response = self.client.post(reverse("load"), request_data, format='multipart')
-            print(response.data)
             # Assertions
             self.assertEqual(response.status_code, 201)
             self.assertEqual(response.data, "Data reader has processed new term data")
@@ -1029,7 +1027,6 @@ class TestLoadView(APITestCase):
             request_data = {'file': File(fp)}
             # Execute
             response = self.client.post(reverse("load"), request_data, format='multipart')
-            print(response.data)
             # Assertions
             self.assertEqual(response.status_code, 422)
             self.assertEqual(response.data, {'error': 'This is not a valid file.'})

@@ -10,7 +10,7 @@ import logger from "../loggers/logger";
 
 const Calendar = ({selectedClassroom}) => {
     const [calendarData, setCalendarData] = useState([]);
-    const [firstReoccur, setFirstReoccur] = useState(undefined); // Start as undefined
+    const [firstReoccur, setFirstReoccur] = useState(undefined);
     const [events, setEvents] = useState([]);
     const {axiosInstance} = useAuth();
 
@@ -18,7 +18,7 @@ const Calendar = ({selectedClassroom}) => {
         try {
             const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
             setCalendarData(response.data);
-            logger.info("Calendar data set")
+            logger.debug("Calendar data set")
         } catch (err) {
             logger.error("Error fetching calendar data:", err);
         }
@@ -86,7 +86,7 @@ const Calendar = ({selectedClassroom}) => {
             weekends={false}
             slotMinTime={'06:00:00'}
             slotMaxTime={'22:00:00'}
-            initialDate={firstReoccur} // Now guaranteed to be defined
+            initialDate={firstReoccur}
             eventClick={(info) => {
                 logger.trace(`You've clicked an event: ${info.event.title}`);
             }}

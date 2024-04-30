@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 
 import logger from "../loggers/logger";
 import {useAuth} from "../service/auth/AuthProvider";
 
-function DailyScheduleInsight2({ selectedClassroom }) {
+function DailyScheduleInsight2({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
     const [chartOptions, setChartOptions] = useState(null);
-    const { axiosInstance } = useAuth();
+    const {axiosInstance} = useAuth();
 
     useEffect(() => {
         fetchData();
@@ -15,15 +15,19 @@ function DailyScheduleInsight2({ selectedClassroom }) {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-            logger.info("Fetched data:"); // Log fetched data
-            const parsedData = parseData(response.data);
-            logger.info("Parsed data:"); // Log parsed data
-            setScheduleData(parsedData);
-            updateTotalUsedTimeChartOptions(parsedData);
+            if (selectedClassroom) {
+
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                logger.debug("Fetched data:"); // Log fetched data
+                const parsedData = parseData(response.data);
+                logger.debug("Parsed data:"); // Log parsed data
+                setScheduleData(parsedData);
+                updateTotalUsedTimeChartOptions(parsedData);
+            }
         } catch (err) {
             logger.error('Error fetching data:', err);
         }
+
     };
 
     const parseData = (data) => {

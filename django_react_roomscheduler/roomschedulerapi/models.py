@@ -214,6 +214,7 @@ class Course(models.Model):
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
 
+
 class User(AbstractUser):
     """
     Custom User model.
@@ -221,7 +222,6 @@ class User(AbstractUser):
     - name : none
     - emails : Email of the user
     - is_active : True if the user is active, False otherwise
-    - is_admin : True if the user is admin, False otherwise
     - created_at: datetime when the user was created
     - updated_at: datetime when the user was updated
     """
@@ -233,8 +233,7 @@ class User(AbstractUser):
         max_length=255,
         unique=True,
     )
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     temp_password_flag = models.BooleanField(default=False)
@@ -251,8 +250,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
-    def is_admin(self, perm, obj=None):
-        return self.is_admin
 
 
 

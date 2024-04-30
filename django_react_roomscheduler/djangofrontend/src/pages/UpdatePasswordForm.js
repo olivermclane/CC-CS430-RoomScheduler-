@@ -2,16 +2,20 @@ import React, {useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import {useAuth} from "../service/auth/AuthProvider";
+import carrollCampusImage from '../icons/carroll-campus.jpg';
 
 export default function UpdatePasswordForm() {
 
     const email = localStorage.getItem('email').toString();
     const [updatePasswordError, setUpdatePasswordError] = useState('');
     const navigate = useNavigate();
+    const {axiosInstance} = useAuth();
+
     const updatePassword = async (email, password) => {
         try {
             console.log(password)
-            const response = await axios.post('http://localhost:8000/updatePassword/', {
+            const response = await axiosInstance.post('/updatePassword/', {
                 'email' : email,
                 'password': password
             });
@@ -61,11 +65,9 @@ export default function UpdatePasswordForm() {
                 return
             }
 
-            console.log(email);
             const data = await updatePassword(email, password);
-            window.location.href = '/dashboard';
+            navigate('/dashboard');
         } catch (error) {
-            console.log(error)
             setUpdatePasswordError("There was an error updating your password")
         }
     };
@@ -75,7 +77,7 @@ export default function UpdatePasswordForm() {
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `

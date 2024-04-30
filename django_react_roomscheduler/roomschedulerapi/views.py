@@ -45,6 +45,7 @@ class IndexView(APIView):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         return render(request, 'index.html')
 
+
 class LogoutView(APIView):
     """
     post:
@@ -117,14 +118,15 @@ class RegisterView(APIView):
         serializer.save()
         user = serializer.instance
         refresh = RefreshToken.for_user(user)
-        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
+        logger.info(f"User {request.data.get('email')} register, Body: {request}")
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         })
 
+
 class UpdatePasswordView(APIView):
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         logger.info("updating password")
@@ -137,18 +139,8 @@ class UpdatePasswordView(APIView):
             user = get_user_model().objects.get(email=request.data['email'])
             user.set_password(request.data['password'])
             user.temp_password_flag = False
-            #user.temp_password_admin = True
+            # user.temp_password_admin = True
             user.save()
-
-            refresh = RefreshToken.for_user(user)
-
-    def post(self, request, *args, **kwargs):
-        try:
-            serializer = UserSerializer(data=request.data)
-            logger.info(f"Attempting to register user with email: {request.data.get('email')}")
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            user = serializer.instance
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
@@ -160,14 +152,13 @@ class UpdatePasswordView(APIView):
 
 
 class AdminUpdatePasswordView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         logger.info("updating password")
         logger.info(f"{request.data}")
         # Access user data after token generation
         logger.info(f'{request.data["email"]}')
-        logger.info(f'{request.data["password"]}')
 
         try:
             user = get_user_model().objects.get(email=request.data['email'])
@@ -591,6 +582,7 @@ class DownloadExampleExcel(APIView):
     """
 
     permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"
         if not os.path.exists(file_path):

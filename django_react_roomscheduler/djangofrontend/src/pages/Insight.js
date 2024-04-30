@@ -10,17 +10,18 @@ import MonthlyHeatMap from "../components/MonthlyHeatMap"
 import CalendarPopup from "../components/CalendarPopup";
 import ClassroomDetails from "../components/ClassroomDetails";
 import logger from "../loggers/logger";
+import SeatVisualization2 from "../components/SeatVisualization2";
 
 export default function Insight() {
     const [selectedClassroom, setSelectedClassroom] = useState('');
     const [selectedTerm, setSelectedTerm] = useState('')
     const handleClassroomChange = (classroomId) => {
-        logger.info("Classroom ID: ", classroomId)
+        logger.debug("Classroom ID: ", classroomId)
         setSelectedClassroom(classroomId);
     };
 
     const handleTermChange = (termId) => {
-        logger.info("Term ID: ")
+        logger.debug("Term ID: ")
         setSelectedTerm(termId)
     }
 
@@ -33,7 +34,6 @@ export default function Insight() {
                 </div>
             </div>
             <div className="flex space-x-10">
-                <UsageChart selectedClassroom={selectedClassroom}/>
                 <DailyScheduleInsight selectedClassroom={selectedClassroom}/>
                 <MostFreqProf selectedClassroom={selectedClassroom}/>
                 <DailyScheduleInsight2 selectedClassroom={selectedClassroom}/>
@@ -42,9 +42,12 @@ export default function Insight() {
                 <ScoreVisualization selectedClassroom={selectedClassroom}/>
             </div>
             <div className="flex space-x-10">
-                <ClassroomDetails selectedClassroom={selectedClassroom}/>
-
                 <MonthlyHeatMap selectedClassroom={selectedClassroom}/>
+            </div>
+            <div className="flex space-x-10">
+                <ClassroomDetails selectedClassroom={selectedClassroom}/>
+                <SeatVisualization2 selectedClassroom={selectedClassroom}/>
+                <UsageChart selectedClassroom={selectedClassroom}/>
             </div>
         </div>
     );

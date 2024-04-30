@@ -38,14 +38,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='index.html')),
-    path('', DefaultView.as_view()),
-    path('register', IndexView.as_view()),
-    path('login', IndexView.as_view()),
-    path('dashboard', IndexView.as_view()),
-    path('api/', include('roomschedulerapi.urls')),
-
-    # API schema and documentation routes
-    re_path(r'^api/docs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('', TemplateView.as_view(template_name='index.html')),
+                  path('', DefaultView.as_view()),
+                  path('register', IndexView.as_view()),
+                  path('login', IndexView.as_view()),
+                  path('dashboard', IndexView.as_view()),
+                  path('api/', include('roomschedulerapi.urls')),
+                  path('updatePassword/', IndexView.as_view()),
+                  path('adminUpdatePassword/', IndexView.as_view()),
+                  # API schema and documentation routes
+                  re_path(r'^api/docs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

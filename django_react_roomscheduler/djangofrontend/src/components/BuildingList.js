@@ -13,7 +13,7 @@ function BuildingList({updateFloorList}){
         try {
             const response = await axiosInstance.get(`${endpoint}/`);
             setBuildings(response.data);
-            logger.info('Response received:'); // Log the response received
+            logger.debug('Response received:');
 
         } catch (err) {
             if (err.response) {

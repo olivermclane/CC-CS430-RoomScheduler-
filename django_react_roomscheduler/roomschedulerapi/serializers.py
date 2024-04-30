@@ -118,7 +118,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     """
     Serializer for the User model.
     """

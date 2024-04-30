@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ApexCharts from "apexcharts";
 import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
 
 
-function MostFreqProf({ selectedClassroom }) {
+function MostFreqProf({selectedClassroom}) {
     const [scheduleData, setScheduleData] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
     const parseData = (data) => {
         const instructorCounts = {};
@@ -15,40 +14,40 @@ function MostFreqProf({ selectedClassroom }) {
             const instructor = course.instructor;
             instructorCounts[instructor] = (instructorCounts[instructor] || 0) + 1;
         });
-        logger.info("Instructor counts set")
+        logger.debug("Instructor counts set")
 
         return instructorCounts;
     };
 
-    const { axiosInstance } = useAuth();
+    const {axiosInstance} = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true); // Set loading to true before fetching new data
-            try {
-                logger.info('Requested data from classroom-courses'); // Log the response received
-                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-                logger.info('Received data from classroom-courses'); // Log the response received
-                const parsedData = parseData(response.data);
-                setScheduleData(parsedData);
-                setIsLoading(false); // Set loading to false after data is fetched
-            } catch (err) {
-                setIsLoading(false); // Set loading to false in case of error
-                if (err.response) {
-                    logger.error('Server error:', err.response.data);
-                } else if (err.request) {
-                    logger.error('Network error:', err.message);
-                } else {
-                    logger.error('Error:', err.message);
+                try {
+                    if (selectedClassroom) {
+                        logger.debug('Requested data from classroom-courses');
+                        const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                        logger.debug('Received data from classroom-courses');
+                        const parsedData = parseData(response.data);
+                        setScheduleData(parsedData);
+                    }
+                } catch (err) {
+                    if (err.response) {
+                        logger.error('Server error:', err.response.data);
+                    } else if (err.request) {
+                        logger.error('Network error:', err.message);
+                    } else {
+                        logger.error('Error:', err.message);
+                    }
                 }
-            }
+
         };
 
         fetchData(); // Fetch data when the selected classroom changes
     }, [selectedClassroom]);
 
     useEffect(() => {
-        if (!isLoading && Object.keys(scheduleData).length > 0) {
+        if (Object.keys(scheduleData).length > 0) {
             const instructors = Object.keys(scheduleData);
             const counts = Object.values(scheduleData);
 
@@ -87,12 +86,12 @@ function MostFreqProf({ selectedClassroom }) {
 
             const chart = new ApexCharts(document.getElementById("MostFreqProfChart"), options);
             chart.render();
-            logger.info("Chart rendered")
+            logger.debug("Chart rendered")
 
             // Return a cleanup function to remove the chart when the component unmounts
             return () => chart.destroy();
         }
-    }, [isLoading, scheduleData]);
+    }, [scheduleData]);
 
     return (
         <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6">

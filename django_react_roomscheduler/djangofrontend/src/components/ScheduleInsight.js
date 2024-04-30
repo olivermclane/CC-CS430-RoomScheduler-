@@ -9,30 +9,29 @@ function ScheduleInsight({selectedClassroom}) {
 
     useEffect(() => {
         const fetchData = async () => {
-            logger.log(selectedClassroom)
             try {
                 if (selectedClassroom) {
 
-                    logger.info('Requested data from classroom-courses'); // Log the response received
+                    logger.debug('Requested data from classroom-courses'); // Log the response received
 
                     const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                     if (response && response.data) {
-                        logger.info('Received data from classroom-courses'); // Log the response received
+                        logger.debug('Received data from classroom-courses'); // Log the response received
 
                         const parsedData = parseData(response.data);
                         setScheduleData(parsedData);
                     } else {
-                        logger.info('No data returned from API');
+                        logger.debug('No data returned from API');
                         setScheduleData([]); // Set empty array if no data is received
                     }
                 }
             } catch (err) {
                 if (err.response) {
-                    logger.info('Server error:', err.response.data);
+                    logger.error('Server error:', err.response.data);
                 } else if (err.request) {
-                    logger.info('Network error:', err.message);
+                    logger.error('Network error:', err.message);
                 } else {
-                    logger.info('Error:', err.message);
+                    logger.error('Error:', err.message);
                 }
             }
         };
@@ -45,11 +44,11 @@ function ScheduleInsight({selectedClassroom}) {
 
         if (scheduleData.length > 0) {
             const categories = scheduleData.map(scheduleData => scheduleData.course_name);
-            const seatUsages = scheduleData.map(scheduleData => (scheduleData.enrollment_total / scheduleData.total_seats) * 100);
+            const seatUsages = scheduleData.map(scheduleData => Math.round((scheduleData.enrollment_total / scheduleData.total_seats) * 100));
             const options = {
                 chart: {
                     type: "bar",
-                    height: 350,
+                    height: 800,
                     toolbar: {
                         show: false
                     }
@@ -82,20 +81,20 @@ function ScheduleInsight({selectedClassroom}) {
             // Render new chart
             chart = new ApexCharts(document.getElementById("bar-chart"), options);
             chart.render();
-            logger.info("Chart rendered")
+            logger.debug("Chart rendered")
         }
 
         return () => {
             if (chart) {
                 chart.destroy();
-                logger.info("Chart destroyed")
+                logger.debug("Chart destroyed")
             }
         };
     }, [scheduleData]);
 
 
     const parseData = (data) => {
-        logger.info("Data parsed")
+        logger.debug("Data parsed")
         return data.map(course => ({
             course_id: course.course_id,
             course_name: course.course_name,
@@ -106,7 +105,7 @@ function ScheduleInsight({selectedClassroom}) {
 
 
     return (
-        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6">
+        <div className="max-w-auto w-full bg-white rounded-lg shadow p-4 md:p-6 mt-4">
             <div id="bar-chart"/>
             <div className="mt-4">
                 <hr className='my-3'/>

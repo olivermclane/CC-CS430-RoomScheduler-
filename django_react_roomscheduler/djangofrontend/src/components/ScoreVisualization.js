@@ -67,10 +67,11 @@ const ScoreVisualization = ({selectedClassroom}) => {
             },
         },
         yaxis: {
-            tickAmount: 7,
+            tickAmount: 5,
         },
         labels: ['Prime Time Score', 'Capacity Score', 'Instructor Score', 'Idle Time Score', 'Double Booking Penalty']
     });
+
 
     const [chartSeries, setChartSeries] = useState([]);
     const [overallScore, setOverallScore] = useState("");
@@ -81,31 +82,33 @@ const ScoreVisualization = ({selectedClassroom}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-                const courseData = response.data[0];
-                const optimizationScores = courseData.classroom.optimization_score;
-                setScoreData(optimizationScores)
-                setChartSeries([{
-                    name: "Optimization Score",
-                    data: [
-                        parseFloat(optimizationScores.prime_time_score),
-                        parseFloat(optimizationScores.capacity_score),
-                        parseFloat(optimizationScores.instructor_score),
-                        parseFloat(optimizationScores.idle_time_score),
-                        parseFloat(optimizationScores.double_booking_score),
-                    ],
-                }]);
+                if (selectedClassroom) {
+                    const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                    const courseData = response.data[0];
+                    const optimizationScores = courseData.classroom.optimization_score;
+                    setScoreData(optimizationScores)
+                    setChartSeries([{
+                        name: "Optimization Score",
+                        data: [
+                            parseFloat(optimizationScores.prime_time_score),
+                            parseFloat(optimizationScores.capacity_score),
+                            parseFloat(optimizationScores.instructor_score),
+                            parseFloat(optimizationScores.idle_time_score),
+                            parseFloat(optimizationScores.double_booking_score),
+                        ],
+                    }]);
 
-                setOverallScore(courseData.classroom.optimization_score.overall_score);
+                    setOverallScore(courseData.classroom.optimization_score.overall_score);
+                }
             } catch (err) {
                 logger.error('Error fetching data:', err);
             }
+
         };
 
         fetchData();
     }, [selectedClassroom]);
 
-    // Styles for the slide-up detail panel
     const detailPanelStyles = showDetails ? {
         transform: "translateY(0)",
         transition: "transform 0.3s ease-in-out",

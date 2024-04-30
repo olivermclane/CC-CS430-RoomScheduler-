@@ -20,6 +20,7 @@ from roomschedulerapi.models import (
 from roomschedulerapi.OptimizationScorer.calculate_score import (
     optimize_classroom_schedule,
 )
+from django.db import transaction
 
 warnings.filterwarnings("ignore", message="DataFrame is highly fragmented", category=pd.errors.PerformanceWarning)
 
@@ -206,103 +207,99 @@ class DataReader(object):
         return True
 
     def loadData(self):
-        # load classes
         logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
-        current_term_name = self.courseData['SEC_TERM'].iloc[0]
-        current_term, _ = Term.objects.get_or_create(term_name=current_term_name)
+        with transaction.atomic():
+            current_term_name = self.courseData['SEC_TERM'].iloc[0]
+            current_term, _ = Term.objects.get_or_create(term_name=current_term_name)
 
-        # Assuming you want to start fresh for each term
-        Classroom.objects.filter(term=current_term).delete()
-        Course.objects.filter(term=current_term).delete()
+            for c in range(len(self.courseData)):
+                building_name = self.data['CSM_BLDG'].iloc[c]
+                image_url = self.data['Image_url'].iloc[c]
 
-        for c in range(len(self.courseData)):
-            building_name = self.data['CSM_BLDG'].iloc[c]
-            image_url = self.data['Image_url'].iloc[c]
+                # Update the building if it exists, otherwise create a new one
+                bd, created = Building.objects.update_or_create(
+                    building_name=building_name,
+                    defaults={'image_url': image_url}
+                )
 
-            # Update the building if it exists, otherwise create a new one
-            bd, created = Building.objects.update_or_create(
-                building_name=building_name,
-                defaults={'image_url': image_url}
-            )
+                fl, floor_created = Floor.objects.update_or_create(
+                    floor_name=self.data['Floor Name'].iloc[c],
+                    building=bd,
+                )
+                logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
 
-            fl, floor_created = Floor.objects.update_or_create(
-                floor_name=self.data['Floor Name'].iloc[c],
-                building=bd,
-            )
-            logger.info("Loading new data started for term %s", self.courseData['SEC_TERM'].iloc[0])
+                # Create or get the classroom without including the optimization_score in this step
+                cl, created = Classroom.objects.get_or_create(
+                    classroom_number=self.data['Room Number'].iloc[c],
+                    classroom_name=self.data['Classroom Name'].iloc[c],
+                    term=current_term,
+                    defaults={
+                        'total_seats': self.data['Number of Student Seats in Room'].iloc[c],
+                        'width_of_room': self.data['Width of Room'].iloc[c],
+                        'length_of_room': self.data['Length of Room'].iloc[c],
+                        'projectors': self.data['Number of Projectors in Room'].iloc[c],
+                        'microphone_system': self.data['Microphone'].iloc[c],
+                        'blueray_player': self.data['BluRay'].iloc[c],
+                        'laptop_hdmi': self.data['Laptop HDMI input plug in'].iloc[c],
+                        'zoom_camera': self.data['Zoom'].iloc[c],
+                        'document_camera': self.data['Document Camera'].iloc[c],
+                        'storage': self.data['Storage'].iloc[c],
+                        'movable_chairs': self.data['Movable Chairs'].iloc[c],
+                        'printer': self.data['Printer'].iloc[c],
+                        'piano': self.data['Piano'].iloc[c],
+                        'stereo_system': self.data['Stereo'].iloc[c],
+                        'total_tv': self.data['TV'].iloc[c],
+                        'sinks': self.data['Sink'].iloc[c],
+                        'notes': self.data['Notes'].iloc[c],
+                        'floor': fl,
+                    }
+                )
+                logger.info("Added new classroom to the database")
 
-            # Create or get the classroom without including the optimization_score in this step
-            cl, created = Classroom.objects.get_or_create(
-                classroom_number=self.data['Room Number'].iloc[c],
-                classroom_name=self.data['Classroom Name'].iloc[c],
-                term=current_term,
-                defaults={
-                    'total_seats': self.data['Number of Student Seats in Room'].iloc[c],
-                    'width_of_room': self.data['Width of Room'].iloc[c],
-                    'length_of_room': self.data['Length of Room'].iloc[c],
-                    'projectors': self.data['Number of Projectors in Room'].iloc[c],
-                    'microphone_system': self.data['Microphone'].iloc[c],
-                    'blueray_player': self.data['BluRay'].iloc[c],
-                    'laptop_hdmi': self.data['Laptop HDMI input plug in'].iloc[c],
-                    'zoom_camera': self.data['Zoom'].iloc[c],
-                    'document_camera': self.data['Document Camera'].iloc[c],
-                    'storage': self.data['Storage'].iloc[c],
-                    'movable_chairs': self.data['Movable Chairs'].iloc[c],
-                    'printer': self.data['Printer'].iloc[c],
-                    'piano': self.data['Piano'].iloc[c],
-                    'stereo_system': self.data['Stereo'].iloc[c],
-                    'total_tv': self.data['TV'].iloc[c],
-                    'sinks': self.data['Sink'].iloc[c],
-                    'notes': self.data['Notes'].iloc[c],
-                    'floor': fl,
-                }
-            )
-            logger.info("Added new classroom to the database")
+                # Now, update or create the OptiScore separately and link it to the classroom
+                opti, _ = OptiScore.objects.update_or_create(
+                    classroom=cl,
+                    defaults={
+                        'prime_time_score': float(self.data['PrimeTimeScore'].iloc[c]),
+                        'prime_time_utilization': float(self.data['PrimeTimeUtilization'].iloc[c]),
+                        'capacity_score': float(self.data['CapacityScore'].iloc[c]),
+                        'instructor_score': float(self.data['InstructorScore'].iloc[c]),
+                        'instructor_methods': self.data["InstructorMethods_aggregated"].iloc[c],
+                        'double_booking_score': float(self.data["DoubleBookingPenalty"].iloc[c]),
+                        'idle_time_score': float(self.data["IdleTimeScore"].iloc[c]),
+                        'double_booking': self.data["OverlappingClasses"].iloc[c],
+                        'overall_score': float(self.data['OverallScore'].iloc[c]),
+                    }
+                )
+                logger.info("Added new score to the database")
 
-            # Now, update or create the OptiScore separately and link it to the classroom
-            opti, _ = OptiScore.objects.update_or_create(
-                classroom=cl,
-                defaults={
-                    'prime_time_score': float(self.data['PrimeTimeScore'].iloc[c]),
-                    'prime_time_utilization': float(self.data['PrimeTimeUtilization'].iloc[c]),
-                    'capacity_score': float(self.data['CapacityScore'].iloc[c]),
-                    'instructor_score': float(self.data['InstructorScore'].iloc[c]),
-                    'instructor_methods': self.data["InstructorMethods_aggregated"].iloc[c],
-                    'double_booking_score': float(self.data["DoubleBookingPenalty"].iloc[c]),
-                    'idle_time_score': float(self.data["IdleTimeScore"].iloc[c]),
-                    'double_booking': self.data["OverlappingClasses"].iloc[c],
-                    'overall_score': float(self.data['OverallScore'].iloc[c]),
-                }
-            )
-            logger.info("Added new score to the database")
+                cl.optimization_score = opti
+                cl.save()
 
-            cl.optimization_score = opti
-            cl.save()
+                # Course creation logic remains unchanged
+                cr, _ = Course.objects.get_or_create(
+                    first_day=self.data['StartDate'].iloc[c],
+                    last_day=self.data['EndDate'].iloc[c],
+                    course_name=self.data['SEC_SHORT_TITLE'].iloc[c],
+                    term=current_term,
+                    credits=self.data['SEC_MIN_CRED'].iloc[c],
+                    start_time=self.data['MilitaryStart'].iloc[c],
+                    end_time=self.data['MilitaryEnd'].iloc[c],
+                    monday=self.data['CSM_MONDAY'].iloc[c],
+                    tuesday=self.data['CSM_TUESDAY'].iloc[c],
+                    wednesday=self.data['CSM_WEDNESDAY'].iloc[c],
+                    thursday=self.data['CSM_THURSDAY'].iloc[c],
+                    friday=self.data['CSM_FRIDAY'].iloc[c],
+                    saturday=self.data['CSM_SATURDAY'].iloc[c],
+                    sunday=self.data['CSM_SUNDAY'].iloc[c],
+                    instructor=self.data['SEC_FACULTY_INFO'].iloc[c],
+                    enrollment_total=self.data['STUDENTS_AND_RESERVED_SEATS'].iloc[c],
+                    course_cap=self.data['SEC_CAPACITY'].iloc[c],
+                    waitlist_cap=self.data['XL_WAITLIST_MAX'].iloc[c],
+                    waitlist_total=self.data['WAITLIST'].iloc[c],
+                    course_level=self.data['SEC_COURSE_NO'].iloc[c],
+                    classroom=cl
+                )
 
-            # Course creation logic remains unchanged
-            cr, _ = Course.objects.get_or_create(
-                first_day=self.data['StartDate'].iloc[c],
-                last_day=self.data['EndDate'].iloc[c],
-                course_name=self.data['SEC_SHORT_TITLE'].iloc[c],
-                term=current_term,
-                credits=self.data['SEC_MIN_CRED'].iloc[c],
-                start_time=self.data['MilitaryStart'].iloc[c],
-                end_time=self.data['MilitaryEnd'].iloc[c],
-                monday=self.data['CSM_MONDAY'].iloc[c],
-                tuesday=self.data['CSM_TUESDAY'].iloc[c],
-                wednesday=self.data['CSM_WEDNESDAY'].iloc[c],
-                thursday=self.data['CSM_THURSDAY'].iloc[c],
-                friday=self.data['CSM_FRIDAY'].iloc[c],
-                saturday=self.data['CSM_SATURDAY'].iloc[c],
-                sunday=self.data['CSM_SUNDAY'].iloc[c],
-                instructor=self.data['SEC_FACULTY_INFO'].iloc[c],
-                enrollment_total=self.data['STUDENTS_AND_RESERVED_SEATS'].iloc[c],
-                course_cap=self.data['SEC_CAPACITY'].iloc[c],
-                waitlist_cap=self.data['XL_WAITLIST_MAX'].iloc[c],
-                waitlist_total=self.data['WAITLIST'].iloc[c],
-                course_level=self.data['SEC_COURSE_NO'].iloc[c],
-                classroom=cl
-            )
-
-            logger.info("Added new course to the database: %s", cr.course_name)
+                logger.info("Added new course to the database: %s", cr.course_name)

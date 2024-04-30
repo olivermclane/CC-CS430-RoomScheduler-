@@ -20,7 +20,7 @@ function ClassroomList({selectedFloor}){
         }
         try {
             const response = await axiosInstance.get(`${complete_url}/`);
-            logger.info('Fetching data from endpoint:', selectedTerm, endpoint); // Log the endpoint being called
+            logger.debug('Fetching data from endpoint:', selectedTerm, endpoint);
             setClassrooms(response.data);
 
         } catch (err) {
@@ -47,7 +47,7 @@ function ClassroomList({selectedFloor}){
     }
 
     const handleTermChange = (termId) => {
-        logger.log(termId)
+        logger.debug(termId)
         setSelectedTerm(termId);
     }
 

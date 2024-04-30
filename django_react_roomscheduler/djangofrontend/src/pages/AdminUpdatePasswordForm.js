@@ -1,23 +1,28 @@
 import React, {useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
-import axios from "axios";
+import {useAuth} from "../service/auth/AuthProvider";
+import carrollCampusImage from '../icons/carroll-campus.jpg';
+
 
 export default function UpdatePasswordForm() {
 
     const email = localStorage.getItem('email').toString();
-    const tempPasswordAdmin = localStorage.getItem('temp_password_admin').toString() == "true";
+    const tempPasswordAdmin = localStorage.getItem('temp_password_admin') === true;
     const [updatePasswordError, setUpdatePasswordError] = useState('');
     const navigate = useNavigate();
+    const {axiosInstance} = useAuth();
+
+    if (!tempPasswordAdmin) {
+        navigate('/dashboard')
+    }
+
     const adminUpdatePassword = async (email, password) => {
         try {
-            console.log(password)
-            const response = await axios.post('http://localhost:8000/adminUpdatePassword/', {
-                'email' : email,
+            const response = await axiosInstance.post('/adminUpdatePassword/', {
+                'email': email,
                 'password': password
             });
-            //console.log(response)
-            //console.log(response.data)
             return response.data;
         } catch (error) {
             throw error;
@@ -29,9 +34,7 @@ export default function UpdatePasswordForm() {
         const email = formData.get('email');
         const password = formData.get('password');
         try {
-
-
-            if(password.length < 8){
+            if (password.length < 8) {
                 setUpdatePasswordError("Password not long enough")
                 return
             }
@@ -39,49 +42,40 @@ export default function UpdatePasswordForm() {
             let hasCapital = false
             let hasNumber = false
 
-            for(let i = 0; i < password.length; i++){
+            for (let i = 0; i < password.length; i++) {
                 let ch = password[i]
-                if(ch.charCodeAt(0) >= 65 && ch.charCodeAt(0) <= 90){
+                if (ch.charCodeAt(0) >= 65 && ch.charCodeAt(0) <= 90) {
                     hasCapital = true
                 }
-                if(!isNaN(ch)){
+                if (!isNaN(ch)) {
                     hasNumber = true
                 }
             }
 
-            if(hasCapital === false){
+            if (hasCapital === false) {
                 setUpdatePasswordError("Password requires a capital letter")
                 return
             }
 
-            if(hasNumber === false){
+            if (hasNumber === false) {
                 setUpdatePasswordError("Password requires a number")
                 return
             }
 
-            console.log(email);
             const data = await adminUpdatePassword(email, password);
-            window.location.href = '/dashboard';
+            navigate('/dashboard')
         } catch (error) {
-            console.log(error)
             setUpdatePasswordError("There was an error updating your password")
         }
     };
 
-    if(!tempPasswordAdmin){
-        return (
-            <div>
-                You don't have access to this page.
-            </div>
-        )
-    }
 
     return (
         <div className="flex justify-center items-center h-screen w-screen">
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `
