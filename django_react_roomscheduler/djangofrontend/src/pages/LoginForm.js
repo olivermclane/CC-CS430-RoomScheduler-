@@ -9,7 +9,7 @@ export default function LoginForm() {
     const login = async (email, password) => {
       try {
         const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
-        return response.data;
+        return response;
       } catch (error) {
         throw error;
       }
@@ -22,14 +22,22 @@ export default function LoginForm() {
 
 
     try {
-      const data = await login( email, password );
+      const response = await login( email, password );
+      const data = response.data
       localStorage.setItem('access_token', data.access);
       console.log(localStorage.getItem('access_token'))
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)
+      localStorage.setItem('temp_password_admin', data.temp_password_admin)
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
-      window.location.href = '/dashboard';
+
+      if (data.temp_password_flag) {
+          window.location.href = '/updatePassword';
+      } else {
+          window.location.href = '/dashboard';
+      }
+
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
     }

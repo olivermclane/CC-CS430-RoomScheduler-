@@ -139,6 +139,8 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    temp_password_flag = models.BooleanField(default=False)
+    temp_password_admin = models.BooleanField(default=False)
 
     ## Custom User Fields
     user_schedules = models.ManyToManyField(SavedSchedule)
@@ -154,3 +156,6 @@ class User(AbstractUser):
 
     def is_admin(self, perm, obj=None):
         return self.is_admin
+
+
+

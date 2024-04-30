@@ -28,10 +28,40 @@ export default function RegisterForm() {
         const password = formData.get('password');
         const username = formData.get('username')
         try {
+
+            if(password.length < 8){
+                setRegistrationError("Password not long enough")
+                return
+            }
+
+            let hasCapital = false
+            let hasNumber = false
+
+            for(let i = 0; i < password.length; i++){
+                let ch = password[i]
+                if(ch.charCodeAt(0) >= 65 && ch.charCodeAt(0) <= 90){
+                    hasCapital = true
+                }
+                if(!isNaN(ch)){
+                    hasNumber = true
+                }
+            }
+
+            if(hasCapital === false){
+                setRegistrationError("Password requires a capital letter")
+                return
+            }
+
+            if(hasNumber === false){
+                setRegistrationError("Password requires a number")
+                return
+            }
+
             const data = await login(email, password, username);
             window.location.href = '/login';
         } catch (error) {
-            setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
+            setRegistrationError("Email or username is already taken")
+            //setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
         }
     };
 
@@ -72,6 +102,12 @@ export default function RegisterForm() {
                                     >
                                         Register
                                     </Button>
+
+                                    <a href="/login"
+                                        className="ml-3 rounded-full px-4 py-2 text-sm font-medium text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white"
+                                    >
+                                        Back
+                                    </a>
                                 </div>
                             </div>
                         </div>
