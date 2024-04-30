@@ -1,8 +1,9 @@
 import os
 
 from django.contrib.auth import get_user_model, logout
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -44,6 +45,7 @@ class IndexView(APIView):
         logger.info(f"User requested index page - User: {request.data.get('email')} - Body: {request.data.get('body')}")
         return render(request, 'index.html')
 
+
 class LogoutView(APIView):
     """
     post:
@@ -80,16 +82,20 @@ class LoginView(TokenObtainPairView):
         # Access user data after token generation
         try:
             user = get_user_model().objects.get(email=request.data['email'])
+
+            print('test:', user.temp_password_admin)
+
             user_data = {
                 'username': user.username,
                 'email': user.email,
+                'temp_password_flag': user.temp_password_flag,
+                'temp_password_admin': user.temp_password_admin,
             }
-            logger.info(f"Successful login for user: {request.data.get('email')}")
 
-            response.data.update(user_data)
+            logger.info(f"Successful login for user: {request.data.get('email')}")
+            response.data.update(user_data)  # Include user data in response
         except KeyError:
             return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
-
         return response
 
 
@@ -104,21 +110,72 @@ class RegisterView(APIView):
     permission_classes = (AllowAny,)
     queryset = User.objects.all()
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        logger.info(f"User {request.data.get('email')} attempted to register")
+        serializer.is_valid(raise_exception=True)
+        logger.info("test")
+        serializer.save()
+        user = serializer.instance
+        refresh = RefreshToken.for_user(user)
+        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+
+
+class UpdatePasswordView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        logger.info("updating password")
+        logger.info(f"{request.data}")
+        # Access user data after token generation
+        logger.info(f'{request.data["email"]}')
+        logger.info(f'{request.data["password"]}')
+
         try:
-            serializer = UserSerializer(data=request.data)
-            logger.info(f"Attempting to register user with email: {request.data.get('email')}")
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            user = serializer.instance
+            user = get_user_model().objects.get(email=request.data['email'])
+            user.set_password(request.data['password'])
+            user.temp_password_flag = False
+            # user.temp_password_admin = True
+            user.save()
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
-        except Exception as e:
-            logger.error(f"Error during user registration: {str(e)}")
-            return Response({'detail': str(e)}, status=400)
+        except KeyError:
+            # Handle cases where email is not found (e.g., invalid credentials)
+            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class AdminUpdatePasswordView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        logger.info("updating password")
+        logger.info(f"{request.data}")
+        # Access user data after token generation
+        logger.info(f'{request.data["email"]}')
+        logger.info(f'{request.data["password"]}')
+
+        try:
+            user = get_user_model().objects.get(email=request.data['email'])
+            user.set_password(request.data['password'])
+            user.temp_password_flag = True
+            user.save()
+
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })
+        except KeyError:
+            # Handle cases where email is not found (e.g., invalid credentials)
+            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class BuildingView(APIView):
@@ -495,16 +552,17 @@ class PostLogView(APIView):
     - 500: Returned if an error occurs during processing of the log event.
     - 401: Returned if no refresh token is provided. (Needs implementation)
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         try:
             # Extract the log event from the request data
-            log_event = request.data  # Assuming log events are sent as JSON data in the request body
+            log_event = request.data
             # Write the log event to a log file
-            with open('../django_debug.log', 'a') as file:
+            with open('django_debug.log', 'a') as file:
                 file.write(str(log_event) + '\n')
             # Return a success response
-            return Response({"message": "Log event received and processed successfully"}, status=200)
+            return Response({"message": "Log was written"}, status=200)
         except Exception as e:
             # Handle any exceptions that occur during processing
             return Response({"error": str(e)}, status=500)
@@ -523,6 +581,8 @@ class DownloadExampleExcel(APIView):
     - 404: Returned if the file is not found.
     - 500: Returned if an error occurs during the download process.
     """
+
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         file_path = "roomschedulerapi/Sample_Excel_Upload.xlsx"

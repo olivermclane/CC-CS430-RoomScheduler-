@@ -17,7 +17,6 @@ const ClassroomDetails = ({ selectedClassroom }) => {
             } catch (err) {
                 logger.error("Error fetching calendar data:", err);
             }
-
     };
 
     useEffect(() => {

@@ -1,7 +1,9 @@
 import pino from "pino";
 import axios from "axios";
 
-const send = async function (level, logEvent, a, b) {
+const send = async function (level, logEvent) {
+  const authToken = localStorage.getItem('access_token');
+
   try {
     // Check if the level is above the specified level below
     if (pino.levels.values[level] > pino.levels.values.debug) {
@@ -12,16 +14,16 @@ const send = async function (level, logEvent, a, b) {
         `${logEvent.messages.join(", ")}`,
       ];
 
-
       // Send the formatted log event to the server
       const response = await axios.post("http://127.0.0.1:8000/api/post-log/", formattedLogEvent, {
         headers: {
           "Content-Type": "application/json",
+          'Authorization':`Bearer ${authToken}`
         },
       });
     }
   } catch (error) {
-    console.error("Error sending log event:", error);
+    // logger.error("Error sending log event:", error);
   }
 };
 

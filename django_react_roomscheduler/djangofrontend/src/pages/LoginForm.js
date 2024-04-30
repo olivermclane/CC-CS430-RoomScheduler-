@@ -33,11 +33,13 @@ export default function LoginForm() {
     };
 
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const email = formData.get('email');
         const password = formData.get('password');
+
 
         try {
             await login(email, password);
@@ -46,6 +48,7 @@ export default function LoginForm() {
             logger.error('Login failed for user', email);
         }
     };
+
 
     return (
         <div className="bg-dark-purple-900 flex justify-center items-center h-screen w-screen">

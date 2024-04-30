@@ -8,7 +8,7 @@ const DropdownTerm = ({onTermChange}) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState({term_id: '', term_name: 'All Terms'});
     const {axiosInstance} = useAuth();
-    const dropdownRef = useRef(null);  // Ref for the dropdown container
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const fetchTerms = async () => {
@@ -53,7 +53,7 @@ const DropdownTerm = ({onTermChange}) => {
                 onClick={() => setShowDropdown(!showDropdown)}
             >
                 {selectedTerm.term_name}
-                <ChevronDown/>
+                <ChevronDown size={10}/>
             </div>
             {showDropdown && (
                 <div className="absolute z-10 w-full bg-white mt-1 border border-purple-500 rounded-md">

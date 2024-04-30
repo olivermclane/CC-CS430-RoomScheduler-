@@ -10,7 +10,13 @@ from .models import Building, Classroom, Term, Floor, Course
 
 
 class LoginViewTestCase(TestCase):
+    '''
+    Group of login tests
+    '''
     def setUp(self):
+        '''
+        Setup test variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -20,12 +26,18 @@ class LoginViewTestCase(TestCase):
         self.user = get_user_model().objects.create_user(**self.user_data)
 
     def test_login_success(self):
+        '''
+        Test login success
+        '''
         response = self.client.post('/login/', data=self.user_data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('refresh' in response.data)
         self.assertTrue('access' in response.data)
 
     def test_login_failure_invalid_email(self):
+        '''
+        Test login does not work when there is an invalid email
+        '''
         invalid_email_data = {
             'email': 'invalid@example.com',
             'password': 'test_password',
@@ -36,6 +48,9 @@ class LoginViewTestCase(TestCase):
         self.assertEqual(str(response.data['detail']), "No active account found with the given credentials")
 
     def test_login_failure_invalid_password(self):
+        '''
+        Test login does not work when there is an invalid password
+        '''
         invalid_password_data = {
             'email': 'test@example.com',
             'password': 'invalid_password',
@@ -47,7 +62,13 @@ class LoginViewTestCase(TestCase):
 
 
 class RefreshTokenTestCase(APITestCase):
+    '''
+    Test refresh tokens
+    '''
     def setUp(self):
+        '''
+        Setup test
+        '''
         # Setup method to create a user
         self.user_model = get_user_model()
         self.user = self.user_model.objects.create_user(username='testuser', email='test@example.com',
@@ -56,6 +77,9 @@ class RefreshTokenTestCase(APITestCase):
         self.refresh_url = reverse('token_refresh')
 
     def test_refresh_token_valid_refresh_token(self):
+        '''
+        Test refresh tokens when the refresh token is valid
+        '''
         response = self.client.post(self.login_url, {'email': 'test@example.com', 'password': 'testpassword123'})
         self.assertEqual(response.status_code, 200)
         access_token = response.data['access']
@@ -73,6 +97,9 @@ class RefreshTokenTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Successfully logged out')
 
     def test_refresh_token_invalid_refresh_token(self):
+        '''
+        Test refresh tokens when the refresh token is invalid
+        '''
         invalid_refresh_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwNzY2NzE1OSwianRpIjoiYjI2M2JmMzllYjVlNGY4OGJhZGU2MjUyODJlOTc0MTEiLCJ1c2VyX2lkIjozfQ.SflKxwRJSMeKKF2QT4fwpMeJpXUbbV3LkTjbyQ6AGsM"  # This is just an example; use a format that looks like your actual tokens but is clearly invalid
         response = self.client.post(self.refresh_url, {'refresh': invalid_refresh_token}, format='json')
         self.assertNotEqual(response.status_code, 200, "The request should not be successful with an invalid token.")
@@ -83,7 +110,13 @@ class RefreshTokenTestCase(APITestCase):
 
 
 class RegisterViewTestCase(TestCase):
+    '''
+    Test that a user can register
+    '''
     def setUp(self):
+        '''
+        Set up the variables
+        '''
         self.client = APIClient()
         self.valid_user_data = {
             'username': 'test_user',
@@ -97,12 +130,18 @@ class RegisterViewTestCase(TestCase):
         }
 
     def test_register_success(self):
+        '''
+        Test the user can register with a valid data
+        '''
         response = self.client.post('/register/', data=self.valid_user_data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('refresh' in response.data)
         self.assertTrue('access' in response.data)
 
     def test_register_failure_invalid_email(self):
+        '''
+        Test the user cannot register with an invalid data
+        '''
         response = self.client.post('/register/', data=self.invalid_user_data)
         self.assertEqual(response.status_code, 400)
         self.assertTrue('email' in response.data)
@@ -110,7 +149,13 @@ class RegisterViewTestCase(TestCase):
 
 
 class LogoutViewTestCase(TestCase):
+    '''
+    Test the logout view
+    '''
     def setUp(self):
+        '''
+        Set up variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -122,6 +167,9 @@ class LogoutViewTestCase(TestCase):
         self.access_token = response.data['access']
 
     def test_logout(self):
+        '''
+        Test the user successfully logged out when executed correctly
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.post('/logout/')
         self.assertEqual(response.status_code, 200)
@@ -129,7 +177,13 @@ class LogoutViewTestCase(TestCase):
 
 
 class BuildingViewTestCase(APITestCase):
+    '''
+    Test the database responds correctly with the building data
+    '''
     def setUp(self):
+        '''
+        Set up the variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -144,6 +198,9 @@ class BuildingViewTestCase(APITestCase):
         Building.objects.create(building_name="Test Building 2", image_url="http://example.com/img2.jpg")
 
     def test_get_buildings_authenticated(self):
+        '''
+        Test that the buildings are returned when the user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get("/buildings/")
         self.assertEqual(response.status_code, 200)
@@ -156,10 +213,16 @@ class BuildingViewTestCase(APITestCase):
         self.assertTrue(len(response.data) <= 3, "Should return at least one building")
 
     def test_get_buildings_unauthenticated(self):
+        '''
+        Test nothing is returned when the user is not authenticated
+        '''
         response = self.client.get("/buildings/")
         self.assertEqual(response.status_code, 401, "Should return 401 for unauthenticated access")
 
     def test_building_detail_view(self):
+        '''
+        Test the building details are returned correctly when the building is valid and user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('building-detail', kwargs={'pk': self.building.building_id}))
         self.assertEqual(response.status_code, 200)
@@ -170,6 +233,9 @@ class BuildingViewTestCase(APITestCase):
         self.assertTrue(len(response.data) <= 3, "Should return at least one building")
 
     def test_building_detail_view_not_found(self):
+        '''
+        Test the building detail is not returned when the building does not exist
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('building-detail', kwargs={'pk': 999}))
 
@@ -177,12 +243,21 @@ class BuildingViewTestCase(APITestCase):
         self.assertEqual(response.data['error'], 'Building not found')
 
     def test_get_buildings_detail_unauthenticated(self):
+        '''
+        Test the buildings are not returned for unauthenticated users
+        '''
         response = self.client.get(reverse('building-detail', kwargs={'pk': self.building.building_id}))
         self.assertEqual(response.status_code, 401, "Should return 401 for unauthenticated access")
 
 
 class ClassroomViewTestCase(APITestCase):
+    '''
+    Tests the database responds correctly when the classroom view is called
+    '''
     def setUp(self):
+        '''
+        Set up variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -205,6 +280,9 @@ class ClassroomViewTestCase(APITestCase):
                                  floor=self.floor)
 
     def test_get_classrooms_authenticated(self):
+        '''
+        Test the classrooms are returned when no classroom is specified and user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get('/classrooms/')
         self.assertEqual(response.status_code, 200)
@@ -222,10 +300,16 @@ class ClassroomViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in the response data")
 
     def test_get_classrooms_unauthenticated(self):
+        '''
+        Test that nothing is returned when the user is not authenticated
+        '''
         response = self.client.get('/classrooms/')
         self.assertEqual(response.status_code, 401)
 
     def test_classroom_detail_view(self):
+        '''
+        Test that the correct classroom is returned when the user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(
             reverse('classrooms-detail', kwargs={'pk': self.classroom.classroom_id}))
@@ -242,17 +326,29 @@ class ClassroomViewTestCase(APITestCase):
             self.assertIn(field, required_classroom_fields, f"{field} is missing in the response data")
 
     def test_classroom_detail_view_not_found(self):
+        '''
+        Test that nothing is returned if the classroom does not exist
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('classrooms-detail', kwargs={'pk': 999}))
         self.assertEqual(response.status_code, 404)
 
     def test_get_classroom_detail_unauthenticated(self):
+        '''
+        Test that nothing is returned if the user is not authenticated
+        '''
         response = self.client.get(reverse('classrooms-detail', kwargs={'pk': self.classroom.classroom_id}))
         self.assertEqual(response.status_code, 401)
 
 
 class ClassroomTermViewTestCase(APITestCase):
+    '''
+    Tests for the classroom term view
+    '''
     def setUp(self):
+        '''
+        Set up the variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -276,6 +372,9 @@ class ClassroomTermViewTestCase(APITestCase):
                                                     floor=self.floor)
 
     def test_get_classrooms_terms_authenticated(self):
+        '''
+        Test that the response is correct when user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("classrooms-term", kwargs={'term': self.term.term_id}))
         self.assertEqual(response.status_code, 200)
@@ -295,17 +394,29 @@ class ClassroomTermViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in the response data")
 
     def test_get_classrooms_terms_unauthenticated(self):
+        '''
+        Test that a classroom is not returned when the user is not authenticated
+        '''
         response = self.client.get(reverse("classrooms-term", kwargs={'term': self.term.term_id}))
         self.assertEqual(response.status_code, 401)
 
     def test_get_classrooms_terms_view_not_found(self):
+        '''
+        Test that nothing is returned when the term does not exist
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("classrooms-term", kwargs={'term': 999}))
         self.assertEqual(response.status_code, 404)
 
 
 class ClassroomTermCoursesViewTestCase(APITestCase):
+    '''
+    Test the database responds correctly when querying by classroom, term, and courses
+    '''
     def setUp(self):
+        '''
+        Set up the variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -345,6 +456,9 @@ class ClassroomTermCoursesViewTestCase(APITestCase):
         )
 
     def test_get_term_classrooms_course_authenticated(self):
+        '''
+        Test that the term, classroom, course endpoint returns valid when user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(
             reverse("term-classroom-courses", kwargs={'term': self.term.term_id, 'fk': self.classroom_a.classroom_id}))
@@ -378,29 +492,48 @@ class ClassroomTermCoursesViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
     def test_get_term_classrooms_course_unauthenticated(self):
+        '''
+        Test that nothing is returned when the user is invalid
+        '''
         response = self.client.get(
             reverse("term-classroom-courses", kwargs={'term': self.term.term_id, 'fk': self.classroom_a.classroom_id}))
         self.assertEqual(response.status_code, 401)
 
     def test_get_term_classrooms_course_valid_term_invalid_classroom(self):
+        '''
+        Test that nothing is returned when the term is valid and the classroom is invalid
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(
             reverse("term-classroom-courses", kwargs={'term': 999, 'fk': self.classroom_a.classroom_id}))
         self.assertEqual(response.status_code, 404)
 
     def test_get_term_classrooms_course_valid_course_invalid_classroom(self):
+        '''
+        Tests that nothing is returned when course is valid, classroom is invalid
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("term-classroom-courses", kwargs={'term': 999, 'fk': 20}))
         self.assertEqual(response.status_code, 404)
 
     def test_get_term_classrooms_course_invalid_term_invalid_classroom(self):
+        '''
+        Test that nothing is returned when the course and term are invalid
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("term-classroom-courses", kwargs={'term': self.term.term_id, 'fk': 20}))
         self.assertEqual(response.status_code, 404)
 
 
 class ClassroomCoursesViewTestCase(APITestCase):
+    '''
+    This group of tests checks the functionality of the endpoint that queries the
+    set of courses that are scheduled in each classroom
+    '''
     def setUp(self):
+        '''
+        Set up the variables
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -440,6 +573,9 @@ class ClassroomCoursesViewTestCase(APITestCase):
         )
 
     def test_get_classrooms_course_authenticated(self):
+        '''
+        Test that we can access the courses scheduled in each classroom when authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("classroom-courses", kwargs={'fk': self.course.course_id}))
         self.assertEqual(response.status_code, 200)
@@ -472,17 +608,29 @@ class ClassroomCoursesViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
     def test_get_classrooms_course_unauthenticated(self):
+        '''
+        Test that the courses are not accessible when the user is not authenticated
+        '''
         response = self.client.get(reverse("classroom-courses", kwargs={'fk': self.course.course_id}))
         self.assertEqual(response.status_code, 401)
 
     def test_get_classrooms_course_view_not_found(self):
+        '''
+        Tests that no courses is returned when the course does not exist
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("classroom-courses", kwargs={'fk': 999}))
         self.assertEqual(response.status_code, 404)
 
 
 class CourseViewTestCase(APITestCase):
+    '''
+    Test cases for accessing the courses
+    '''
     def setUp(self):
+        '''
+        Set up variables for tests
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -519,12 +667,18 @@ class CourseViewTestCase(APITestCase):
         )
 
     def test_get_course_authenticated(self):
+        '''
+        Test that we can get access to the courses when authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get("/courses/")
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) > 0, "Should return at least one course")
 
     def test_get_multiple_courses(self):
+        '''
+        Test that multiple courses are returned when they should be
+        '''
         self.client.force_authenticate(user=self.user)  # Authenticate the request
         response = self.client.get("/courses/")  # Use the name of your URL for listing courses
         self.assertEqual(response.status_code, 200)
@@ -557,10 +711,16 @@ class CourseViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
     def test_get_course_unauthenticated(self):
+        '''
+        Test the access to courses is not available through unauthenticated users
+        '''
         response = self.client.get("/courses/")
         self.assertEqual(response.status_code, 401)
 
     def test_course_detail_view(self):
+        '''
+        Test that the course details view is displayed correctly when user is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(
             reverse('courses-detail', kwargs={'pk': self.course.course_id}))
@@ -593,16 +753,25 @@ class CourseViewTestCase(APITestCase):
             self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
     def test_course_detail_view_not_found(self):
+        '''
+        Test that course details are not returned when the course is not present in the database
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('courses-detail', kwargs={'pk': 999}))
         self.assertEqual(response.status_code, 404)
 
     def test_get_course_detail_unauthenticated(self):
+        '''
+        Test that the course details are not returned when user is unauthenticated
+        '''
         response = self.client.get(
             reverse('courses-detail', kwargs={'pk': self.course.course_id}))
         self.assertEqual(response.status_code, 401)
 
     def test_get_course_term_authenticated(self):
+        '''
+        Test that the course data returned is correct for an authenticated user
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("term-courses", kwargs={'term': self.term.term_id}))
         self.assertEqual(response.status_code, 200)
@@ -635,17 +804,29 @@ class CourseViewTestCase(APITestCase):
                 self.assertIn(field, classroom_data, f"{field} is missing in 'classroom' data")
 
     def test_get_course_term_unauthenticated(self):
+        '''
+        Test that an unauthenticated user cannot access the data related to course
+        '''
         response = self.client.get(reverse("term-courses", kwargs={'term': self.term.term_id}))
         self.assertEqual(response.status_code, 401)
 
     def test_get_course_invalid_term(self):
+        '''
+        Test that an invalid term does not return any data
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse("term-courses", kwargs={'term': 999}))
         self.assertEqual(response.status_code, 404)
 
 
 class FloorViewTestCase(APITestCase):
+    '''
+    Test the access to the floor table in the database
+    '''
     def setUp(self):
+        '''
+        Set up variables for test
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -661,6 +842,9 @@ class FloorViewTestCase(APITestCase):
         self.floor2 = Floor.objects.create(floor_name="Second Floor", building=self.building)
 
     def test_get_floors_authenticated(self):
+        '''
+        Test that we can access the floors when authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get('/floors/')
         self.assertEqual(response.status_code, 200)
@@ -678,10 +862,16 @@ class FloorViewTestCase(APITestCase):
                 self.assertIn(b_field, floor['building'], f"{b_field} is missing in the building data")
 
     def test_get_floors_unauthenticated(self):
+        '''
+        Test the unauthenticated user cannot access the floors data
+        '''
         response = self.client.get('/floors/')
         self.assertEqual(response.status_code, 401)
 
     def test_get_floors_detail_authenticated(self):
+        '''
+        Ensure the floor details are returned when everything is authenticated
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('floor-detail', kwargs={'pk': self.floor.floor_id}))
         self.assertEqual(response.status_code, 200)
@@ -698,17 +888,29 @@ class FloorViewTestCase(APITestCase):
             self.assertIn(b_field, response.data['building'], f"{b_field} is missing in the building data")
 
     def test_get_floor_detail_view_not_found(self):
+        '''
+        Test that a floor detail with a non-existent primary key is not returned
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get(reverse('floor-detail', kwargs={'pk': 999}))
         self.assertEqual(response.status_code, 404)
 
     def test_get_floors_detail_unauthenticated(self):
+        '''
+        Test the user should not be able to load the floor detail view when unauthenticated
+        '''
         response = self.client.get(reverse('floor-detail', kwargs={'pk': self.floor.floor_id}))
         self.assertEqual(response.status_code, 401)
 
 
 class TermViewTestCase(APITestCase):
+    '''
+    Test for loading the terms from the database
+    '''
     def setUp(self):
+        '''
+        Set up the variables for the test
+        '''
         self.client = APIClient()
         self.user_data = {
             'email': 'test@example.com',
@@ -722,6 +924,9 @@ class TermViewTestCase(APITestCase):
         self.term2 = Term.objects.create(term_name="FA2023")
 
     def test_get_terms_authenticated(self):
+        '''
+        Test that an authenticated user can retrieve the terms
+        '''
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         response = self.client.get('/terms/')
         self.assertEqual(response.status_code, 200)
@@ -733,12 +938,21 @@ class TermViewTestCase(APITestCase):
                 self.assertIn(field, term, f"{field} is missing in the term data")
 
     def test_get_terms_unauthenticated(self):
+        '''
+        Test that the user cannot retrieve the terms if not authenticated
+        '''
         response = self.client.get('/terms/')
         self.assertEqual(response.status_code, 401)
 
 
 class TestLoadView(APITestCase):
+    '''
+    Test the loading of the load file view
+    '''
     def setUp(self):
+        '''
+        Set up the test variables
+        '''
         self.client = APIClient()
 
         # Create and authenticate user
@@ -755,6 +969,9 @@ class TestLoadView(APITestCase):
 
     @patch('roomschedulerapi.views.logger')
     def test_post_load_data_valid(self, mock_logger):
+        '''
+        Tests that the post loads the file correctly
+        '''
         # Setup Mocks
         with open('roomschedulerapi/Sample_Excel_Upload.xlsx', 'rb') as fp:
             request_data = {'file': File(fp)}
@@ -802,6 +1019,9 @@ class TestLoadView(APITestCase):
 
     @patch('roomschedulerapi.views.logger')
     def test_post_load_data_invalid(self, mock_logger):
+        '''
+        Tests that the invalid file will not be posted to the database
+        '''
         # Setup Mocks
         with open('roomschedulerapi/Sample_Excel_Invalid.xlsx', 'rb') as fp:
             request_data = {'file': File(fp)}

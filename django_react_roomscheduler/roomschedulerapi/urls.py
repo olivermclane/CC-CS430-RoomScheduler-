@@ -4,7 +4,8 @@ from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 from .views import RegisterView, BuildingView, FloorView, ClassroomView, CourseView, \
      BuildingDetailView, FloorDetailView, CourseDetailView, ClassroomDetailView, LoadView, LoginView, LogoutView, \
-     ClassroomCoursesView, PostLogView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, DownloadExampleExcel
+     ClassroomCoursesView, ClassroomCoursesTermView, CoursesTermView, TermView, ClassroomTermView, UpdatePasswordView, \
+     AdminUpdatePasswordView, PostLogView, DownloadExampleExcel
 
 
 urlpatterns = ([
@@ -19,6 +20,10 @@ urlpatterns = ([
      path('logout/', LogoutView.as_view(), name='logout'), #Tested
 
      ## APPLICATION ENDPOINTS
+
+     path('updatePassword/', UpdatePasswordView.as_view(), name='updatePassword'),
+     path('adminUpdatePassword/', AdminUpdatePasswordView.as_view(), name='adminUpdatePassword'),
+    
      path('buildings/', BuildingView.as_view(), name='buildings'), #Tested
      path('buildings/<int:pk>/', BuildingDetailView.as_view(), name='building-detail'), #Tested
 

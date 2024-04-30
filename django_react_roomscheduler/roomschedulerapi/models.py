@@ -6,6 +6,9 @@ from django.contrib.postgres.fields import ArrayField
 class Building(models.Model):
     """
     Model for representing a building.
+    - building_id : The id of the building (pk)
+    - building_name : The name of the building
+    - image_url : The url of the image of the building
     """
 
     building_id = models.AutoField(primary_key=True)
@@ -22,6 +25,10 @@ class Building(models.Model):
 class Floor(models.Model):
     """
     Model for representing a floor.
+    - floor_id : The id of the floor (pk)
+    - floor_name : The name of the floor
+    - building_name : The name of the building the floor is on
+    - building : The building each floor is on (fk)
     """
 
     floor_id = models.AutoField(primary_key=True)
@@ -39,6 +46,10 @@ class Floor(models.Model):
 class Term(models.Model):
     """
     Model for representing a term.
+    - term_id : The id of the term (pk)
+    - term_name : The name of the term
+    - created_at : The creation date of the term
+    - updated_at : The last update date of the term
     """
 
     term_id = models.AutoField(primary_key=True)
@@ -56,6 +67,16 @@ class Term(models.Model):
 class OptiScore(models.Model):
     """
     Model for representing optimization scores.
+    - score_id : The id of the score (pk)
+    - prime_time_score : The calculated score for if the classroom is scheduled during prime time
+    - prime_time_utilization : The calculated score for if the classroom is used during prime time
+    - capacity_score : The calculated score for if the classroom is used to capacity
+    - instructor_score : The calculated score for if the use of instructors is optimal
+    - instructor_methods : The calculated score for if the use of instructor needs that type of classroom
+    - double_booking_score : The calculated score for if the classroom has more than one course scheduled at the same time
+    - idle_time_score : The calculated score for how long the classroom is unused
+    - double_booking : True if the classroom is double booked, false if it is not
+    - overall score : The calculated score for the use of the classroom
     """
 
     score_id = models.AutoField(primary_key=True)
@@ -79,6 +100,31 @@ class OptiScore(models.Model):
 class Classroom(models.Model):
     """
     Model for representing a classroom.
+    - classroom_id : ID of the classroom
+    - classroom_name : Name of the classroom
+    - classroom_number : The room number of the classroom
+    - total_seats : The total number of seats
+    - width_of_room : The width of the room
+    - term : The term associated with this instance of the classroom
+    - length_of_room : The length of the room
+    - projectors : The projectors in this classroom
+    - microphone_systems : True if the room has a microphone, False if the room does not
+    - blueray_system : True if the room has a blueray system, False if the room does not
+    - laptop_hdmi : True if the room has a laptop hdmi, False if the room does not
+    - zoom_camera : True if the room has a zoom camera, False if the room does not
+    - document_camera : True if the room has a document camera, False if the room does not
+    - storage : True if the room has storage, False if the room does not
+    - movable_chairs : True if the room has movable chairs, False if the room does not
+    - printer : True if the room has a printer, False if the room does not
+    - piano : True if the room has a piano, False if the room does not
+    - stereo_system : True if the room has a stereo, False if the room does not
+    - total_tv : Number of tvs in the room
+    - sinks : Number of sinks in the room
+    - notes : Any notes on the room
+    - floor_name : Name of the floor the room is on
+    - floor : The floor the classroom is on (fk)
+    - optimization_score : The optimization score of the classroom (fk)
+
     """
 
     classroom_id = models.AutoField(primary_key=True)
@@ -116,6 +162,27 @@ class Classroom(models.Model):
 class Course(models.Model):
     """
     Model for representing a course.
+    - course_id : The id of the course (pk)
+    - classroom : The classroom the course is in (fk)
+    - start_time : The start time of the course
+    - end_time : The end time of the course
+    - instructor : The instructor of the course
+    - first_day : The first day of the course
+    - last_day : The last day of the course
+    - course_name : The name of the course
+    - term : The term of the course (fk)
+    - credits : The credits of the course
+    - course_cap : The maximum amount of students in the class
+    - waitlist_cap : The maximum amount of students allowed on the waitlist
+    - enrollment_total : The total amount of students enrolled in the course
+    - course_level : The level of the course
+    - monday : True if the course is on Monday, False if the course is not
+    - tuesday : True if the course is on Tuesday, False if the course is not
+    - wednesday : True if the course is on Wednesday, False if the course is not
+    - thursday : True if the course is on Thursday, False if the course is not
+    - friday : True if the course is on Friday, False if the course is not
+    - saturday : True if the course is on Saturday, False if the course is not
+    - sunday : True if the course is on Sunday, False if the course is not
     """
 
     course_id = models.AutoField(primary_key=True)
@@ -151,6 +218,12 @@ class Course(models.Model):
 class User(AbstractUser):
     """
     Custom User model.
+    - username : Username for the user
+    - name : none
+    - emails : Email of the user
+    - is_active : True if the user is active, False otherwise
+    - created_at: datetime when the user was created
+    - updated_at: datetime when the user was updated
     """
 
     username = models.CharField(max_length=100, unique=True)
@@ -160,11 +233,11 @@ class User(AbstractUser):
         max_length=255,
         unique=True,
     )
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_temporary_password = models.BooleanField(default=False)  # New field
+    temp_password_flag = models.BooleanField(default=False)
+    temp_password_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -177,5 +250,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
-    def is_admin(self, perm, obj=None):
-        return self.is_admin
+
+
+

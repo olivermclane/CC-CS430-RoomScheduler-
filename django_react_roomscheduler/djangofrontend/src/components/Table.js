@@ -361,7 +361,6 @@ const Table = () => {
         logger.debug(data);
     }, [data]);
 
-
     const {
         getTableProps,
         getTableBodyProps,

@@ -38,6 +38,7 @@ function Classroom({classroom}) {
                         let calendars = document.getElementsByClassName("calendars")
                         for (let i = 0; i < calendars.length; i++) {
                             calendars[i].style.zIndex = -1;
+                            calendars[i].style.display = "none";
                         }
                         setShowCalendar(!showCalendar)
                     }}
@@ -48,6 +49,7 @@ function Classroom({classroom}) {
             </div>
             {showCalendar ? (
                 <div className="calendars" id={"calendar-" + classroom.classroom_id} style={{
+                    display: "auto",
                     zIndex: "2",
                     position: "fixed",
                     left: "5%",
