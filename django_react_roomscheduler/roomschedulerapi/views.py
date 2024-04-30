@@ -118,7 +118,7 @@ class RegisterView(APIView):
         serializer.save()
         user = serializer.instance
         refresh = RefreshToken.for_user(user)
-        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
+        logger.info(f"User {request.data.get('email')} register, Body: {request}")
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -126,7 +126,7 @@ class RegisterView(APIView):
 
 
 class UpdatePasswordView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         logger.info("updating password")
@@ -152,14 +152,13 @@ class UpdatePasswordView(APIView):
 
 
 class AdminUpdatePasswordView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         logger.info("updating password")
         logger.info(f"{request.data}")
         # Access user data after token generation
         logger.info(f'{request.data["email"]}')
-        logger.info(f'{request.data["password"]}')
 
         try:
             user = get_user_model().objects.get(email=request.data['email'])

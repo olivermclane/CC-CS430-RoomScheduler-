@@ -9,6 +9,8 @@ import {useNavigate} from "react-router-dom";
 
 export default function Dashboard() {
     const navigate = useNavigate();
+    const [authorized, setAuthorized] = useState(localStorage.getItem('temp_password_admin') === 'true');
+    console.log('This is authroiuzed', authorized)
     const [selectedItem, setSelectedItem] = useState(() => {
         return localStorage.getItem("selectedItem") || "dashboard";
     });
@@ -34,6 +36,16 @@ export default function Dashboard() {
                              onClick={() => handleSidebarItemClick("insights")}/>
                 <SidebarItem icon={<FileUp size={20}/>} text="Import New Term"
                              onClick={() => handleSidebarItemClick("import new term")}/>
+
+                {authorized && (
+                    <>
+                        <hr className='my-3'/>
+                        <SidebarItem icon={<Settings size={20}/>} text="Settings"
+                                     onClick={() => navigate("/adminUpdatePassword")}/>
+                    </>
+                )}
+
+
             </Sidebar>
             <div className="sm:w-full mt-4 p-4 bg-violet-100 rounded-lg shadow-md flex-1"
                  style={{minHeight: 'calc(100vh - 64px)'}}>

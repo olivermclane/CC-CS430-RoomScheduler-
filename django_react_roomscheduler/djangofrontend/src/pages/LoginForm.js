@@ -5,6 +5,7 @@ import logger from "../loggers/logger";
 import carrollCampusImage from '../icons/carroll-campus.jpg';
 import shieldImage from '../icons/shield.png';
 import {useAuth} from "../service/auth/AuthProvider";
+import axios from "axios";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -13,19 +14,24 @@ export default function LoginForm() {
 
     const login = async (email, password) => {
         try {
-            const response = await axiosInstance.post('/login/', {email, password});
+            const response = await axios.post('api/login/', {email, password});
             logger.info("User attempted login", email);
-            const {access, refresh, username, email: userEmail} = response.data;
+            const {access, refresh, username, email: userEmail, temp_password_admin, temp_password_flag} = response.data;
             localStorage.setItem('access_token', access);
             localStorage.setItem('refresh_token', refresh);
             localStorage.setItem('username', username);
             localStorage.setItem('email', email);
+            localStorage.setItem('temp_password_admin', temp_password_admin)
+            console.log(temp_password_flag)
+            console.log(temp_password_admin)
 
             // Set authorization header in Axios instance
             axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-
-            // Redirect to dashboard after successful login
-            navigate('/dashboard');
+            if (temp_password_flag){
+                navigate("/updatePassword")
+            }else{
+                navigate("/dashboard")
+            }
         } catch (error) {
             console.log("Error ", error);
             throw error;
