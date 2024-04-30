@@ -1,60 +1,61 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
+import logger from "../../loggers/logger";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [authToken, setAuthToken] = useState(localStorage.getItem('access_token'));
+    const [authToken, setAuthToken] = useState(() => localStorage.getItem('access_token'));
+    const axiosInstanceRef = useRef(createAxiosInstance());
 
-    const axiosInstance = axios.create({
-        baseURL: '/api',
-        timeout: 20000,
-    });
+    function createAxiosInstance() {
+        const instance = axios.create({
+            baseURL: '/api',
+            timeout: 20000,
+        });
+
+        updateAuthorizationHeader(instance, localStorage.getItem('access_token'));
+        return instance;
+    }
+
+    function updateAuthorizationHeader(axiosInstance, token) {
+        if (token) {
+            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            delete axiosInstance.defaults.headers.common['Authorization'];
+        }
+    }
 
     const forceLogout = useCallback(() => {
-        // Clearing all tokens and user-related info from localStorage
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('email');
-        localStorage.removeItem('username');
-        // Using window.location.href to force a full page reload and redirect
+        localStorage.clear();
+        setAuthToken(null);
         window.location.href = '/login';
     }, []);
 
     useEffect(() => {
-        let isRefreshing = false;
-        let refreshSubscribers = [];
-
+        const axiosInstance = axiosInstanceRef.current;
         const requestQueueInterceptor = axiosInstance.interceptors.response.use(
             response => response,
-            error => {
+            async error => {
                 const originalRequest = error.config;
                 if (error.response && error.response.status === 401 && !originalRequest._retry) {
-                    if (!isRefreshing) {
-                        isRefreshing = true;
-                        axios.post('/api/login/refresh/', {
+                    originalRequest._retry = true;
+                    try {
+                        const response = await axiosInstance.post('/login/refresh/', {
                             refresh: localStorage.getItem('refresh_token')
-                        }).then(response => {
-                            const { access, refresh } = response.data;
-                            localStorage.setItem('access_token', access);
-                            localStorage.setItem('refresh_token', refresh);
+                        });
 
-                            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-                            originalRequest._retry = true;
-                            refreshSubscribers.forEach(callback => callback(access));
-                            refreshSubscribers = [];
-                        }).catch(() => {
-                            forceLogout();
-                        }).finally(() => {
-                            isRefreshing = false;
-                        });
+                        const { access, refresh } = response.data;
+                        localStorage.setItem('access_token', access);
+                        localStorage.setItem('refresh_token', refresh);
+                        setAuthToken(access);
+                        updateAuthorizationHeader(axiosInstance, access);
+                        originalRequest.headers['Authorization'] = `Bearer ${access}`;
+                        return axiosInstance(originalRequest);
+                    } catch (error) {
+                        forceLogout();
+                        return Promise.reject(error);
                     }
-                    return new Promise(resolve => {
-                        refreshSubscribers.push(access => {
-                            originalRequest.headers.Authorization = `Bearer ${access}`;
-                            resolve(axiosInstance(originalRequest));
-                        });
-                    });
                 }
                 return Promise.reject(error);
             }
@@ -63,18 +64,14 @@ export function AuthProvider({ children }) {
         return () => {
             axiosInstance.interceptors.response.eject(requestQueueInterceptor);
         };
-    }, [forceLogout, axiosInstance]);
+    }, [forceLogout]);
 
     useEffect(() => {
-        if (authToken) {
-            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-        } else {
-            delete axiosInstance.defaults.headers.common['Authorization'];
-        }
-    }, [authToken, axiosInstance]);
+        updateAuthorizationHeader(axiosInstanceRef.current, authToken);
+    }, [authToken]);
 
     return (
-        <AuthContext.Provider value={{ authToken, axiosInstance }}>
+        <AuthContext.Provider value={{ authToken, axiosInstance: axiosInstanceRef.current }}>
             {children}
         </AuthContext.Provider>
     );

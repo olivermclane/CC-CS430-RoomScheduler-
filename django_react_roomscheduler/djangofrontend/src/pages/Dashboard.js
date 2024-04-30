@@ -6,20 +6,24 @@ import {BarChart3, Calendar, FileUp, LayoutDashboard, Settings, UserIcon} from "
 import Insight from "./Insight";
 import ImportNewTerm from "./ImportNewTerm";
 import {useNavigate} from "react-router-dom";
+
 export default function Dashboard() {
     const navigate = useNavigate();
-    const [selectedItem, setSelectedItem] = useState("dashboard");
+    const [selectedItem, setSelectedItem] = useState(() => {
+        return localStorage.getItem("selectedItem") || "dashboard";
+    });
 
     useEffect(() => {
         if (localStorage.getItem('access_token') === null) {
             navigate('/login')
         }
-    }, []);
+    }, [navigate]);
 
-    // Function to handle sidebar item click
     function handleSidebarItemClick(item) {
         setSelectedItem(item);
+        localStorage.setItem("selectedItem", item);
     }
+
 
     return (
         <div className="d-flex bg-violet-100">
@@ -31,7 +35,8 @@ export default function Dashboard() {
                 <SidebarItem icon={<FileUp size={20}/>} text="Import New Term"
                              onClick={() => handleSidebarItemClick("import new term")}/>
             </Sidebar>
-        <div className="sm:w-full mt-4 p-4 bg-violet-100 rounded-lg shadow-md flex-1" style={{minHeight: 'calc(100vh - 64px)'}}>
+            <div className="sm:w-full mt-4 p-4 bg-violet-100 rounded-lg shadow-md flex-1"
+                 style={{minHeight: 'calc(100vh - 64px)'}}>
                 {selectedItem === "dashboard" && (
                     <TableTiles/>
                 )}

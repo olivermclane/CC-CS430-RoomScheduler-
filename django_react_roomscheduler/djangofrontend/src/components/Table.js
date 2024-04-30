@@ -32,23 +32,29 @@ export function GlobalFilter({
                                  placeholder,
                              }) {
     const [value, setValue] = useState(globalFilter);
+
+    useEffect(() => {
+        setValue(globalFilter);
+    }, [globalFilter]);
+
     const onChange = useAsyncDebounce((value) => {
         setGlobalFilter(value || undefined);
     }, 200);
 
+
     return (
         <span className="flex justify-between ml-auto pt-4 pb-2 px-3">
-      <input
-          value={value || ""}
-          onChange={(e) => {
-              setValue(e.target.value);
-              onChange(e.target.value);
-          }}
-          className="w-4/12 rounded-xl border p-4 text-gray-500 cursor-pointer"
-          type="search"
-          placeholder={placeholder}
-      />
-    </span>
+            <input
+                value={value || ""}
+                onChange={(e) => {
+                    setValue(e.target.value);
+                    onChange(e.target.value);
+                }}
+                className="w-4/12 rounded-xl border p-4 text-gray-500 cursor-pointer"
+                type="search"
+                placeholder={placeholder}
+            />
+        </span>
     );
 }
 
@@ -62,35 +68,25 @@ const Table = () => {
     const [selectedTerm, setSelectedTerm] = useState('')
     const [columnOrder, setColumnOrder] = useState([]);
     const [isExportModalOpen, setExportModalOpen] = useState(false);
-    const {axiosInstance} = useAuth();
     const data = tableData;
+    const {axiosInstance} = useAuth();
 
     const fetchData = async (endpoint) => {
-        setIsLoading(true); // Ensure loading starts every time fetchData is called
+        setIsLoading(true);
         try {
-            const authToken = localStorage.getItem('access_token');
-            if (authToken) {
-                let requestUrl = "";
-                if (selectedTerm === "") {
-                    requestUrl += endpoint;
-                } else {
-                    requestUrl += `/${selectedTerm}${endpoint}`;
-                }
-                const response = await axiosInstance.get(requestUrl, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`
-                    }
-                });
-                if (response.data && response.data.length > 0) {
-                    setTableData(response.data);
-                    setIsLoading(false);
-                } else {
-                    // Handle the case where data is successfully fetched but empty
-                    setTableData([]);
-                    setIsLoading(false);
-                }
+            let requestUrl = "";
+            if (selectedTerm === "") {
+                requestUrl += endpoint;
             } else {
-                // Handle the case where access token is not available
+                requestUrl += `/${selectedTerm}${endpoint}`;
+            }
+            const response = await axiosInstance.get(requestUrl)
+            if (response.data && response.data.length > 0) {
+                setTableData(response.data);
+                setIsLoading(false);
+            } else {
+                setTableData([]);
+                setIsLoading(false);
             }
         } catch (err) {
             if (err.response) {
@@ -309,7 +305,7 @@ const Table = () => {
             const newColumnOrder = [...columnOrder];
             newColumnOrder.splice(dragIndex, 1);
             newColumnOrder.splice(hoverIndex, 0, dragColumn);
-            console.log(columnOrder)
+            logger.debug(columnOrder)
             setColumnOrder(newColumnOrder);
         }
     ;
@@ -333,7 +329,7 @@ const Table = () => {
         }
     };
     const handleTermChange = (termId) => {
-        console.log(termId)
+        logger.debug(termId)
         setSelectedTerm(termId);
     }
 
@@ -358,11 +354,11 @@ const Table = () => {
     }, [endpoint, selectedTerm]);
 
     useEffect(() => {
-        console.log(orderedColumns);
+        logger.debug(orderedColumns);
     }, [orderedColumns]);
 
     useEffect(() => {
-        console.log(data);
+        logger.debug(data);
     }, [data]);
 
 
@@ -447,7 +443,12 @@ const Table = () => {
         const data = selectedVisibleRows.map(row => {
             const rowData = {};
             visibleColumns.forEach(column => {
-                rowData[column.Header] = row[column.accessor];
+                if (column.accessor === "term.term_name") {
+                    rowData[column.Header] = row.term ? row.term.term_name : '';
+                    logger.debug(row.term.term_name)
+                } else {
+                    rowData[column.Header] = row[column.accessor];
+                }
             });
             return rowData;
         });
@@ -658,6 +659,7 @@ const Table = () => {
                 </select>
             </div>
         </div>
+
     );
 };
 

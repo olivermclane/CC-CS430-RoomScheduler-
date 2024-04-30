@@ -38,7 +38,6 @@ function ImportNewTerm() {
     const [success, setSuccess] = useState(false);
     const {axiosInstance} = useAuth();
 
-
     const validateFile = (jsonData) => {
         const columnNames = jsonData[0];
         const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
@@ -84,8 +83,6 @@ function ImportNewTerm() {
         const formData = new FormData();
         formData.append('file', file);
 
-        console.log(formData)
-
         try {
             const response = await axiosInstance.post('/load/', formData, {
                 headers: {
@@ -95,7 +92,7 @@ function ImportNewTerm() {
 
             setLoading(false);
             setSuccess(true);
-            logger.info('Response from server:', response.data);
+            logger.debug('Response from server:', response.data);
         } catch (error) {
             setLoading(false);
             logger.error('Error uploading file:', error);
@@ -127,7 +124,7 @@ function ImportNewTerm() {
     };
 
     return (
-        <div className="mx-auto p-6">
+        <div className="full-height mx-auto p-6">
             <h1 className="flex text-gray-700 text-3xl font-bold mb-6">Import New Term </h1>
             <div className="flex mb-6">
                 <input type="file" accept=".xlsx" onChange={handleFileUpload}
@@ -146,7 +143,7 @@ function ImportNewTerm() {
             {success && <div className="text-green-500">File successfully loaded.</div>}
             {fileData && (
                 <div className="mb-6 mx-auto border border-gray-300 bg-white rounded-lg overflow-y-auto"
-                     style={{maxWidth: '100%', maxHeight: '20%'}}>
+                     style={{maxWidth: '100%', height: '100%'}}>
                     <table className="w-full table-auto">
                         <thead>
                         <tr className="bg-gray-200">
@@ -157,8 +154,7 @@ function ImportNewTerm() {
                         </thead>
                         <tbody>
                         {fileData.slice(1, 6).map((row, rowIndex) => (
-                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''}
-                                style={{maxHeight: '20%'}}>
+                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''}>
                                 {row.map((cell, cellIndex) => (
                                     <td key={cellIndex} className="px-4 py-2 text-sm">{cell}</td>
                                 ))}
@@ -168,6 +164,7 @@ function ImportNewTerm() {
                     </table>
                 </div>
             )}
+
         </div>
     );
 }

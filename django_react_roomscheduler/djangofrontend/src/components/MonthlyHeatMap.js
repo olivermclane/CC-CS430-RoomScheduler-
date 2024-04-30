@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import CalHeatmap from 'cal-heatmap';
 import 'cal-heatmap/cal-heatmap.css';
-import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
 import {useAuth} from "../service/auth/AuthProvider";
 import logger from "../loggers/logger";
@@ -24,12 +23,15 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-                setOpenTimes(calculateOpenTimes(response.data))
-                const parsedData = parseData(response.data);
-                const transformedData = transformDataForHeatMap(parsedData);
-                setScheduleData(transformedData);
+                try {
+                    if(selectedClassroom) {
+
+                        const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                        setOpenTimes(calculateOpenTimes(response.data))
+                        const parsedData = parseData(response.data);
+                        const transformedData = transformDataForHeatMap(parsedData);
+                        setScheduleData(transformedData);
+                    }
             } catch (err) {
                 logger.error(err);
             }
@@ -45,7 +47,7 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
             const count = courses.length; // The number of courses on this date
 
             transformedData.push({
-                date: date, // Include the date property
+                date: date,
                 p: count,
             });
         });
@@ -78,14 +80,6 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
                 }
             },
             [
-                /*[
-                    Tooltip, {
-                    // Dynamic text for the tooltip based on the data point
-                    text: function (date, value, dayjsDate) {
-                        return `${value ? value + ' Courses' : 'No data'} on ${dayjsDate.format('LL')}`;
-                    },
-                }
-                ],*/
                 [
                     Legend,
                     {
@@ -146,19 +140,20 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
 
             mergedTimes.forEach(time => {
                 let [start, end] = time.split('-');
-                if (lastEnd < start && minuteDifference(lastEnd, start) > 15) { // Only add if gap is more than 10 minutes
+                // Only add if gap is more than 10 minutes
+                if (lastEnd < start && minuteDifference(lastEnd, start) > 15) {
                     openTimes.push(`${tConvert(lastEnd)} - ${tConvert(start)}`);
-                    console.log(`${tConvert(lastEnd)} - ${tConvert(start)}`)
+                    logger.debug(`${tConvert(lastEnd)} - ${tConvert(start)}`)
 
                 }
                 lastEnd = end;
             });
 
             if (lastEnd < opEnd && minuteDifference(lastEnd, opEnd) > 15) {
-                console.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
+                logger.debug(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
                 openTimes.push(`${tConvert(lastEnd)}-${tConvert(opEnd)}`);
             }
-            console.log(openTimes)
+            logger.debug(openTimes)
             return openTimes;
         };
 
@@ -173,13 +168,11 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
 
     const parseData = (courses) => {
         const result = {};
-        // Logic to parse the data from your API response
         courses.forEach((course) => {
             const {first_day, last_day, course_name} = course;
             const startDate = new Date(first_day);
             const endDate = new Date(last_day);
 
-            // Adjusted logic to fill dates based on course days
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                 const dayOfWeek = d.toLocaleDateString('en-US', {weekday: 'long'}).toLowerCase();
                 if (course[dayOfWeek]) {

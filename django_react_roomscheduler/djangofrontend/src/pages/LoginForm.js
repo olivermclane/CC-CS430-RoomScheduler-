@@ -1,47 +1,51 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
-import axios from "axios";
 import logger from "../loggers/logger";
-import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+import carrollCampusImage from '../icons/carroll-campus.jpg';
 import shieldImage from '../icons/shield.png';
+import {useAuth} from "../service/auth/AuthProvider";
 
 export default function LoginForm() {
     const navigate = useNavigate();
     const [loginError, setLoginError] = useState('');
+    const {axiosInstance} = useAuth();
+
     const login = async (email, password) => {
-      try {
-        const response = await axios.post('/api/login/', { 'email':email.toString(), 'password':password });
-        logger.info("User attempted login", email.toString()); // Log the endpoint being called
-        return response.data;
-      } catch (error) {
-        logger.error("Error ", error)
-        throw error;
-      }
-    }
+        try {
+            const response = await axiosInstance.post('/login/', {email, password});
+            logger.info("User attempted login", email);
+            const {access, refresh, username, email: userEmail} = response.data;
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+            localStorage.setItem('username', username);
+            localStorage.setItem('email', email);
+
+            // Set authorization header in Axios instance
+            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+
+            // Redirect to dashboard after successful login
+            navigate('/dashboard');
+        } catch (error) {
+            console.log("Error ", error);
+            throw error;
+        }
+    };
+
+
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget); // Use e.currentTarget
-    const email = formData.get('email');
-    const password = formData.get('password');
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get('email');
+        const password = formData.get('password');
 
-
-    try {
-      const data = await login( email, password );
-      localStorage.setItem('access_token', data.access);
-      console.log(localStorage.getItem('access_token'))
-      localStorage.setItem('refresh_token', data.refresh);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('email', data.email)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
-      navigate('/dashboard');
-
-    } catch (error) {
-      setLoginError('Login failed. Please check your credentials and try again.');
-      logger.error('Login failed for user', email)
-
-    }
-  };
+        try {
+            await login(email, password);
+        } catch (error) {
+            setLoginError('Login failed. Please check your credentials and try again.');
+            logger.error('Login failed for user', email);
+        }
+    };
 
     return (
         <div className="bg-dark-purple-900 flex justify-center items-center h-screen w-screen">
@@ -70,29 +74,18 @@ export default function LoginForm() {
                             type="password" id="password" name="password" label="Password" placeholder="••••••••••"
                         />
                         <div className="mt-4">
-                            <div className="mt-4">
-                                <Button
-                                    className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
-                                    value="Submit" label="Login"
-                                >
-                                    Login
-                                </Button>
-                                <Button
-                                    className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
-                                    onClick={() => navigate('/register')}
-                                >
-                                    Sign Up
-                                </Button>
-                            </div>
-                            <div className="text-center mt-4">
-                                <a
-                                    className="inline-block rounded-full px-4 py-2 text-white bg-purple-700 border border-purple-900 hover:bg-purple-400 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
-                                    href="https://your-okta-domain.com/oauth2/default/v1/authorize?clientId=your-okta-client-id&redirectUri=your-redirect-uri&responseType=code&scope=openid%20profile%20email">
-                                    <img src="https://cdnlogo.com/logos/o/10/okta.svg" alt="Okta Logo"
-                                         className="mr-2 inline-block h-6 w-6"/>
-                                    Login with Okta
-                                </a>
-                            </div>
+                            <Button
+                                className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
+                                type="submit"
+                            >
+                                Login
+                            </Button>
+                            <Button
+                                className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
+                                onClick={() => navigate('/register')}
+                            >
+                                Sign Up
+                            </Button>
                         </div>
                     </div>
                 </form>

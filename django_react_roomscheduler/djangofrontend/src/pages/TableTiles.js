@@ -17,18 +17,18 @@ export default function DashboardPage() {
 
     function updateFloorList(building) {
         setSelectedBuilding(building);
-        logger.info("Selected building updated")
+        logger.debug("Selected building updated")
         setSelectedFloor(null);
     }
 
     function updateClassroomList(floor) {
         setSelectedFloor(floor);
-        logger.info("Classroom list updated")
+        logger.debug("Classroom list updated")
     }
 
     function updateClassroom(classroom){
         setSelectedClassroom(classroom)
-        logger.info("Classroom updated")
+        logger.debug("Classroom updated")
     }
 
 
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         <Fragment>
             {showTable ? (
                 <Fragment>
-                    <Table />
+                    <Table/>
                     <button
                         className="mt-4 p-2 bg-gray-200 rounded-lg text-gray-800 hover:bg-gray-300 flex items-center justify-center"
                         onClick={() => setShowTable(false)}
@@ -61,8 +61,7 @@ export default function DashboardPage() {
                     </button>
                 </Fragment>
             )}
-
-
         </Fragment>
+
     );
 }

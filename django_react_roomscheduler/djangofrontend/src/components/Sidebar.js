@@ -27,15 +27,12 @@ export default function Sidebar({children}) {
     function handleLogout(onSuccess) {
         axiosInstance.post('/logout/')
             .then(() => {
-                logger.info('User logged out:', username);
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                localStorage.removeItem('email');
-                localStorage.removeItem('username');
+                logger.debug('User logged out:', username);
+                localStorage.clear()
 
                 if (onSuccess) {
                     onSuccess(); // Call the success callback if provided
-                    logger.info('User logged out:', username)
+                    logger.debug('User logged out:', username)
                 } else {
                     navigate('/login'); // Redirect to login (if not using callback)
                 }

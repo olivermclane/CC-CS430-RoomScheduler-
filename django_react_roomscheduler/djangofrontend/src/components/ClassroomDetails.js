@@ -1,5 +1,6 @@
 import { useAuth } from "../service/auth/AuthProvider";
 import React, { useEffect, useState } from "react";
+import logger from "../loggers/logger";
 
 const ClassroomDetails = ({ selectedClassroom }) => {
     const { axiosInstance } = useAuth();
@@ -7,13 +8,16 @@ const ClassroomDetails = ({ selectedClassroom }) => {
     const [classroomName, setClassroomName] = useState('')
 
     const fetchData = async () => {
-        try {
-            const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-            setClassroomName(response.data[0].classroom.floor.building.building_name + ' ' + response.data[0].classroom.classroom_number)
-            setClassroomData(response.data[0].classroom);
-        } catch (err) {
-            console.error("Error fetching calendar data:", err);
-        }
+            try {
+                if(selectedClassroom) {
+                    const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                    setClassroomName(response.data[0].classroom.floor.building.building_name + ' ' + response.data[0].classroom.classroom_number)
+                    setClassroomData(response.data[0].classroom);
+                }
+            } catch (err) {
+                logger.error("Error fetching calendar data:", err);
+            }
+
     };
 
     useEffect(() => {

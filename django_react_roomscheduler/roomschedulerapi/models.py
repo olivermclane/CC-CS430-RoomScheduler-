@@ -147,6 +147,7 @@ class Course(models.Model):
     def __str__(self):
         return f"{self.course_name} - {self.start_time} - {self.end_time} (ID: {self.course_id})"
 
+
 class User(AbstractUser):
     """
     Custom User model.
@@ -163,6 +164,7 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_temporary_password = models.BooleanField(default=False)  # New field
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

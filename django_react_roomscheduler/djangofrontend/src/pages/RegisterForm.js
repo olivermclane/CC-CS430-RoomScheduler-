@@ -3,16 +3,19 @@ import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
 import logger from "../loggers/logger";
-import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+import carrollCampusImage from '../icons/carroll-campus.jpg';
+import {useAuth} from "../service/auth/AuthProvider"; // Import the image
 
 
 export default function RegisterForm() {
 
     const [registrationError, setRegistrationError] = useState('');
     const navigate = useNavigate();
+    const { axiosInstance } = useAuth();
+
     const login = async (email, password, username) => {
         try {
-            const response = await axios.post('/api/register/', {
+            const response = await axiosInstance.post('/register/', {
                 'email': email.toString(),
                 'username': username,
                 'password': password

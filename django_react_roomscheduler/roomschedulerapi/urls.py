@@ -36,8 +36,8 @@ urlpatterns = ([
      path('classroom-courses/<int:fk>/', ClassroomCoursesView.as_view(), name='classroom-courses'), #Tested
      path('<str:term>/classroom-courses/<int:fk>/', ClassroomCoursesTermView.as_view(), name='term-classroom-courses'), #Tested
 
-     path('post-log/', PostLogView.as_view(), name='post-log'),
-     path('terms/', TermView.as_view(), name='term-classroom-courses'),
-     path('load/', LoadView.as_view(), name='load'),
-     path('load-example-excel/', DownloadExampleExcel.as_view(), name='load-example-excel'),
+     path('post-log/', PostLogView.as_view(), name='post-log'), #Tested
+     path('terms/', TermView.as_view(), name='term-classroom-courses'), #Tested
+     path('load/', LoadView.as_view(), name='load'), # Tested
+     path('load-example-excel/', DownloadExampleExcel.as_view(), name='load-example-excel'), # Tested
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))

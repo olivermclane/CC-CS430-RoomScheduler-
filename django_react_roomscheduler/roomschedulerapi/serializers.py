@@ -121,10 +121,11 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for the User model.
     """
+    is_admin = serializers.BooleanField()
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'password']
+        fields = ['id', 'email', 'username', 'password','is_admin']
 
     def create(self, validated_data):
         user = User.objects.create(email=validated_data['email'],

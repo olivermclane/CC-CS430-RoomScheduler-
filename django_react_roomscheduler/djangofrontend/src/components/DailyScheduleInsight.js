@@ -9,15 +9,17 @@ function DailyScheduleInsight({selectedClassroom}) {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
-                logger.info('Fetching data from endpoint:', 'classroom-courses'); // Log the endpoint being called
-                logger.info("Fetched data:"); // Log fetched data
-                const parsedData = parseData(response.data);
-                logger.info("Parsed data:", parsedData); // Log parsed data
-                updateChartOptions(parsedData);
+                try {
+                    if(selectedClassroom) {
+                        const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
+                        logger.debug('Fetching data from endpoint:', 'classroom-courses'); // Log the endpoint being called
+                        logger.debug("Fetched data:"); // Log fetched data
+                        const parsedData = parseData(response.data);
+                        logger.debug("Parsed data:", parsedData); // Log parsed data
+                        updateChartOptions(parsedData);
+                    }
             } catch (err) {
-                logger.info('Error fetching data:', err);
+                logger.error('Error fetching data:', err);
             }
         };
         fetchData();
@@ -49,8 +51,8 @@ function DailyScheduleInsight({selectedClassroom}) {
         data.forEach(course => {
             Object.keys(totalUnusedTime).forEach(day => {
                 if (course[day.toLowerCase()]) {
-                    const startTime = course.start_time.split(":"); // Split the time string
-                    const endTime = course.end_time.split(":"); // Split the time string
+                    const startTime = course.start_time.split(":");
+                    const endTime = course.end_time.split(":");
 
                     // Calculate the time difference in minutes
                     const timeDiff = (parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)) - (parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10));
@@ -58,7 +60,7 @@ function DailyScheduleInsight({selectedClassroom}) {
                     logger.debug("Time Difference (minutes):", timeDiff);
 
                     // Calculate unused time
-                    const unusedTime = timeDiff / 60; // Convert minutes to hours
+                    const unusedTime = timeDiff / 60;
                     if (unusedTime > 0) {
                         totalUnusedTime[day] -= unusedTime;
                     } else {
@@ -68,7 +70,7 @@ function DailyScheduleInsight({selectedClassroom}) {
             });
         });
 
-        logger.debug("Total unused time:", totalUnusedTime); // Log total unused time
+        logger.debug("Total unused time:", totalUnusedTime);
 
         const days = Object.keys(totalUnusedTime);
         const unusedTimes = Object.values(totalUnusedTime);
@@ -113,7 +115,7 @@ function DailyScheduleInsight({selectedClassroom}) {
             ]
         };
 
-        logger.debug("Chart options:", options); // Log chart options
+        logger.debug("Chart options:", options);
         setChartOptions(options);
     };
 

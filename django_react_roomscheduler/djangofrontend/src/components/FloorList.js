@@ -12,9 +12,9 @@ function FloorList({selectedBuilding, updateClassroomList}){
     const fetchData = async (endpoint) => {
 
         try {
-            logger.info('Requesting received from floors');
+            logger.debug('Requesting received from floors');
             const response = await axiosInstance.get(`${endpoint}/`);
-            logger.info('Received data from floors'); // Log the response received
+            logger.debug('Received data from floors');
             setFloors(response.data);
         } catch (err) {
             if (err.response) {
