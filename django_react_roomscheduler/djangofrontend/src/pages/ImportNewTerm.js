@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import logger from "../loggers/logger";
+import {BeatLoader} from 'react-spinners';
+import {useAuth} from "../service/auth/AuthProvider";
 
 const requiredColumns = [
     'CSM_BLDG',
@@ -29,76 +32,97 @@ const requiredColumns = [
 
 function ImportNewTerm() {
     const [file, setFile] = useState(null);
+    const [fileData, setFileData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const {axiosInstance} = useAuth();
 
-    // Function to handle file upload
-    const handleFileUpload = (event) => {
-        setFile(event.target.files[0]);
-        setError(''); // Clear any previous errors
-        setSuccess(false); // Reset success state
-        setLoading(false)
+
+    const validateFile = (jsonData) => {
+        const columnNames = jsonData[0];
+        const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
+        if (missingColumns.length > 0) {
+            setError(`Missing columns: ${missingColumns.join(', ')}`);
+            logger.error(`Missing columns: ${missingColumns.join(', ')}`);
+            return false;
+        }
+        return true;
     };
 
-    // Function to handle form submission
+    const handleFileUpload = (event) => {
+        const uploadedFile = event.target.files[0];
+        setFile(uploadedFile);
+        setError('');
+        setSuccess(false);
+        setLoading(false);
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const content = e.target.result;
+            const workbook = XLSX.read(content, {type: 'binary'});
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+            if (validateFile(jsonData)) {
+                setFileData(jsonData);
+            }
+        };
+        reader.readAsBinaryString(uploadedFile);
+    };
+
     const handleSubmit = async () => {
-        if (!file) {
+        if (!file || !fileData) {
             setError('Please select a file.');
+            logger.error("No file selected to upload")
             return;
         }
 
-        setSuccess(false)
-        setError('')
+        setSuccess(false);
+        setError('');
         setLoading(true);
 
+        const formData = new FormData();
+        formData.append('file', file);
+
+        logger.log(formData)
+
         try {
-            // Read the file content
-            const fileReader = new FileReader();
-            fileReader.onload = (e) => {
-                const content = e.target.result;
-                // Parse Excel file
-                const workbook = XLSX.read(content, { type: 'binary' });
-                // Get the first sheet
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                // Get column headers
-                const columns = Object.keys(firstSheet);
-                // Get column names as the value of the keys
-                const columnNames = columns.map(key => firstSheet[key].v);
-
-                // Check if all required columns are present
-                const missingColumns = requiredColumns.filter(column => !columnNames.includes(column));
-                if (missingColumns.length > 0) {
-                    setLoading(false);
-                    setError(`Missing columns: ${missingColumns.join(', ')}`);
-                    return;
+            const response = await axiosInstance.post('/load/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
+            });
 
-                // Create FormData object
-                const formData = new FormData();
-                formData.append('file', file);
-
-                // Send POST request to backend API
-                axios.post('http://localhost:8000/load/', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }).then(response => {
-                    setLoading(false);
-                    setSuccess(true);
-                    console.log('Response from server:', response.data);
-                    // Add any further handling for successful upload if needed
-                }).catch(error => {
-                    setLoading(false);
-                    console.error('Error uploading file:', error);
-                    setError('Error uploading file. Please try again.');
-                });
-            };
-            fileReader.readAsBinaryString(file);
+            setLoading(false);
+            setSuccess(true);
+            logger.info('Response from server:', response.data);
         } catch (error) {
             setLoading(false);
-            console.error('Error uploading file:', error);
+            logger.error('Error uploading file:', error);
             setError('Error uploading file. Please try again.');
+        }
+    };
+
+    const handleDownloadExampleFile = async () => {
+        try {
+            const response = await axiosInstance.get('/load-example-excel/', {
+                responseType: 'blob'
+            });
+
+            const blob = new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'example.xlsx';
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            logger.error('Error downloading example file:', error);
         }
     };
 
@@ -106,16 +130,44 @@ function ImportNewTerm() {
         <div className="mx-auto p-6">
             <h1 className="flex text-gray-700 text-3xl font-bold mb-6">Import New Term </h1>
             <div className="flex mb-6">
-                <input type="file" accept=".xlsx" onChange={handleFileUpload} className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300" />
-            </div>
-            {loading && <div>Loading...</div>}
-            {error && <div className="text-red-500">{error}</div>}
-            {success && <div className="text-green-500">File successfully loaded.</div>}
-            <div>
-                <button onClick={handleSubmit} className="bg-violet-300 text-white font-bold py-2 px-4 rounded mr-4 hover:bg-purple-700 hover:text-white">
-                    Submit
+                <input type="file" accept=".xlsx" onChange={handleFileUpload}
+                       className="py-2 px-4 border rounded bg-gray-200 text-gray-700 cursor-pointer hover:bg-gray-300"/>
+                <button onClick={handleDownloadExampleFile}
+                        className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
+                    Download Example File
+                </button>
+                <button onClick={handleSubmit}
+                        className="bg-violet-300 text-white font-bold py-2 px-4 rounded ml-4 hover:bg-purple-700 hover:text-white">
+                    Save
                 </button>
             </div>
+            {loading && <BeatLoader color="#3c1952" loading={true}/>}
+            {error && <div className="text-red-500">{error}</div>}
+            {success && <div className="text-green-500">File successfully loaded.</div>}
+            {fileData && (
+                <div className="mb-6 mx-auto border border-gray-300 bg-white rounded-lg overflow-y-auto"
+                     style={{maxWidth: '100%', maxHeight: '20%'}}>
+                    <table className="w-full table-auto">
+                        <thead>
+                        <tr className="bg-gray-200">
+                            {fileData[0].map((header, index) => (
+                                <th key={index} className="px-4 py-2">{header}</th>
+                            ))}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {fileData.slice(1, 6).map((row, rowIndex) => (
+                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-gray-100' : ''}
+                                style={{maxHeight: '20%'}}>
+                                {row.map((cell, cellIndex) => (
+                                    <td key={cellIndex} className="px-4 py-2 text-sm">{cell}</td>
+                                ))}
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

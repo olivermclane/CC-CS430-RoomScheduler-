@@ -2,15 +2,20 @@ import React, {useState, useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import logger from "../loggers/logger";
+import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+import shieldImage from '../icons/shield.png';
 
 export default function LoginForm() {
     const navigate = useNavigate();
     const [loginError, setLoginError] = useState('');
     const login = async (email, password) => {
       try {
-        const response = await axios.post('http://localhost:8000/login/', { 'email':email.toString(), 'password':password });
-        return response;
+
+        const response = await axios.post('/api/login/', { 'email':email.toString(), 'password':password });
+        return response.data;
       } catch (error) {
+        // logger.error("Error ", error)
         throw error;
       }
     }
@@ -25,7 +30,7 @@ export default function LoginForm() {
       const response = await login( email, password );
       const data = response.data
       localStorage.setItem('access_token', data.access);
-      console.log(localStorage.getItem('access_token'))
+      // console.log(localStorage.getItem('access_token'))
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)
@@ -33,13 +38,14 @@ export default function LoginForm() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       if (data.temp_password_flag) {
-          window.location.href = '/updatePassword';
+          navigate('/updatePassword');
       } else {
-          window.location.href = '/dashboard';
+          navigate('/dashboard');
       }
 
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');
+
     }
   };
 
@@ -48,7 +54,7 @@ export default function LoginForm() {
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `
@@ -57,7 +63,7 @@ export default function LoginForm() {
             <div className="border-t-8 rounded-sm border-purple-900 bg-dark-purple-800 p-12 shadow-2xl w-96 bg-white">
                 <h1 className="font-bold text-center block text-2xl text-purple-950">Login</h1>
                 <div className="bg-dark-purple-800 rounded-t-lg overflow-hidden mb-8">
-                    <img src="/icons/shield.png" alt="Login Image" className="w-48 mx-auto"/>
+                    <img src={shieldImage} alt="Login Image" className="w-48 mx-auto"/>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Input
@@ -73,14 +79,16 @@ export default function LoginForm() {
                             <div className="mt-4">
                                 <Button
                                     className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
-                                    value="Submit" label="Login In"
+                                    value="Submit" label="Login"
                                 >
-                                    Login In
+                                    Login
                                 </Button>
-                                <a href="/register/"
-                                   className="inline-block ml-4 text-sm font-medium text-purple-900 hover:text-purple-400">
+                                <Button
+                                    className="rounded-full px-4 py-2 text-sm font-medium text-purple-400 bg-purple-700 border border-purple-900 hover:bg-purple-800 hover:text-purple-200 focus:z-10 focus:ring-2 focus:ring-purple-900 dark:bg-purple-900 dark:border-purple-800 dark:text-purple-200 dark:hover:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-900 dark:focus:text-purple-200"
+                                    onClick={() => navigate('/register')}
+                                >
                                     Sign Up
-                                </a>
+                                </Button>
                             </div>
                             <div className="text-center mt-4">
                                 <a

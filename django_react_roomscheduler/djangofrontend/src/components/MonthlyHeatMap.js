@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import CalHeatmap from 'cal-heatmap';
 import 'cal-heatmap/cal-heatmap.css';
-import axios from "axios";
-import Tooltip from 'cal-heatmap/plugins/Tooltip';
-import CalendarLabel from "cal-heatmap/plugins/CalendarLabel";
 import "./cal-heatmap-custom.css"
 import Legend from "cal-heatmap/plugins/Legend";
-import {useAuth} from "../service/AuthProvider";
+import {useAuth} from "../service/auth/AuthProvider";
+import logger from "../loggers/logger";
 
 const MonthlyHeatMap = ({selectedClassroom}) => {
     const [scheduleData, setScheduleData] = useState({});
@@ -27,13 +25,13 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/classroom-courses/${selectedClassroom}/`);
+                const response = await axiosInstance.get(`/classroom-courses/${selectedClassroom}/`);
                 setOpenTimes(calculateOpenTimes(response.data))
                 const parsedData = parseData(response.data);
                 const transformedData = transformDataForHeatMap(parsedData);
                 setScheduleData(transformedData);
             } catch (err) {
-                console.error(err);
+                logger.error(err);
             }
         };
 
@@ -157,10 +155,10 @@ const MonthlyHeatMap = ({selectedClassroom}) => {
             });
 
             if (lastEnd < opEnd && minuteDifference(lastEnd, opEnd) > 15) {
-                console.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
+                logger.log(`${tConvert(lastEnd)}-${tConvert(opEnd)}`)
                 openTimes.push(`${tConvert(lastEnd)}-${tConvert(opEnd)}`);
             }
-            console.log(openTimes)
+            logger.log(openTimes)
             return openTimes;
         };
 

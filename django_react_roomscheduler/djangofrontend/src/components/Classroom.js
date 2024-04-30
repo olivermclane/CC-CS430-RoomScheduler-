@@ -27,7 +27,7 @@ function Classroom({classroom}) {
                 <p>Classroom total seats: {classroom.total_seats}</p>
             </div>
             <div className="flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0">
-            <button
+                <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="bg-violet-300 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 focus:outline-none w-full sm:w-auto"
                 >
@@ -86,7 +86,7 @@ function Classroom({classroom}) {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                Classroom name: {classroom.classroom_name}
+                                Classroom name: {classroom.floor.building.building_name + ' ' + classroom.classroom_number}
                                 <br/>
                                 Width of room: {classroom.width_of_room}
                                 <br/>

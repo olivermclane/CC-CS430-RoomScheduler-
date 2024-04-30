@@ -2,6 +2,9 @@ import React, {useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button, Input} from "reactstrap";
 import axios from "axios";
+import logger from "../loggers/logger";
+import carrollCampusImage from '../icons/carroll-campus.jpg'; // Import the image
+
 
 export default function RegisterForm() {
 
@@ -9,13 +12,11 @@ export default function RegisterForm() {
     const navigate = useNavigate();
     const login = async (email, password, username) => {
         try {
-            console.log(password)
-            const response = await axios.post('http://localhost:8000/register/', {
+            const response = await axios.post('/api/register/', {
                 'email': email.toString(),
                 'username': username,
                 'password': password
             });
-            console.log(response)
             return response.data;
         } catch (error) {
             throw error;
@@ -58,10 +59,10 @@ export default function RegisterForm() {
             }
 
             const data = await login(email, password, username);
-            window.location.href = '/login';
+            navigate('/login')
         } catch (error) {
-            setRegistrationError("Email or username is already taken")
-            //setRegistrationError(error.message || 'Registration failed. Please check with your provider.');
+
+            setRegistrationError('Registration failed. Try a different username and email or check with your provider.');
         }
     };
 
@@ -70,7 +71,7 @@ export default function RegisterForm() {
             <style>{
                 `
                 body {
-                    background-image: url("/carroll-campus.jpg");
+                    background-image: url(${carrollCampusImage});
                     background-size: cover;
                 }
                 `
@@ -103,11 +104,11 @@ export default function RegisterForm() {
                                         Register
                                     </Button>
 
-                                    <a href="/login"
-                                        className="ml-3 rounded-full px-4 py-2 text-sm font-medium text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white"
+                                   <Button onClick={() => navigate('/login')}
+                                        className="rounded-full px-4 py-2 text-sm font-medium text-violet-700 bg-violet-200 border border-violet-400 hover:bg-violet-300 hover:text-violet-800 focus:z-10 focus:ring-2 focus:ring-violet-800 dark:bg-violet-700 dark:border-violet-600 dark:text-white dark:hover:text-white dark:hover:bg-violet-600 dark:focus:ring-violet-800 dark:focus:text-white"
                                     >
-                                        Back
-                                    </a>
+                                        Back to Home
+                                    </Button>
                                 </div>
                             </div>
                         </div>

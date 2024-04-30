@@ -1,6 +1,10 @@
 import {LogOut, ChevronLast, ChevronFirst} from "lucide-react"
 import {useContext, createContext, useState} from "react"
-import axios from "axios";
+import logger from "../loggers/logger";
+import horizontalImage from '../icons/cc_logo_horiz.jpg';
+import {useAuth} from "../service/auth/AuthProvider";
+import {useNavigate} from 'react-router-dom';
+
 
 /**
  * https://gist.github.com/nimone/9204ed6e9d725c0eef003011c9113698#file-sidebar-jsx
@@ -11,25 +15,35 @@ import axios from "axios";
 const SidebarContext = createContext()
 
 export default function Sidebar({children}) {
+    const navigate = useNavigate();
     const email = localStorage.getItem('email');
     const username = localStorage.getItem('username');
     const [expanded, setExpanded] = useState(false)
     const baseurl = "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true";
     const fieldParam = `&name=${username}`;
     const profileURL = baseurl + fieldParam;
+    const {axiosInstance} = useAuth();
 
     function handleLogout(onSuccess) {
-        axios.post('http://localhost:8000/logout/')
+        axiosInstance.post('/logout/')
             .then(() => {
+                logger.info('User logged out:', username);
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('email');
+                localStorage.removeItem('username');
+
                 if (onSuccess) {
                     onSuccess(); // Call the success callback if provided
+                    logger.info('User logged out:', username)
                 } else {
-                    window.location.href = '/login'; // Redirect to login (if not using callback)
+                    navigate('/login'); // Redirect to login (if not using callback)
                 }
+
+                window.location.reload(); // Use reload to clear all session data and state
             })
             .catch(error => {
-                console.error('Logout failed:', error);
-                // Handle errors
+                logger.error('Logout failed:', error);
             });
     }
 
@@ -39,7 +53,7 @@ export default function Sidebar({children}) {
                 <nav className="h-full flex flex-col bg-white border-r shadow-sm fixed">
                     <div className="p-4 pb-2 flex justify-between items-center">
                         <img
-                            src="/icons/cc_logo_horiz.jpg"
+                            src={horizontalImage}
                             className={`overflow-hidden transition-all ${
                                 expanded ? "w-32" : "w-0"
                             }`}
