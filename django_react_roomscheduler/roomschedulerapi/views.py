@@ -81,16 +81,20 @@ class LoginView(TokenObtainPairView):
         # Access user data after token generation
         try:
             user = get_user_model().objects.get(email=request.data['email'])
+
+            print('test:', user.temp_password_admin)
+
             user_data = {
                 'username': user.username,
                 'email': user.email,
+                'temp_password_flag': user.temp_password_flag,
+                'temp_password_admin': user.temp_password_admin,
             }
-            logger.info(f"Successful login for user: {request.data.get('email')}")
 
-            response.data.update(user_data)
+            logger.info(f"Successful login for user: {request.data.get('email')}")
+            response.data.update(user_data)  # Include user data in response
         except KeyError:
             return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
-
         return response
 
 
@@ -105,6 +109,39 @@ class RegisterView(APIView):
     permission_classes = (AllowAny,)
     queryset = User.objects.all()
 
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        logger.info(f"User {request.data.get('email')} attempted to register")
+        serializer.is_valid(raise_exception=True)
+        logger.info("test")
+        serializer.save()
+        user = serializer.instance
+        refresh = RefreshToken.for_user(user)
+        logger.info(f"User {request.data.get('email')} register, Body: {request.data}")
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+
+class UpdatePasswordView(APIView):
+    #permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        logger.info("updating password")
+        logger.info(f"{request.data}")
+        # Access user data after token generation
+        logger.info(f'{request.data["email"]}')
+        logger.info(f'{request.data["password"]}')
+
+        try:
+            user = get_user_model().objects.get(email=request.data['email'])
+            user.set_password(request.data['password'])
+            user.temp_password_flag = False
+            #user.temp_password_admin = True
+            user.save()
+
+            refresh = RefreshToken.for_user(user)
+
     def post(self, request, *args, **kwargs):
         try:
             serializer = UserSerializer(data=request.data)
@@ -117,9 +154,36 @@ class RegisterView(APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
-        except Exception as e:
-            logger.error(f"Error during user registration: {str(e)}")
-            return Response({'detail': str(e)}, status=400)
+        except KeyError:
+            # Handle cases where email is not found (e.g., invalid credentials)
+            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class AdminUpdatePasswordView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        logger.info("updating password")
+        logger.info(f"{request.data}")
+        # Access user data after token generation
+        logger.info(f'{request.data["email"]}')
+        logger.info(f'{request.data["password"]}')
+
+        try:
+            user = get_user_model().objects.get(email=request.data['email'])
+            user.set_password(request.data['password'])
+            user.temp_password_flag = True
+            user.save()
+
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })
+        except KeyError:
+            # Handle cases where email is not found (e.g., invalid credentials)
+            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class BuildingView(APIView):

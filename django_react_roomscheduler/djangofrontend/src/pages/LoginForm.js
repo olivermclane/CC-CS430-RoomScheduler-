@@ -11,8 +11,8 @@ export default function LoginForm() {
     const [loginError, setLoginError] = useState('');
     const login = async (email, password) => {
       try {
-        const response = await axios.post('/api/login/', { 'email':email.toString(), 'password':password });
 
+        const response = await axios.post('/api/login/', { 'email':email.toString(), 'password':password });
         return response.data;
       } catch (error) {
         // logger.error("Error ", error)
@@ -27,14 +27,21 @@ export default function LoginForm() {
 
 
     try {
-      const data = await login( email, password );
+      const response = await login( email, password );
+      const data = response.data
       localStorage.setItem('access_token', data.access);
       // console.log(localStorage.getItem('access_token'))
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('username', data.username);
       localStorage.setItem('email', data.email)
+      localStorage.setItem('temp_password_admin', data.temp_password_admin)
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
-      navigate('/dashboard');
+
+      if (data.temp_password_flag) {
+          navigate('/updatePassword');
+      } else {
+          navigate('/dashboard');
+      }
 
     } catch (error) {
       setLoginError('Login failed. Please check your credentials and try again.');

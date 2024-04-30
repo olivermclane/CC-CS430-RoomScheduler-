@@ -36,7 +36,7 @@ const DropdownTerm = ({onTermChange}) => {
                 onClick={() => setShowDropdown(!showDropdown)}
             >
                 {selectedTerm.term_name}
-                <ChevronDown/>
+                <ChevronDown size={10}/>
             </div>
             {showDropdown && (
                 <div className="absolute z-10 w-full bg-white mt-1 border border-purple-500 rounded-md">

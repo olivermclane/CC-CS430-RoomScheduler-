@@ -182,7 +182,3 @@ def optimize_classroom_schedule(df):
 
     return df
 
-
-# Comformabilty score
-# Technology score
-# Total Courses in the classroom
