@@ -38,7 +38,7 @@ These values should be set as such:
  - DB_USER: `Username for database`
  - DB_PASSWORD: `Password for database`
  - DB_HOST: `Host for the database` suggested db
- - DEBUG: `1` for `DEBUG` or `0` for `PROD`
+ - DEBUG: 'True'
  - SECRET_KEY: `Any string` but do not share
 
 
@@ -109,7 +109,7 @@ These values should be set as such:
  - DB_USER: `Username for database`
  - DB_PASSWORD: `Password for database`
  - DB_HOST: `Host for the database` suggested localhost
- - DEBUG: `1` for `DEBUG` or `2` for `PROD`
+ - DEBUG: 'False'
  - SECRET_KEY: `Any string` but do not share
 
 Once these values have been filled in we are ready to start our docker-compose.yml. Run the following to start the all the containers:
