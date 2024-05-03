@@ -82,9 +82,6 @@ class LoginView(TokenObtainPairView):
         # Access user data after token generation
         try:
             user = get_user_model().objects.get(email=request.data['email'])
-
-            print('test:', user.temp_password_admin)
-
             user_data = {
                 'username': user.username,
                 'email': user.email,
@@ -114,7 +111,6 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         logger.info(f"User {request.data.get('email')} attempted to register")
         serializer.is_valid(raise_exception=True)
-        logger.info("test")
         serializer.save()
         user = serializer.instance
         refresh = RefreshToken.for_user(user)
@@ -129,12 +125,7 @@ class UpdatePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        logger.info("updating password")
-        logger.info(f"{request.data}")
         # Access user data after token generation
-        logger.info(f'{request.data["email"]}')
-        logger.info(f'{request.data["password"]}')
-
         try:
             user = get_user_model().objects.get(email=request.data['email'])
             user.set_password(request.data['password'])
@@ -155,11 +146,7 @@ class AdminUpdatePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        logger.info("updating password")
-        logger.info(f"{request.data}")
         # Access user data after token generation
-        logger.info(f'{request.data["email"]}')
-
         try:
             user = get_user_model().objects.get(email=request.data['email'])
             user.set_password(request.data['password'])
